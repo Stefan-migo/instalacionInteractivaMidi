@@ -36,17 +36,17 @@
   },
   "006": {
     "original": "1. Manifiesto Liminar A",
-    "file": "006.jpg",
-    "w": 1600,
-    "h": 2234,
-    "size_kb": 806
+    "file": "006.png",
+    "w": 1146,
+    "h": 1600,
+    "size_kb": 1392
   },
   "007": {
     "original": "1. Manifiesto Liminar B",
-    "file": "007.jpg",
-    "w": 1600,
-    "h": 2234,
-    "size_kb": 998
+    "file": "007.png",
+    "w": 1146,
+    "h": 1600,
+    "size_kb": 1465
   },
   "008": {
     "original": "11. Manifestación estudiantes reformistas",
@@ -204,10 +204,10 @@
   },
   "030": {
     "original": "Bono (1)",
-    "file": "030.jpg",
+    "file": "030.png",
     "w": 1600,
     "h": 800,
-    "size_kb": 447
+    "size_kb": 1015
   },
   "031": {
     "original": "Bordabehere, Ismael (1894-1977)",
@@ -267,10 +267,10 @@
   },
   "039": {
     "original": "Gaceta10",
-    "file": "039.jpg",
-    "w": 1600,
-    "h": 2150,
-    "size_kb": 1252
+    "file": "039.png",
+    "w": 1191,
+    "h": 1600,
+    "size_kb": 1468
   },
   "040": {
     "original": "Garzón Maceda, Ceferino (1895-1969)",
@@ -330,10 +330,10 @@
   },
   "048": {
     "original": "Pasted image (07)",
-    "file": "048.jpg",
+    "file": "048.png",
     "w": 655,
     "h": 985,
-    "size_kb": 80
+    "size_kb": 322
   },
   "049": {
     "original": "Pasted image (10)",
@@ -414,10 +414,10 @@
   },
   "060": {
     "original": "Pasted image (20)",
-    "file": "060.jpg",
+    "file": "060.png",
     "w": 1479,
     "h": 1000,
-    "size_kb": 576
+    "size_kb": 1281
   },
   "061": {
     "original": "Pasted image (3)",
@@ -456,17 +456,17 @@
   },
   "066": {
     "original": "Pasted image (70)",
-    "file": "066.jpg",
+    "file": "066.png",
     "w": 1439,
     "h": 718,
-    "size_kb": 192
+    "size_kb": 610
   },
   "067": {
     "original": "Pasted image (73)",
-    "file": "067.jpg",
+    "file": "067.png",
     "w": 735,
     "h": 888,
-    "size_kb": 90
+    "size_kb": 330
   },
   "068": {
     "original": "Pasted image (8)",
