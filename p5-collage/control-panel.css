@@ -1,0 +1,355 @@
+/* Control Panel — Fixed Right Sidebar
+   Aged-paper aesthetic for the projector operator. */
+#control-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100vh;
+  z-index: 1000;
+  background: #f7eedd;
+  border-left: 2px solid #a67c52;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+  font-family: system-ui, sans-serif;
+  color: #3d3830;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+  overflow: hidden;
+}
+#control-panel.collapsed {
+  transform: translateX(100%);
+}
+
+/* Toggle button — fixed position, always visible at the right edge */
+#panel-toggle {
+  position: fixed;
+  right: 0;
+  top: 1rem;
+  width: 40px;
+  height: 40px;
+  background: #a67c52;
+  border: none;
+  border-radius: 8px 0 0 8px;
+  color: #f7eedd;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: right 0.3s ease, background 0.2s;
+  line-height: 1;
+  padding: 0;
+  z-index: 1001;
+}
+#panel-toggle:hover {
+  background: #8b6944;
+}
+/* When panel is open, toggle button sits at the panel's left edge */
+#control-panel:not(.collapsed) ~ #panel-toggle,
+#control-panel:not(.collapsed) + #panel-toggle {
+  right: 320px;
+}
+
+/* Panel header */
+#panel-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #d4cfc3;
+  flex-shrink: 0;
+}
+#panel-header h2 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #3d3830;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+/* Scrollable body */
+#panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.75rem 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: #a67c52 #d4cfc3;
+}
+#panel-body::-webkit-scrollbar {
+  width: 6px;
+}
+#panel-body::-webkit-scrollbar-track {
+  background: #d4cfc3;
+}
+#panel-body::-webkit-scrollbar-thumb {
+  background: #a67c52;
+  border-radius: 3px;
+}
+
+/* Section containers */
+.panel-section {
+  margin-bottom: 1rem;
+}
+.panel-section:last-child {
+  margin-bottom: 0;
+}
+.panel-section-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8f7b57;
+  margin-bottom: 0.4rem;
+  border-bottom: 1px solid #e5ddcb;
+  padding-bottom: 0.2rem;
+}
+
+/* ── Preset grid ── */
+.preset-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+}
+.preset-btn {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.72rem;
+  background: #e5ddcb;
+  border: 1px solid #d4cfc3;
+  border-radius: 4px;
+  color: #3d3830;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.preset-btn:hover {
+  background: #d4cfc3;
+}
+.preset-btn.active {
+  background: #a67c52;
+  color: #f7eedd;
+  border-color: #8b6944;
+}
+
+/* ── Slider rows ── */
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+.slider-row label {
+  font-size: 0.72rem;
+  color: #5c5446;
+  min-width: 4.5rem;
+  flex-shrink: 0;
+}
+.slider-row input[type="range"] {
+  flex: 1;
+  accent-color: #a67c52;
+  height: 4px;
+  min-width: 0;
+}
+.slider-row .slider-value {
+  font-size: 0.68rem;
+  color: #8f7b57;
+  min-width: 2.8rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Background selector ── */
+.bg-selector {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+.bg-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.68rem;
+  background: #e5ddcb;
+  border: 1px solid #d4cfc3;
+  border-radius: 4px;
+  color: #3d3830;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.bg-btn:hover {
+  background: #d4cfc3;
+}
+.bg-btn.active {
+  background: #a67c52;
+  color: #f7eedd;
+  border-color: #8b6944;
+}
+
+/* ── Cell Catalog ── */
+#catalog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.catalog-entry {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.35rem;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.catalog-entry:hover {
+  background: #e5ddcb;
+}
+.catalog-entry.selected {
+  background: #d4cfc3;
+  outline: 1px solid #a67c52;
+}
+.catalog-thumb {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 2px;
+  border: 1px solid #d4cfc3;
+  flex-shrink: 0;
+  background: #d4cfc3;
+}
+.catalog-title {
+  flex: 1;
+  font-size: 0.68rem;
+  color: #3d3830;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.catalog-slot {
+  font-size: 0.58rem;
+  color: #8f7b57;
+  min-width: 1.4rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+.catalog-eye {
+  width: 22px;
+  height: 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  transition: background 0.12s;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.catalog-eye:hover {
+  background: #d4cfc3;
+}
+
+/* ── Per-cell editor ── */
+#per-cell-editor {
+  display: none;
+  border-top: 1px solid #d4cfc3;
+  padding-top: 0.6rem;
+  margin-top: 0.2rem;
+}
+#per-cell-editor.visible {
+  display: block;
+}
+.editor-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.3rem;
+}
+.editor-row label {
+  font-size: 0.68rem;
+  color: #5c5446;
+  min-width: 3.5rem;
+  flex-shrink: 0;
+}
+.editor-row select {
+  flex: 1;
+  padding: 0.2rem 0.35rem;
+  font-size: 0.68rem;
+  background: #e5ddcb;
+  border: 1px solid #d4cfc3;
+  border-radius: 3px;
+  color: #3d3830;
+  min-width: 0;
+}
+.editor-row input[type="range"] {
+  flex: 1;
+  accent-color: #a67c52;
+  height: 4px;
+  min-width: 0;
+}
+.editor-row .editor-value {
+  font-size: 0.68rem;
+  color: #8f7b57;
+  min-width: 2.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Floating Control Bar ── */
+#floating-bar {
+  position: fixed;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: #fdfcf8;
+  border: 1px solid #d4cfc3;
+  border-radius: 6px;
+  padding: 3px 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  pointer-events: auto;
+  transition: opacity 0.15s ease;
+}
+#floating-bar.hidden {
+  display: none;
+}
+.float-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  color: #3d3830;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  line-height: 1;
+  padding: 0;
+}
+.float-btn:hover {
+  background: #faf6ed;
+  color: #a67c52;
+}
+.float-btn:active {
+  background: #e5ddcb;
+}
+
+/* ── Esparcir Todo button ── */
+#esparcir-todo {
+  width: 100%;
+  padding: 0.45rem;
+  font-size: 0.78rem;
+  background: #a67c52;
+  border: none;
+  border-radius: 4px;
+  color: #f7eedd;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+#esparcir-todo:hover {
+  background: #8b6944;
+}

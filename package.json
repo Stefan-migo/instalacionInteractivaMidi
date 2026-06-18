@@ -1,0 +1,28 @@
+{
+  "name": "instalacioninteractiva",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "generate-layout": "node scripts/generate-layout.js",
+    "bridge": "node bridge/index.js",
+    "tunnel": "ngrok http 8080",
+    "dev": "node bridge/index.js & ngrok http 8080 & wait"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "sharp": "^0.34.5",
+    "ws": "^8.21.0"
+  },
+  "jest": {
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ]
+  }
+}

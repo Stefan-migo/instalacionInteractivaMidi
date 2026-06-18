@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Test coverage
+coverage/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Large assets (original datasets, raw images)
+DataSet/
+images/raw/
+
+# Curation pipeline intermediates
+curation/
+
+# Large assets — zips over GitHub 100MB limit
+phone-client/assets/*.zip
+
+# Temp / Examples
+temp/
+tmp/
+tempExample/

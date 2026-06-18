@@ -1,0 +1,33 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "AGENTS.md"
+  ],
+  "agent": {
+    "gentle-orchestrator": {
+      "model": "llama.cpp/qwen3-8b"
+    }
+  },
+  "mcp": {
+    "graphify": {
+      "type": "local",
+      "command": ["python3", "-m", "graphify.serve"],
+      "enabled": false,
+      "_note": "Graphify knowledge graph. Run 'graphify init && graphify serve' from project root to enable."
+    },
+    "github": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
+      "enabled": false,
+      "environment": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_TOKEN}"
+      },
+      "_note": "GitHub PR, issues, and code management. Set GITHUB_TOKEN in env before launching."
+    }
+  },
+  "permission": {
+    "skill": {
+      "*": "allow"
+    }
+  }
+}
