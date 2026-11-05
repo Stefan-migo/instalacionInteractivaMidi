@@ -21,15 +21,10 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# Large assets (original datasets, raw images)
+# Local image sources — the repository ships no image content
 DataSet/
 images/raw/
-
-# Curation pipeline intermediates
 curation/
-
-# Large assets — zips over GitHub 100MB limit
-phone-client/assets/*.zip
 
 # Temp / Examples
 temp/

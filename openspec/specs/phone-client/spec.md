@@ -2,7 +2,7 @@
 
 ## Overview
 
-Defines the onboarding experience for phone visitors at the exhibition: splash screen with MIDI branding, sensor permission flow with recovery, WebGL paper texture background, action-based hint engine, and help overlay. These capabilities transform the phone client from a blank tool into a self-explanatory interactive experience that orients first-time visitors.
+Defines the onboarding experience for phone visitors at the exhibition: splash screen, sensor permission flow with recovery, WebGL paper texture background, action-based hint engine, and help overlay. These capabilities transform the phone client from a blank tool into a self-explanatory interactive experience that orients first-time visitors.
 
 This spec complements [`openspec/specs/phone-ux/spec.md`](../phone-ux/spec.md) (functional behavior extensions) and [`openspec/specs/phone-style/spec.md`](../phone-style/spec.md) (visual design system).
 
@@ -15,8 +15,8 @@ This spec complements [`openspec/specs/phone-ux/spec.md`](../phone-ux/spec.md) (
 #### R-PUP-1: Three-Screen Onboarding Flow
 
 The phone client MUST present a 3-screen sequential flow: Splash → Permission → Dashboard.
-Screen 1 (Splash): MIDI logo centered + "Reafirmá la Reforma" tagline + [Participar] button.
-Screen 2 (Permission): Small logo + sensor explanation + [Activar sensores].
+Screen 1 (Splash): Project title + [Participar] button.
+Screen 2 (Permission): Sensor explanation + [Activar sensores].
 Screen 3 (Dashboard): Existing image + controls.
 
 | Scenario | GIVEN | WHEN | THEN |
@@ -75,24 +75,14 @@ If the user denies sensor permission, the phone MUST show an error message on th
 | Permission denied | Permission screen, iOS 13+ | User denies DeviceOrientation or DeviceMotion | Error message + [Recargar] appear on same screen |
 | Recovery | Error message showing | User taps [Recargar] | Page reloads; flow restarts from splash |
 
-#### R-PUP-7: logoMIDI Branding
-
-Both Splash and Permission screens MUST display the MIDI logo from `assets/logoMIDI.svg` (fallback to `logoMIDI.png`). Splash: large centered. Permission: small top area.
-
-| Scenario | GIVEN | WHEN | THEN |
-|----------|-------|------|------|
-| SVG renders | Phone loads | Splash screen renders | logoMIDI.svg displayed centered |
-| PNG fallback | SVG fails to load | Image onerror fires | logoMIDI.png displayed as fallback |
-
 ### Module Boundaries
 
 | File | Change | Role |
 |------|--------|------|
-| `phone-client/index.html` | Modified | Splash screen markup, help overlay template, shader canvas, logo refs, permission error block |
+| `phone-client/index.html` | Modified | Splash screen markup, help overlay template, shader canvas, permission error block |
 | `phone-client/app.js` | Modified | 3-screen flow controller, action-based HintEngine, help overlay logic, permission denial handler, WebSocket early connect |
 | `phone-client/style.css` | Modified | Splash/permission/help overlay styles, [?] icon, error state |
 | `phone-client/paper-texture.js` | **New** | Extracted WebGL simplex noise shader from `p5-collage/background-texture.js`, render-once caching, fallback to solid color |
-| `phone-client/assets/logoMIDI.svg` | Wired (exists) | MIDI logo on Splash + Permission screens |
 
 ## Capability: Gesture Gallery (`phone-gesture-gallery`)
 

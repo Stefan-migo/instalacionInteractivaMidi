@@ -23,6 +23,8 @@
     orientation: { a: 0, b: 0, g: 0 },
   };
   var paperTextureRendered = false;
+  // Stable seed for deterministic decoration (paper texture + torn edges).
+  var DECOR_SEED = 1337;
   var galleryState = null;
   var gestureDetectors = null;
   var lastFiredGesture = null;
@@ -73,7 +75,7 @@
     if (!canvas) return;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    var ok = renderPaperTexture(canvas, canvas.width, canvas.height, 0.8, 1918);
+    var ok = renderPaperTexture(canvas, canvas.width, canvas.height, 0.8, DECOR_SEED);
     if (ok) {
       try {
         var dataUrl = canvas.toDataURL('image/png');
@@ -111,7 +113,7 @@
   // --- Torn edge effect ---
   document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.torn-container').forEach(function (el, i) {
-      el.style.clipPath = tornClipPath(6, 3, 1918 + i);
+      el.style.clipPath = tornClipPath(6, 3, DECOR_SEED + i);
     });
   });
 

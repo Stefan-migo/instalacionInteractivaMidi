@@ -1,5 +1,5 @@
-/* === Collage Phone — Papel y Tinta Design System === */
-/* Period aesthetic from 1918 Reforma Universitaria */
+/* === Collage Phone — paper and ink design tokens === */
+/* Generic visual language: aged paper, ink accents, torn edges. */
 
 /* --- Reset --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -114,15 +114,6 @@ body::after {
   max-width: 320px;
 }
 
-.logo-midi-main {
-  max-width: 80%;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  mix-blend-mode: multiply;
-  opacity: 0.85;
-}
-
 .splash-tagline {
   font-family: var(--font-heading);
   font-size: var(--font-size-xxl);
@@ -149,15 +140,6 @@ body::after {
   gap: var(--space-lg);
   max-width: 320px;
   margin: 0 auto;
-}
-
-.logo-midi-small {
-  max-width: 100px;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  mix-blend-mode: multiply;
-  opacity: 0.85;
 }
 
 #permission-screen h2 {

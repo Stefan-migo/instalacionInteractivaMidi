@@ -1,0 +1,6 @@
+# Optional tooling for the image curation helpers in this directory.
+# Only needed if you run process-images.py or remove-bg.py.
+opencv-python>=4.8
+numpy>=1.24
+Pillow>=10.0
+rembg>=2.0

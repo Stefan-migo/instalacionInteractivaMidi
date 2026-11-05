@@ -2,11 +2,11 @@
 
 ## Overview
 
-Defines the "Papel y Tinta" visual identity for the phone client. The phone interface MUST read as a period artifact from 1918 — aged paper, ink stamps, torn edges — not a modern app. Pure visual spec: no functional behavior changes.
+Defines the "Papel y Tinta" visual identity for the phone client. The phone interface MUST read as a printed artifact — aged paper, ink accents, torn edges — not a modern app. The visual language is generic and MUST stay independent of any specific subject matter. Pure visual spec: no functional behavior changes.
 
 ## Visual Identity
 
-The phone UI IS part of the installation. Every visual decision derives from the p5 collage's torn-edge language: shared `clip-path` jitter, same sepia-ink palette (`--color-bg #f5e6c8`, `--color-accent #8b2c24`), zero rounded corners (period paper has none). The phone feels like a physical object from the Reforma era: parchment, ink, rubber stamps, faded red from the UCR banner.
+The phone UI IS part of the installation. Every visual decision derives from the p5 collage's torn-edge language: shared `clip-path` jitter, same sepia-ink palette (`--color-bg #f5e6c8`, `--color-accent #8b2c24`), zero rounded corners. The phone feels like a physical paper object: parchment, ink, torn edges.
 
 ## Design Tokens
 
@@ -16,7 +16,7 @@ All visual values MUST be CSS custom properties on `:root` — single source of 
 |-------|-------|------|
 | `--color-bg` | `#f5e6c8` | Aged parchment background |
 | `--color-text` | `#1a1a1a` | Ink black body text |
-| `--color-accent` | `#8b2c24` | Faded red (UCR Reforma identity) |
+| `--color-accent` | `#8b2c24` | Deep red accent |
 | `--color-accent-active` | `#6e201a` | Active/pressed accent |
 | `--color-surface` | `rgba(245,230,200,0.9)` | Translucent paper for cards |
 | `--color-muted` | `#8b7d6b` | Secondary / label text |

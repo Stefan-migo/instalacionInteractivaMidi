@@ -4,7 +4,7 @@
  *
  * @param {number} segments - Number of vertices per side (6 recommended)
  * @param {number} jitter - Maximum deviation as percentage (3 recommended)
- * @param {number} seed - Seed for deterministic RNG (1918 + index recommended)
+ * @param {number} seed - Seed for deterministic RNG (a stable base value plus an index)
  * @returns {string} CSS polygon() value
  */
 function tornClipPath(segments, jitter, seed) {

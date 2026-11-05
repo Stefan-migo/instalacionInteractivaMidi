@@ -8,7 +8,11 @@ const { GestureStore } = require('./gesture-store');
 const { DTWMatcher } = require('./dtw-matcher');
 
 const ROOT_DIR = path.join(__dirname, '..');
-const IMAGE_DIR = path.join(ROOT_DIR, 'images', 'content');
+// Overridable so tests (and deployments with assets elsewhere) do not depend on the
+// repository carrying image content. Absolute paths are honoured as given.
+const IMAGE_DIR = process.env.IMAGES_DIR
+  ? path.resolve(process.env.IMAGES_DIR)
+  : path.join(ROOT_DIR, 'images', 'content');
 const LAYOUT_PATH = path.join(ROOT_DIR, 'images', 'layout.json');
 const MANIFEST_PATH = path.join(ROOT_DIR, 'images', 'manifest.json');
 const PHONE_CLIENT_DIR = path.join(ROOT_DIR, 'phone-client');

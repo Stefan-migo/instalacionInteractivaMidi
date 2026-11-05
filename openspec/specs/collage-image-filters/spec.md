@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Add per-image CSS filter application via `drawingContext.filter` to the p5 collage draw pipeline. Filters transform image appearance to match the 1918 period aesthetic.
+Add per-image CSS filter application via `drawingContext.filter` to the p5 collage draw pipeline. Filters transform image appearance to produce a printed-paper aesthetic.
 
 ## Requirements
 

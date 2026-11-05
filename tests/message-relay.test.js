@@ -213,11 +213,11 @@ describe('MessageRelay', () => {
     });
 
     test('formats with different slot and image', () => {
-      const msg = relay.formatCellImageMessage(7, 'reforma_1918.jpg', '/images/content/reforma_1918.jpg');
+      const msg = relay.formatCellImageMessage(7, 'sample_001.jpg', '/images/content/sample_001.jpg');
       expect(msg.type).toBe('cell-image');
       expect(msg.slot).toBe(7);
-      expect(msg.imageFile).toBe('reforma_1918.jpg');
-      expect(msg.imageUrl).toBe('/images/content/reforma_1918.jpg');
+      expect(msg.imageFile).toBe('sample_001.jpg');
+      expect(msg.imageUrl).toBe('/images/content/sample_001.jpg');
     });
   });
 

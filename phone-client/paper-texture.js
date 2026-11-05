@@ -7,14 +7,14 @@
  *
  * Usage (browser):
  *   var canvas = document.getElementById('my-canvas');
- *   var ok = renderPaperTexture(canvas, canvas.width, canvas.height, 0.8, 1918);
+ *   var ok = renderPaperTexture(canvas, canvas.width, canvas.height, 0.8);
  *   if (ok) { /* use canvas data URL *\/ }
  *
  * @param {HTMLCanvasElement} canvas  - Target canvas to render onto
  * @param {number}            width   - Render width in pixels
  * @param {number}            height  - Render height in pixels
  * @param {number}            [intensity=0.8]  - Noise intensity 0..1
- * @param {number}            [seed=1918]      - Pseudo-random seed (reserved for future use)
+ * @param {number}            [seed=1337]      - Pseudo-random seed (reserved for future use)
  * @returns {boolean} true if WebGL shader rendered successfully, false otherwise
  */
 function renderPaperTexture(canvas, width, height, intensity, seed) {
@@ -23,7 +23,7 @@ function renderPaperTexture(canvas, width, height, intensity, seed) {
   if (typeof canvas.getContext !== 'function') return false;
 
   intensity = intensity !== undefined ? intensity : 0.8;
-  seed = seed !== undefined ? seed : 1918;
+  seed = seed !== undefined ? seed : 1337;
 
   // --- Create offscreen canvas for WebGL rendering ---
   var offscreen;

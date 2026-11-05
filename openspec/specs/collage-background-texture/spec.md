@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Add a vintage paper background layer using p5 noise fibers and semi-transparent dust particles, composited behind all collage cells. Creates the tactile feel of aged paper consistent with the 1918 Reforma period.
+Add a vintage paper background layer using p5 noise fibers and semi-transparent dust particles, composited behind all collage cells. Creates the tactile feel of aged paper.
 
 ## Requirements
 

@@ -1,5 +1,10 @@
 const http = require('http');
+const path = require('path');
 const WebSocket = require('ws');
+
+// Keep the bridge's image directory off the production data: the repository carries no
+// image content, and serving is what this suite verifies.
+process.env.IMAGES_DIR = path.join(__dirname, 'fixtures', 'images');
 
 describe('Bridge', () => {
   let server;
@@ -42,10 +47,15 @@ describe('Bridge', () => {
       expect(body.cells).toBeInstanceOf(Array);
     });
 
-    test('GET /images/content/001.jpg returns image', async () => {
-      const res = await get('/images/content/001.jpg');
+    test('GET /images/content/sample.png returns image', async () => {
+      const res = await get('/images/content/sample.png');
       expect(res.status).toBe(200);
       expect(res.headers['content-type']).toContain('image');
+    });
+
+    test('GET /images/content/missing.png returns 404', async () => {
+      const res = await get('/images/content/missing.png');
+      expect(res.status).toBe(404);
     });
 
     test('GET /nonexistent returns 404', async () => {
