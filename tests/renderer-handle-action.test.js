@@ -20,8 +20,6 @@ function createTestRenderer() {
         pos: { x: 0, y: 0, w: 400, h: 300, zIndex: slot, rotation: 0 },
         img: null,
         opacity: 1.0,
-        flipH: false, flipV: false,
-        locked: false,
         filterType: 'none',
         borderStyle: 'torn',
         phoneConnected: false,
@@ -32,12 +30,6 @@ function createTestRenderer() {
       const s = state.cellStates[slot];
       if (!s) return;
       switch (action) {
-        case 'flipH': s.flipH = !s.flipH; break;
-        case 'flipV': s.flipV = !s.flipV; break;
-        case 'opacityUp': s.opacity = Math.min(1, s.opacity + 0.15); break;
-        case 'opacityDown': s.opacity = Math.max(0.15, s.opacity - 0.15); break;
-        case 'lock': s.locked = true; break;
-        case 'unlock': s.locked = false; break;
         case 'opacity':
           s.opacity = Math.max(0, Math.min(1, payload.value / 100));
           break;

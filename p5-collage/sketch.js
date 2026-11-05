@@ -231,10 +231,8 @@ function createRenderer() {
       const s = state.cellStates[slot];
       if (!s) return;
       switch (action) {
-        case 'cycle-next':
-        case 'cycle-prev': {
-          const dir = action === 'cycle-next' ? 'next' : 'prev';
-          const result = imageCycler.cycle(slot, dir);
+        case 'cycle-next': {
+          const result = imageCycler.cycle(slot, 'next');
           if (result) {
             const newImg = imgLoader.get(result.current);
             if (newImg && s.img) {
@@ -272,49 +270,16 @@ function createRenderer() {
           }
           sendImageUpdate(slot, newCell.imageFile);
           break;
-        case 'flipH': s.flipH = !s.flipH; break;
-        case 'flipV': s.flipV = !s.flipV; break;
-        case 'opacityUp': s.opacity = Math.min(1, s.opacity + 0.15); break;
-        case 'opacityDown': s.opacity = Math.max(0.15, s.opacity - 0.15); break;
-        case 'lock': s.locked = true; break;
-        case 'unlock': s.locked = false; break;
-        case 'blend-mode-next':
-        case 'blend-mode-prev': {
-          const modes = ['source-over', 'multiply', 'screen', 'overlay', 'difference'];
-          const idx = s.blendModeIndex ?? 0;
-          const delta = action === 'blend-mode-next' ? 1 : -1;
-          s.blendModeIndex = (idx + delta + modes.length) % modes.length;
-          s.blendMode = modes[s.blendModeIndex];
-          break;
-        }
-        case 'filter-next':
-        case 'filter-prev': {
+        case 'filter-next': {
           const filters = Object.keys(CONFIG.filterMap);
           const curIdx = filters.indexOf(s.filterType);
-          const delta2 = action === 'filter-next' ? 1 : -1;
-          s.filterType = filters[(curIdx + delta2 + filters.length) % filters.length];
+          s.filterType = filters[(curIdx + 1) % filters.length];
           break;
         }
-        case 'border-next':
-        case 'border-prev': {
+        case 'border-next': {
           const styles = CONFIG.borderStyleMap;
           const curIdx2 = styles.indexOf(s.borderStyle);
-          const delta3 = action === 'border-next' ? 1 : -1;
-          s.borderStyle = styles[(curIdx2 + delta3 + styles.length) % styles.length];
-          break;
-        }
-        case 'set-layout-scatter':
-        case 'set-layout-spiral':
-        case 'set-layout-polaroid-stack':
-        case 'set-layout-neat-grid':
-        case 'set-layout-vignette':
-        case 'set-layout-random': {
-          const presetName = action.replace('set-layout-', '');
-          if (deviceManager) {
-            deviceManager.layoutEngine.setPreset(presetName);
-            deviceManager._recalculateLayout();
-            activeSlots = getSortedSlots();
-          }
+          s.borderStyle = styles[(curIdx2 + 1) % styles.length];
           break;
         }
         case 'opacity':
