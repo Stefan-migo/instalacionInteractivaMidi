@@ -10,6 +10,13 @@ const manifest = JSON.parse(
   fs.readFileSync(path.join(__dirname, '..', 'images', 'manifest.json'), 'utf-8')
 );
 
+if (Object.keys(manifest).length === 0) {
+  console.error('images/manifest.json has no entries — nothing to lay out.');
+  console.error('Add images to images/content/ and describe them in images/manifest.json first.');
+  console.error('Existing images/layout.json was left untouched.');
+  process.exit(1);
+}
+
 const images = Object.entries(manifest).map(([id, info]) => ({
   id,
   file: info.file,
