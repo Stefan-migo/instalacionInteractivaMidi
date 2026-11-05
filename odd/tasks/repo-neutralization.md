@@ -51,3 +51,24 @@ L3 — Decisions taken with the user through a structured questionnaire: content
 L4 — Evidence that the neutral system still works: `CollageLayout` builds `bySlot` from any cell list; `DeviceManager.initAll()` renders every cell; `drawImg` returns early when `img` is null; `bridge/index.js` only relays an `imageFile` when the cell has one. Therefore a 30-cell layout with `imageFile: null` and an empty manifest degrade gracefully to border-only cells.
 
 L5 — Untracked material deleted in T2 beyond the questionnaire summary (`DataSet/`, `curation/`, `images/content/`, assets zips): `images/raw/` (355 MB) is also Reform photographic content and falls under S2/S4. It is unrecoverable. `tempExample/` (261 KB, third-party reference project) is NOT Reform content and is left untouched.
+
+L6 — Slice accounting: U1 reports 991 authored changed lines because it carries 93 data-file deletions plus the layout rewrite; the reviewable logic is ~30 lines (bridge `IMAGES_DIR`, `generate-layout` guard, test fixture). U2-U4 stay well under the 400-line budget. Deleting data files is not a review burden requiring a further split.
+
+## Evidence
+
+| Unit | Task | Commit |
+|------|------|--------|
+| U1 | T2 — content deletion, neutral manifest/layout, `generate-layout` guard, `IMAGES_DIR`, test fixture | `981d4c3` |
+| U2 | T3 — branding, copy and period seeds neutralized | `773ea9d` |
+| U3 | T4 — specs neutralized, `AGENTS.md` rewritten, `README.md` added | `a0b1c3e` |
+| U4 | T5 — package manifest, `requirements.txt`, SDD change archived, `.gitignore` trimmed | `36a89be` |
+
+### Verification (T6)
+
+- `npx jest`: **20 suites, 311 tests passing** (baseline was 310; +1 missing-image 404 test).
+- Bridge smoke on the neutral system: `/health` 200, `/api/manifest` `{}`, `/api/layout` 30 cells with `imageFile: null`, `/p5-collage/` 200, `/phone-client/` 200.
+- Every local `src`/`href` referenced by both `index.html` files resolves 200 — no dangling asset after the deletions.
+- `node --check` clean on every `.js` file in `bridge/`, `p5-collage/`, `phone-client/` and `scripts/`.
+- `git grep -ni "reforma|1918|midi|UCR|córdoba"` over tracked files excluding the preserved history: **no matches**. 65 tracked files under `openspec/changes/archive/`, `sdd/` and `bridge/openspec/` keep their original wording by design (S5).
+- Working tree: **1.6 MB** excluding `.git` and `node_modules` (was ~2.1 GB with data on disk). `.git` stays at ~316 MB because history is the recovery path for the deleted tracked images.
+- Zero-content safety proven by code inspection: `ImageCycler.cycle()` returns `null` on an empty pool and the caller guards it; `adaptCellToImage()` returns `false` when `img` is null; `drawImg()` returns early on a null image; the bridge only relays `imageFile` when present.
