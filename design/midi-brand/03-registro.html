@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MIDI · Dirección 03 — Registro</title>
+<style>
+  /* ============================================================
+     DIRECCIÓN 03 — REGISTRO
+     Estrategia: bandas desplazadas y numerales grandes.
+     Nada flota: los controles están anclados a los bordes de la
+     pantalla y las piezas se corren múltiplos de 19 unidades,
+     como la banda superior del símbolo arranca en x=37.
+     ============================================================ */
+
+  :root {
+    --ink: #000000;
+    --paper: #ffffff;
+    --channel: rgba(255, 255, 255, 0.6);
+    --u: 19px;
+    --hair: 2px;
+    --display: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace;
+    --text: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--text);
+    width: 1660px;
+    padding: 30px 32px 34px;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Slab desplazado de fondo: el gesto del tablero en sí */
+  body::before {
+    content: "";
+    position: absolute;
+    top: -80px; right: -120px;
+    width: 620px; height: 420px;
+    background: rgba(255,255,255,0.05);
+    pointer-events: none;
+  }
+
+  :focus-visible { outline: 2px solid var(--paper); outline-offset: 3px; }
+
+  /* ---------- Tablero ---------- */
+  .board-head {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+    padding-bottom: 14px;
+    margin-bottom: 26px;
+  }
+  .board-head::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 100%; height: var(--hair);
+    background: var(--paper);
+  }
+  .board-head .h-wrap { display: flex; align-items: baseline; gap: 18px; }
+  .board-head .idx {
+    font-family: var(--display);
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+  }
+  .board-head h1 {
+    font-family: var(--display);
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .board-head .tradeoff {
+    font-family: var(--display);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--channel);
+    max-width: 430px;
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  .stage { display: flex; gap: 28px; align-items: flex-start; position: relative; }
+  .phones { display: flex; gap: 24px; }
+
+  /* ---------- Marco de teléfono ---------- */
+  .phone {
+    width: 375px;
+    height: 812px;
+    background: var(--ink);
+    box-shadow: inset 0 0 0 var(--hair) var(--paper);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .phone-tag {
+    position: absolute;
+    top: 0; right: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--display);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    padding: 3px 7px;
+    z-index: 6;
+  }
+
+  .display {
+    font-family: var(--display);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 0.88;
+  }
+
+  /* ---------- Banda: la unidad de esta dirección ---------- */
+  .band {
+    display: flex;
+    align-items: stretch;
+    border-top: var(--hair) solid var(--paper);
+  }
+  .band--bottom { border-top: var(--hair) solid var(--paper); border-bottom: none; }
+  .band .cell {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 12px;
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .band .cell + .cell { border-left: var(--hair) solid var(--paper); }
+  .band .cell.bare { border-left: none; }
+  .band .cell.grow { flex: 1; }
+  .band .cell .n { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+
+  /* ---------- Botón-banda ---------- */
+  .cband {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 20px 18px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+  }
+  .cband .arw { font-size: 19px; line-height: 1; }
+  .cband--ghost {
+    background: transparent;
+    color: var(--paper);
+    box-shadow: inset 0 0 0 var(--hair) var(--paper);
+    padding: 16px 18px;
+    font-size: 11px;
+  }
+
+  /* ---------- Numeral de fondo ---------- */
+  .ghost-num {
+    position: absolute;
+    font-family: var(--display);
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    color: rgba(255,255,255,0.09);
+    line-height: 0.72;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* ---------- Splash ---------- */
+  .splash { flex: 1; display: flex; flex-direction: column; position: relative; }
+  .splash .ghost-num { top: 84px; right: -18px; font-size: 210px; }
+  .splash .top { padding: 22px 20px 0; position: relative; display: flex; gap: 14px; align-items: flex-start; }
+  .splash .mark { width: 62px; flex: none; }
+  .splash .mark svg { display: block; width: 100%; height: auto; }
+  .splash .top .est {
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--channel);
+    line-height: 1.9;
+    padding-top: 4px;
+  }
+  .splash h2 {
+    font-size: 53px;
+    padding: 30px 20px 0;
+    position: relative;
+  }
+  .splash .lead {
+    padding: 16px 20px 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--channel);
+    max-width: 285px;
+    position: relative;
+  }
+  .splash .spacer { flex: 1; }
+  .splash .stamp {
+    padding: 0 20px 14px;
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--channel);
+    position: relative;
+    line-height: 1.9;
+  }
+
+  /* ---------- Permiso ---------- */
+  .perm { flex: 1; display: flex; flex-direction: column; position: relative; }
+  .perm .ghost-num { top: 6px; left: -14px; font-size: 150px; }
+  .perm .top { padding: 22px 20px 0; position: relative; display: flex; justify-content: space-between; align-items: baseline; }
+  .perm .top .eyebrow {
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--channel);
+  }
+  .perm h2 { font-size: 34px; padding: 92px 20px 0; position: relative; }
+  .perm .body { padding: 16px 20px 0; position: relative; }
+  .perm .body p { font-size: 13px; line-height: 1.65; color: var(--channel); }
+  .perm .body p + p { margin-top: 12px; }
+  .perm .spacer { flex: 1; }
+  .perm .note {
+    margin: 0 20px 14px;
+    padding: 12px 14px;
+    box-shadow: inset 0 0 0 var(--hair) var(--paper);
+    font-size: 11px;
+    line-height: 1.55;
+    position: relative;
+  }
+  .perm .note strong {
+    display: block;
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    color: var(--channel);
+  }
+
+  /* ---------- Dashboard ---------- */
+  .dash { flex: 1; display: flex; flex-direction: column; position: relative; }
+  .dash .frame { position: relative; height: 330px; flex: none; margin-left: var(--u); margin-right: 0; margin-top: 0; }
+  .dash .frame .fill {
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(135deg, #1c1c1c 0 10px, #262626 10px 20px);
+    clip-path: polygon(0 2%, 13% 0, 31% 1.4%, 52% 0, 71% 1.1%, 88% 0, 100% 1.8%, 99% 18%, 100% 38%, 98.6% 58%, 100% 77%, 99.2% 91%, 100% 98.6%, 86% 100%, 69% 98.7%, 48% 100%, 29% 98.5%, 11% 100%, 0 98.2%, 1.2% 79%, 0 61%, 1.4% 42%, 0 24%);
+  }
+  .dash .frame .cap {
+    position: absolute;
+    left: -8px; bottom: 10px;
+    background: var(--ink);
+    box-shadow: inset 0 0 0 var(--hair) var(--paper);
+    font-family: var(--display);
+    font-size: 8px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+  }
+  .dash .hud { display: flex; gap: 6px; padding: 10px 0 0 var(--u); }
+  .dash .hud .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--display);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 8px;
+  }
+  .dash .hud .chip--inv { background: transparent; color: var(--paper); box-shadow: inset 0 0 0 var(--hair) var(--paper); }
+  .dash .spacer { flex: 1; }
+
+  /* Transporte: bloques grandes anclados abajo */
+  .transport { display: grid; grid-template-columns: repeat(5, 1fr); border-top: var(--hair) solid var(--paper); }
+  .transport button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 2px 11px;
+    min-height: 74px;
+    background: transparent;
+    color: var(--paper);
+    border: none;
+    cursor: pointer;
+  }
+  .transport button + button { border-left: var(--hair) solid var(--paper); }
+  .transport button .g { font-size: 20px; line-height: 1; }
+  .transport button .t {
+    font-family: var(--display);
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .transport button[aria-pressed="true"] { background: var(--paper); color: var(--ink); }
+
+  /* Rieles: se apoyan sobre el borde, sangrados */
+  .rails { padding: 0 0 14px; }
+  .rail { padding: 10px 18px 0 18px; }
+  .rail:first-child { padding-top: 14px; }
+  .rail .head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .rail .head .v { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+
+  .range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: transparent;
+    box-shadow: inset 0 0 0 var(--hair) var(--paper);
+    cursor: pointer;
+  }
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 24px;
+    background: var(--paper);
+    border: none;
+    cursor: pointer;
+  }
+  .range::-moz-range-thumb {
+    width: 20px; height: 24px;
+    background: var(--paper);
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+  }
+
+  .tabs { display: flex; border-top: var(--hair) solid var(--paper); }
+  .tabs button {
+    flex: 1;
+    padding: 11px 0;
+    background: transparent;
+    color: var(--channel);
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+  }
+  .tabs button + button { border-left: var(--hair) solid var(--paper); }
+  .tabs button[aria-selected="true"] { background: var(--paper); color: var(--ink); }
+
+  /* ---------- Panel del operador ---------- */
+  .panel {
+    width: 360px;
+    flex: none;
+    background: var(--ink);
+    box-shadow: inset 0 0 0 var(--hair) var(--paper);
+    display: flex;
+    flex-direction: column;
+  }
+  .panel .p-title {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 16px 14px 14px;
+    border-bottom: var(--hair) solid var(--paper);
+  }
+  .panel .p-title .n { font-family: var(--display); font-size: 34px; font-weight: 700; line-height: 0.8; letter-spacing: -0.04em; }
+  .panel .p-title h3 {
+    font-family: var(--display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    flex: 1;
+  }
+  .panel .p-title .chev { font-family: var(--display); font-size: 14px; font-weight: 700; }
+
+  .pblock { border-bottom: var(--hair) solid var(--paper); padding: 12px 14px; }
+  .pblock:last-child { border-bottom: none; }
+  .pblock .bh {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 11px;
+  }
+  .pblock .bh .n {
+    font-family: var(--display);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .pblock .bh .t {
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--channel);
+    flex: 1;
+  }
+
+  .pgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--hair); background: var(--paper); }
+  .pgrid button {
+    padding: 11px 2px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+  }
+  .pgrid button[aria-pressed="true"] { background: var(--paper); color: var(--ink); }
+
+  .cat { display: flex; flex-direction: column; gap: var(--hair); background: var(--paper); }
+  .cat .crow {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 8px;
+    background: var(--ink);
+    cursor: pointer;
+  }
+  .cat .crow[aria-current="true"] { background: var(--paper); color: var(--ink); }
+  .cat .crow .idx {
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .cat .crow .thumb { width: 34px; height: 24px; background: rgba(255,255,255,0.16); flex: none; }
+  .cat .crow[aria-current="true"] .thumb { background: rgba(0,0,0,0.16); }
+  .cat .crow .t {
+    flex: 1;
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .prow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.22);
+  }
+  .prow:last-child { border-bottom: none; }
+  .prow .k { font-family: var(--display); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--channel); }
+  .prow .v { font-family: var(--display); font-size: 13px; font-weight: 700; }
+
+  /* ---------- Ficha de sistema ---------- */
+  .spec {
+    margin-top: 26px;
+    padding-top: 16px;
+    border-top: var(--hair) solid var(--paper);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 26px;
+  }
+  .spec h4 {
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--channel);
+    margin-bottom: 9px;
+  }
+  .spec p, .spec li { font-family: var(--display); font-size: 10px; line-height: 1.75; letter-spacing: 0.04em; }
+  .spec ul { list-style: none; }
+  .spec .swatch-row { display: flex; gap: 6px; }
+  .spec .sw { width: 46px; height: 30px; }
+  .spec .sw--ink { background: #000; box-shadow: inset 0 0 0 1px #fff; }
+  .spec .sw--paper { background: #fff; }
+  .spec .sw--chan { background: rgba(255,255,255,0.6); }
+</style>
+</head>
+<body>
+
+<header class="board-head">
+  <div class="h-wrap">
+    <span class="idx">03</span>
+    <h1>Registro</h1>
+  </div>
+  <p class="tradeoff">Bandas ancladas a los bordes y numerales grandes · desplazamiento en múltiplos de 19 · riesgo: mucha superficie de borde, el pulgar compite con el contenido</p>
+</header>
+
+<main class="stage">
+  <div class="phones">
+
+    <!-- ===== SPLASH ===== -->
+    <div class="phone">
+      <span class="phone-tag">01 · SPLASH</span>
+      <div class="splash">
+        <span class="ghost-num" aria-hidden="true">30</span>
+        <div class="top">
+          <div class="mark">
+            <svg viewBox="0 0 728 620" role="img" aria-label="MIDI">
+              <path fill="#ffffff" d="M37 0h462v192h-462zM535 0h193v192h-193zM0 192h193v428h-193zM268 192h192v428h-192zM536 228h192v1h-192zM535 229h193v391h-193z"/>
+            </svg>
+          </div>
+          <p class="est">MIDI<br>Colectivo<br>artístico</p>
+        </div>
+        <h2 class="display">Collage<br>interactivo</h2>
+        <p class="lead">Treinta fragmentos. Cada teléfono toma uno y lo mueve con el cuerpo.</p>
+        <div class="spacer"></div>
+        <p class="stamp">1920 × 1080 · 30 FRAGMENTOS<br>SESIÓN ABIERTA</p>
+        <button class="cband">Participar<span class="arw">→</span></button>
+      </div>
+    </div>
+
+    <!-- ===== PERMISO ===== -->
+    <div class="phone">
+      <span class="phone-tag">02 · PERMISO</span>
+      <div class="perm">
+        <span class="ghost-num" aria-hidden="true">02</span>
+        <div class="top">
+          <p class="eyebrow">Paso 02 / 03</p>
+          <p class="eyebrow">Sensores</p>
+        </div>
+        <h2 class="display">Tu cuerpo<br>mueve el<br>fragmento</h2>
+        <div class="body">
+          <p>El movimiento del teléfono y los gestos grabados mueven tu parte del collage.</p>
+          <p>Sin acceso a los sensores podés seguir usando los controles en pantalla.</p>
+        </div>
+        <div class="spacer"></div>
+        <div class="note">
+          <strong>Error</strong>
+          No pudimos activar los sensores. Revisá los permisos del navegador y volvé a intentar.
+        </div>
+        <button class="cband">Permitir sensores<span class="arw">→</span></button>
+        <div style="padding:10px 0 12px"><button class="cband cband--ghost" style="justify-content:center">Recargar</button></div>
+      </div>
+    </div>
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="phone">
+      <span class="phone-tag">03 · DASHBOARD</span>
+      <div class="dash">
+        <div class="band">
+          <div class="cell bare"><span class="n">07</span>Fragmento</div>
+          <div class="cell"><span style="width:8px;height:8px;background:#fff;display:inline-block"></span>Conectado</div>
+          <div class="cell grow" style="justify-content:flex-end">30/30</div>
+        </div>
+
+        <div class="hud">
+          <span class="chip">REC 00:03</span>
+          <span class="chip chip--inv">Látigo</span>
+        </div>
+
+        <div class="frame">
+          <div class="fill" role="img" aria-label="Fragmento 07 sin imagen asignada"></div>
+          <span class="cap">Fragmento 07</span>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="rails">
+          <div class="rail">
+            <div class="head"><span>Opacidad</span><span class="v">75</span></div>
+            <input class="range" type="range" min="0" max="100" value="75" aria-label="Opacidad">
+          </div>
+          <div class="rail">
+            <div class="head"><span>Rotación</span><span class="v">−12°</span></div>
+            <input class="range" type="range" min="-180" max="180" value="-12" aria-label="Rotación">
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button aria-selected="true">Forma</button>
+          <button aria-selected="false">Gestos</button>
+          <button aria-selected="false">Guía</button>
+        </div>
+
+        <div class="transport">
+          <button aria-pressed="false"><span class="g">◎</span><span class="t">Esparcir</span></button>
+          <button aria-pressed="false"><span class="g">↑</span><span class="t">Frente</span></button>
+          <button aria-pressed="false"><span class="g">✳</span><span class="t">Filtro</span></button>
+          <button aria-pressed="false"><span class="g">◀</span><span class="t">Ant.</span></button>
+          <button aria-pressed="false"><span class="g">▶</span><span class="t">Sig.</span></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== PANEL DEL OPERADOR ===== -->
+  <aside class="panel" aria-label="Controles del proyector">
+    <div class="p-title">
+      <span class="n">00</span>
+      <h3>Projector Controls</h3>
+      <span class="chev">☰</span>
+    </div>
+
+    <section class="pblock">
+      <div class="bh"><span class="n">01</span><span class="t">Layout presets</span></div>
+      <div class="pgrid">
+        <button aria-pressed="true">Grid</button>
+        <button aria-pressed="false">Scatter</button>
+        <button aria-pressed="false">Stack</button>
+        <button aria-pressed="false">Spiral</button>
+        <button aria-pressed="false">Row</button>
+        <button aria-pressed="false">Salón</button>
+      </div>
+    </section>
+
+    <section class="pblock">
+      <div class="bh"><span class="n">02</span><span class="t">Dispersión</span></div>
+      <div class="prow"><span class="k">Valor</span><span class="v">1.00</span></div>
+      <div class="prow"><span class="k">Rango</span><span class="v">0.40 — 1.60</span></div>
+      <div style="padding-top:10px">
+        <input class="range" type="range" min="40" max="160" value="100" aria-label="Escala de dispersión">
+      </div>
+    </section>
+
+    <section class="pblock">
+      <div class="bh"><span class="n">03</span><span class="t">Catálogo</span></div>
+      <div class="cat">
+        <div class="crow" aria-current="true">
+          <span class="idx">01</span><span class="thumb"></span>
+          <span class="t">Fragmento 01</span>
+        </div>
+        <div class="crow" aria-current="false">
+          <span class="idx">02</span><span class="thumb"></span>
+          <span class="t">Fragmento 02</span>
+        </div>
+        <div class="crow" aria-current="false">
+          <span class="idx">03</span><span class="thumb"></span>
+          <span class="t">Fragmento 03</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="pblock" style="padding-bottom:14px">
+      <div class="bh"><span class="n">04</span><span class="t">Esparcir todo</span></div>
+      <button class="cband" style="padding:13px 12px;font-size:10px">Esparcir<span class="arw">→</span></button>
+    </section>
+  </aside>
+</main>
+
+<section class="spec">
+  <div>
+    <h4>Color</h4>
+    <div class="swatch-row">
+      <span class="sw sw--ink"></span>
+      <span class="sw sw--paper"></span>
+      <span class="sw sw--chan"></span>
+    </div>
+    <p style="margin-top:9px">#000000 · #FFFFFF<br>Canal: blanco al 60%<br>Sin color de acento</p>
+  </div>
+  <div>
+    <h4>Geometría</h4>
+    <ul>
+      <li>Radio: 0</li>
+      <li>Unidad de desplazamiento: 19</li>
+      <li>Filete: 2 px entre bandas</li>
+      <li>Sombra: ninguna</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Tipografía</h4>
+    <ul>
+      <li>Numerales 34–210 px</li>
+      <li>Display: mono negra versal</li>
+      <li>Texto: system-ui</li>
+      <li>Sin webfonts</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Motivo</h4>
+    <ul>
+      <li>Banda desplazada del símbolo</li>
+      <li>Controles anclados al borde</li>
+      <li>Numeral fantasma al 9%</li>
+      <li>Nada flota en el medio</li>
+    </ul>
+  </div>
+</section>
+
+</body>
+</html>

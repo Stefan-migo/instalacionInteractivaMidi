@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MIDI · Dirección 02 — Ficha</title>
+<style>
+  /* ============================================================
+     DIRECCIÓN 02 — FICHA
+     Estrategia: la interfaz como formulario técnico impreso.
+     Campo blanco, tinta negra, reglas de 1 px, alineación tabular.
+     El estado se comunica por LLENO/VACÍO, no por color, porque
+     el color no existe en esta identidad.
+     ============================================================ */
+
+  :root {
+    --ink: #000000;
+    --paper: #ffffff;
+    --rule: #000000;
+    --quiet: rgba(0, 0, 0, 0.58);
+    --display: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace;
+    --text: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --r: 1px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--text);
+    width: 1660px;
+    padding: 30px 32px 34px;
+  }
+
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  /* ---------- Tablero ---------- */
+  .board-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+    border-bottom: 2px solid var(--rule);
+    padding-bottom: 14px;
+    margin-bottom: 26px;
+  }
+  .board-head h1 {
+    font-family: var(--display);
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .board-head h1 .idx { color: var(--quiet); margin-right: 14px; }
+  .board-head .tradeoff {
+    font-family: var(--display);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--quiet);
+    max-width: 470px;
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  .stage { display: flex; gap: 28px; align-items: flex-start; }
+  .phones { display: flex; gap: 24px; }
+
+  /* ---------- Marco de teléfono ---------- */
+  .phone {
+    width: 375px;
+    height: 812px;
+    background: var(--paper);
+    border: 2px solid var(--rule);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .phone-tag {
+    position: absolute;
+    top: 0; right: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    padding: 3px 7px;
+    z-index: 5;
+  }
+
+  /* ---------- Utilidades de ficha ---------- */
+  .display {
+    font-family: var(--display);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 0.95;
+  }
+  .num {
+    font-family: var(--display);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--quiet);
+  }
+  .rule { height: 1px; background: var(--rule); }
+  .rule--thick { height: 2px; }
+
+  /* Fila de datos tabular */
+  .data {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.22);
+    font-family: var(--display);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .data .k { color: var(--quiet); }
+  .data .v { font-weight: 700; }
+
+  /* Botón: solo la acción primaria se llena */
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 52px;
+    padding: 15px 12px;
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--ink);
+    border: 2px solid var(--rule);
+    cursor: pointer;
+  }
+  .btn--fill { background: var(--ink); color: var(--paper); }
+  .btn--quiet { border-width: 1px; color: var(--ink); }
+  .btn--sm { min-height: 40px; padding: 9px 8px; font-size: 9px; letter-spacing: 0.1em; }
+
+  /* Cuadrado de estado: lleno = activo, vacío = inactivo */
+  .state-sq {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border: 2px solid var(--ink);
+    background: transparent;
+    vertical-align: -1px;
+  }
+  .state-sq--on { background: var(--ink); }
+
+  /* ---------- Splash ---------- */
+  .splash { flex: 1; display: flex; flex-direction: column; padding: 26px 22px 22px; }
+  .splash .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .splash .mark { width: 76px; }
+  .splash .mark svg { display: block; width: 100%; height: auto; }
+  .splash .est { text-align: right; }
+  .splash .est p {
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--quiet);
+    line-height: 1.8;
+  }
+  .splash h2 { font-size: 47px; margin: 30px 0 0; }
+  .splash .lead { font-size: 14px; line-height: 1.6; color: var(--quiet); margin-top: 16px; max-width: 280px; }
+  .splash .fields { margin-top: auto; }
+  .splash .fields .data:first-child { border-top: 2px solid var(--rule); }
+  .splash .cta { margin-top: 16px; }
+
+  /* ---------- Permiso: formulario numerado ---------- */
+  .perm { flex: 1; display: flex; flex-direction: column; padding: 26px 22px 22px; }
+  .perm h2 { font-size: 30px; margin: 8px 0 0; }
+  .perm .field { margin-top: 22px; }
+  .perm .field .head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--rule);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+  .perm .field p { font-size: 13px; line-height: 1.6; color: var(--quiet); }
+  .perm .spacer { flex: 1; }
+  .perm .err {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 11px 12px;
+    font-size: 11px;
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+  .perm .err strong {
+    display: block;
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  /* ---------- Dashboard ---------- */
+  .dash { flex: 1; display: flex; flex-direction: column; }
+  .dash-head {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border-bottom: 2px solid var(--rule);
+  }
+  .dash-head .cell {
+    padding: 9px 10px;
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .dash-head .cell + .cell { border-left: 1px solid rgba(0,0,0,0.25); }
+  .dash-head .cell .big { font-size: 16px; font-weight: 700; letter-spacing: 0; }
+  .dash-head .grow { flex: 1; }
+  .dash-head .help {
+    width: 40px;
+    align-self: stretch;
+    display: grid;
+    place-items: center;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 15px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* Marco de foto con borde rasgado (se conserva) */
+  .frame { position: relative; margin: 14px 14px 0; height: 300px; flex: none; }
+  .frame .fill {
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(135deg, #ededed 0 10px, #e0e0e0 10px 20px);
+    clip-path: polygon(0 2%, 13% 0, 31% 1.4%, 52% 0, 71% 1.1%, 88% 0, 100% 1.8%, 99% 18%, 100% 38%, 98.6% 58%, 100% 77%, 99.2% 91%, 100% 98.6%, 86% 100%, 69% 98.7%, 48% 100%, 29% 98.5%, 11% 100%, 0 98.2%, 1.2% 79%, 0 61%, 1.4% 42%, 0 24%);
+  }
+  .frame .cap {
+    position: absolute;
+    bottom: 8px; left: 8px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    font-family: var(--display);
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 3px 6px;
+  }
+
+  .hud {
+    display: flex;
+    gap: 8px;
+    padding: 10px 14px 0;
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .hud .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--rule);
+    padding: 4px 7px;
+  }
+  .hud .chip--fill { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .dash .spacer { flex: 1; }
+
+  /* ---------- Hoja de herramientas: tabla ---------- */
+  .sheet { border-top: 2px solid var(--rule); }
+  .sheet .sheet-tabs {
+    display: flex;
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+  }
+  .sheet .sheet-tabs button {
+    flex: 1;
+    padding: 10px 0;
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--quiet);
+    border: none;
+    cursor: pointer;
+  }
+  .sheet .sheet-tabs button + button { border-left: 1px solid rgba(0,0,0,0.25); }
+  .sheet .sheet-tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+
+  .sheet .rows { padding: 0 14px 12px; }
+  .sheet .row-ctl { padding: 11px 0; border-bottom: 1px solid rgba(0,0,0,0.18); }
+  .sheet .row-ctl:last-child { border-bottom: none; }
+  .sheet .row-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 9px;
+  }
+  .sheet .row-top .v { font-size: 13px; font-weight: 700; letter-spacing: 0; }
+  .sheet .row-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid rgba(0,0,0,0.25);
+  }
+  .sheet .row-actions button {
+    padding: 12px 4px;
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--ink);
+    border: none;
+    cursor: pointer;
+  }
+  .sheet .row-actions button + button { border-left: 1px solid rgba(0,0,0,0.25); }
+  .sheet .row-actions button:active { background: var(--ink); color: var(--paper); }
+
+  /* Rango: riel de 1 px, pulgar cuadrado */
+  .range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 14px;
+    background: transparent;
+    cursor: pointer;
+  }
+  .range::-webkit-slider-runnable-track { height: 1px; background: var(--rule); }
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    margin-top: -6.5px;
+    background: var(--ink);
+    border: none;
+    cursor: pointer;
+  }
+  .range::-moz-range-track { height: 1px; background: var(--rule); }
+  .range::-moz-range-thumb {
+    width: 14px; height: 14px;
+    background: var(--ink);
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+  }
+
+  /* ---------- Panel del operador ---------- */
+  .panel {
+    width: 360px;
+    flex: none;
+    background: var(--paper);
+    border: 2px solid var(--rule);
+  }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 12px;
+    border-bottom: 2px solid var(--rule);
+  }
+  .panel-head h3, .panel-head .h {
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .panel-body { display: flex; flex-direction: column; }
+  .psec { padding: 11px 12px; border-bottom: 1px solid rgba(0,0,0,0.25); }
+  .psec:last-child { border-bottom: none; }
+  .psec-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .psec-head .n { color: var(--quiet); }
+
+  .pgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--rule); }
+  .pgrid button {
+    padding: 9px 2px;
+    font-family: var(--display);
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--ink);
+    border: none;
+    cursor: pointer;
+  }
+  .pgrid button + button { border-left: 1px solid rgba(0,0,0,0.25); }
+  .pgrid button:nth-child(n+4) { border-top: 1px solid rgba(0,0,0,0.25); }
+  .pgrid button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+  .pedit { display: flex; flex-direction: column; }
+  .pedit .prow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.18);
+  }
+  .pedit .prow:last-child { border-bottom: none; }
+  .pedit .prow .k {
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--quiet);
+  }
+  .pedit .prow .v { font-family: var(--display); font-size: 11px; font-weight: 700; }
+
+  .cat { display: flex; flex-direction: column; }
+  .cat .crow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.18);
+  }
+  .cat .crow:last-child { border-bottom: none; }
+  .cat .sq {
+    width: 9px; height: 9px; flex: none;
+    border: 1px solid var(--rule);
+  }
+  .cat .crow[aria-current="true"] .sq { background: var(--ink); }
+  .cat .crow .t {
+    flex: 1;
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .cat .crow .s { font-family: var(--display); font-size: 9px; color: var(--quiet); }
+  .cat .thumb { width: 30px; height: 22px; background: #e4e4e4; flex: none; }
+
+  /* ---------- Ficha de sistema ---------- */
+  .spec {
+    margin-top: 26px;
+    border-top: 2px solid var(--rule);
+    padding-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 26px;
+  }
+  .spec h4 {
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--quiet);
+    margin-bottom: 9px;
+  }
+  .spec p, .spec li {
+    font-family: var(--display);
+    font-size: 10px;
+    line-height: 1.75;
+    letter-spacing: 0.04em;
+  }
+  .spec ul { list-style: none; }
+  .spec .swatch-row { display: flex; gap: 6px; }
+  .spec .sw { width: 46px; height: 30px; border: 1px solid var(--rule); }
+  .spec .sw--ink { background: #000; }
+  .spec .sw--paper { background: #fff; }
+  .spec .sw--state { background: linear-gradient(90deg, #000 0 50%, #fff 50% 100%); }
+</style>
+</head>
+<body>
+
+<header class="board-head">
+  <h1><span class="idx">02</span>Ficha</h1>
+  <p class="tradeoff">La interfaz como formulario técnico impreso · reglas de 1 px y alineación tabular en lugar de bloques · riesgo: más densa, menos física, puede sentirse administrativa</p>
+</header>
+
+<main class="stage">
+  <div class="phones">
+
+    <!-- ===== SPLASH ===== -->
+    <div class="phone">
+      <span class="phone-tag">01 · SPLASH</span>
+      <div class="splash">
+        <div class="top">
+          <div class="mark">
+            <svg viewBox="0 0 728 620" role="img" aria-label="MIDI">
+              <path fill="#000000" d="M37 0h462v192h-462zM535 0h193v192h-193zM0 192h193v428h-193zM268 192h192v428h-192zM536 228h192v1h-192zM535 229h193v391h-193z"/>
+            </svg>
+          </div>
+          <div class="est">
+            <p>MIDI<br>Colectivo<br>artístico</p>
+          </div>
+        </div>
+
+        <h2 class="display">Collage<br>interactivo</h2>
+        <p class="lead">Treinta fragmentos en un lienzo compartido. Cada persona mueve el suyo con el teléfono.</p>
+
+        <div class="fields">
+          <div class="data"><span class="k">Fragmentos</span><span class="v">30</span></div>
+          <div class="data"><span class="k">Lienzo</span><span class="v">1920 × 1080</span></div>
+          <div class="data"><span class="k">Sesión</span><span class="v">abierta</span></div>
+          <div class="cta"><button class="btn btn--fill">Participar</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PERMISO ===== -->
+    <div class="phone">
+      <span class="phone-tag">02 · PERMISO</span>
+      <div class="perm">
+        <p class="num">02 / 03 — Sensores</p>
+        <h2 class="display">Acceso al<br>movimiento</h2>
+
+        <div class="field">
+          <div class="head"><span class="num">Campo 01</span><span class="num">Requerido</span></div>
+          <p>El movimiento del teléfono mueve tu fragmento. Sin sensores podés seguir usando los controles en pantalla.</p>
+        </div>
+
+        <div class="field">
+          <div class="head"><span class="num">Campo 02</span><span class="num">Opcional</span></div>
+          <p>Los gestos grabados se comparan con el patrón guardado. Podés practicarlos antes de grabar.</p>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="err">
+          <strong>Error</strong>
+          No pudimos activar los sensores. Revisá los permisos del navegador y volvé a intentar.
+        </div>
+        <button class="btn btn--fill" style="margin-bottom:8px">Permitir sensores</button>
+        <button class="btn btn--quiet">Recargar</button>
+      </div>
+    </div>
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="phone">
+      <span class="phone-tag">03 · DASHBOARD</span>
+      <div class="dash">
+        <div class="dash-head">
+          <div class="cell"><span class="big">07</span>Fragmento</div>
+          <div class="cell"><span class="state-sq state-sq--on"></span>Conectado</div>
+          <div class="cell grow"></div>
+          <button class="help" aria-label="Ayuda">?</button>
+        </div>
+
+        <div class="hud">
+          <span class="chip chip--fill"><span class="state-sq state-sq--on" style="border-color:#fff;background:#fff"></span>REC 00:03</span>
+          <span class="chip">Látigo</span>
+          <span class="chip">Registrado</span>
+        </div>
+
+        <div class="frame">
+          <div class="fill" role="img" aria-label="Fragmento 07 sin imagen asignada"></div>
+          <span class="cap">Fragmento 07</span>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="sheet">
+          <div class="sheet-tabs">
+            <button aria-selected="true">Forma</button>
+            <button aria-selected="false">Gestos</button>
+            <button aria-selected="false">Guía</button>
+          </div>
+
+          <div class="row-actions">
+            <button>Esparcir</button>
+            <button>Al frente</button>
+            <button>Filtro</button>
+          </div>
+
+          <div class="rows">
+            <div class="row-ctl">
+              <div class="row-top"><span>Opacidad</span><span class="v">75 %</span></div>
+              <input class="range" type="range" min="0" max="100" value="75" aria-label="Opacidad">
+            </div>
+            <div class="row-ctl">
+              <div class="row-top"><span>Rotación</span><span class="v">−12°</span></div>
+              <input class="range" type="range" min="-180" max="180" value="-12" aria-label="Rotación">
+            </div>
+            <div class="row-ctl">
+              <div class="row-top"><span>Escala</span><span class="v">100</span></div>
+              <input class="range" type="range" min="40" max="180" value="100" aria-label="Escala">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== PANEL DEL OPERADOR ===== -->
+  <aside class="panel" aria-label="Controles del proyector">
+    <div class="panel-head">
+      <h3>Projector Controls</h3>
+      <span class="h">☰</span>
+    </div>
+    <div class="panel-body">
+
+      <section class="psec">
+        <div class="psec-head"><span>Layout presets</span><span class="n">01</span></div>
+        <div class="pgrid">
+          <button aria-pressed="true">Grid</button>
+          <button aria-pressed="false">Scatter</button>
+          <button aria-pressed="false">Stack</button>
+          <button aria-pressed="false">Spiral</button>
+          <button aria-pressed="false">Row</button>
+          <button aria-pressed="false">Salón</button>
+        </div>
+      </section>
+
+      <section class="psec">
+        <div class="psec-head"><span>Escala de dispersión</span><span class="n">02</span></div>
+        <div class="pedit">
+          <div class="prow"><span class="k">Valor</span><span class="v">1.00</span></div>
+          <div class="prow"><span class="k">Rango</span><span class="v">0.40 — 1.60</span></div>
+        </div>
+        <input class="range" type="range" min="40" max="160" value="100" aria-label="Escala de dispersión" style="margin-top:8px">
+      </section>
+
+      <section class="psec">
+        <div class="psec-head"><span>Catálogo</span><span class="n">03</span></div>
+        <div class="cat">
+          <div class="crow" aria-current="true">
+            <span class="sq"></span><span class="thumb"></span>
+            <span class="t">Fragmento 01</span><span class="s">#01</span>
+          </div>
+          <div class="crow" aria-current="false">
+            <span class="sq"></span><span class="thumb"></span>
+            <span class="t">Fragmento 02</span><span class="s">#02</span>
+          </div>
+          <div class="crow" aria-current="false">
+            <span class="sq"></span><span class="thumb"></span>
+            <span class="t">Fragmento 03</span><span class="s">#03</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="psec">
+        <div class="psec-head"><span>Esparcir todo</span><span class="n">04</span></div>
+        <button class="btn btn--sm btn--fill">Esparcir</button>
+      </section>
+
+    </div>
+  </aside>
+</main>
+
+<section class="spec">
+  <div>
+    <h4>Color</h4>
+    <div class="swatch-row">
+      <span class="sw sw--ink"></span>
+      <span class="sw sw--paper"></span>
+      <span class="sw sw--state"></span>
+    </div>
+    <p style="margin-top:9px">#000000 · #FFFFFF<br>Estado: lleno / vacío<br>Sin color de acento</p>
+  </div>
+  <div>
+    <h4>Geometría</h4>
+    <ul>
+      <li>Radio: 0</li>
+      <li>Regla: 1 px · 2 px</li>
+      <li>Sin canales ni relleno de fondo</li>
+      <li>Sombra: ninguna</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Tipografía</h4>
+    <ul>
+      <li>Display: mono negra versal</li>
+      <li>Texto: system-ui</li>
+      <li>Cifras tabulares</li>
+      <li>Sin webfonts</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Motivo</h4>
+    <ul>
+      <li>Grilla de campos numerados</li>
+      <li>Datos alineados como ficha</li>
+      <li>Lleno solo en acción primaria</li>
+      <li>Estado sin recurso de color</li>
+    </ul>
+  </div>
+</section>
+
+</body>
+</html>

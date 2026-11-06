@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "chosen": "02-ficha.html",
+  "handoffs": {
+    "02-ficha.html": {
+      "status": "in_progress",
+      "queued": false,
+      "sentAt": "2026-11-06T19:23:00.453Z",
+      "startedAt": "2026-11-06T19:23:15.537Z",
+      "implementedAt": null,
+      "feature": "odd/tasks/midi-brand-identity.md",
+      "note": "Implementing Ficha in the real stack: phone-client style.css, operator panel CSS+template, both shells, web brand assets."
+    }
+  }
+}
