@@ -83,8 +83,7 @@
       } catch (e) { /* best-effort */ }
     }
     // If WebGL failed, paper-texture.js already filled the offscreen canvas
-    // with the warm fallback color, but body::after already defaults to #ebd9b3,
-    // so the background renders correctly either way.
+    // with the warm fallback color, so the background renders correctly either way.
   }
 
   // Start on splash
@@ -432,7 +431,7 @@
     // Permission granted — proceed to dashboard
     goToScreen('dashboard');
     permBtn.textContent = 'Sensores activados';
-    permBtn.style.borderColor = '#2d6a4f';
+    permBtn.classList.add('connected');
 
     window.addEventListener('devicemotion', function (e) {
       var a = e.accelerationIncludingGravity || { x: 0, y: 0, z: 0 };
@@ -1001,30 +1000,20 @@
   // Shuffle button
   document.querySelector('[data-action="shuffle"]')?.addEventListener('click', function () {
     sendAction('shuffle');
-    this.style.background = 'rgba(139, 44, 36, 0.1)';
-    setTimeout(function (btn) {
-      btn.style.background = '';
-    }, 150, this);
   });
 
   // Tránsito
   document.getElementById('cell-prev-btn')?.addEventListener('click', function () {
     sendAction('cell-prev');
-    this.style.background = 'rgba(139, 44, 36, 0.1)';
-    setTimeout(function (btn) { btn.style.background = ''; }, 150, this);
   });
 
   document.getElementById('cell-next-btn')?.addEventListener('click', function () {
     sendAction('cell-next');
-    this.style.background = 'rgba(139, 44, 36, 0.1)';
-    setTimeout(function (btn) { btn.style.background = ''; }, 150, this);
   });
 
   // Ascender
   document.getElementById('bring-front-btn')?.addEventListener('click', function () {
     sendAction('bring-front');
-    this.style.background = 'rgba(139, 44, 36, 0.1)';
-    setTimeout(function (btn) { btn.style.background = ''; }, 150, this);
   });
 
   // NOTE: connect() is NO LONGER called on page load.
