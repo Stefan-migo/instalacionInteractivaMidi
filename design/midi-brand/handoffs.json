@@ -3,13 +3,14 @@
   "chosen": "02-ficha.html",
   "handoffs": {
     "02-ficha.html": {
-      "status": "in_progress",
+      "status": "implemented",
       "queued": false,
       "sentAt": "2026-11-06T19:23:00.453Z",
       "startedAt": "2026-11-06T19:23:15.537Z",
-      "implementedAt": null,
+      "implementedAt": "2026-11-06T19:31:46.718Z",
       "feature": "odd/tasks/midi-brand-identity.md",
-      "note": "Implementing Ficha in the real stack: phone-client style.css, operator panel CSS+template, both shells, web brand assets."
+      "note": "Implemented across the phone client, operator panel, both shells and the web brand assets. 21 suites / 323 tests green; all endpoints verified live.",
+      "previewUrl": "http://localhost:8080/phone-client/"
     }
   }
 }

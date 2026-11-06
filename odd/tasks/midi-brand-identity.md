@@ -22,6 +22,8 @@ S8 — Behavior is not part of this change: the 319 tests in 20 suites stay gree
 
 S9 — Sensors still require a secure context, so the phone client is verified in a browser at `localhost` and, for real devices, only through HTTPS. A plain LAN IP remains untestable, unchanged from before this phase.
 
+S10 — The projector canvas field is black with monochrome noise, not the warm cream paper. User request: "ok perfecto se ve bien. me falta el fondo del p5-collage actualmente sigue con el background antiguo". Chosen field: "Negro con ruido monocromo". The shader keeps its grain and its API; only the base colour and the noise mapping change, so the texture that is a signature of the project survives while the sepia disappears. Known follow-up, not part of this card: the eight torn border styles are drawn in warm brown and gold tones (`border-renderer.js`) and were designed against cream paper; on black they may read as loose cut-outs and will need review later.
+
 ## Tasks
 
 | ID | Task | Specs | Route | Commit |
@@ -34,6 +36,7 @@ S9 — Sensors still require a secure context, so the phone client is verified i
 | T6 | Apply the chosen direction to the operator panel in `p5-collage/` | S3, S8 | writer | U4 |
 | T7 | Shells + web brand assets (favicon, Apple Touch, maskable, `site.webmanifest`) | S3, S7 | writer | U5 |
 | T8 | Verify: suite green, endpoints alive, artboards match the implementation | S8, S9 | verify | (folded into U5) |
+| T9 | Projector canvas field: black base with monochrome noise in the shader, black fallback fill, black `fullscreenBg`; update any test that pins the old cream value | S10 | writer | U6 |
 
 ## Log
 
@@ -64,3 +67,7 @@ L12 — Conflict resolved: the handoff text instructs implementers to "take colo
 L13 — Test-first for the brand assets: `tests/brand-assets.test.js` was written before the assets existed and observed RED with four `404`s, then GREEN after copying the icon set into `phone-client/icons/` and adding `.svg`, `.ico` and `.webmanifest` to `MIME_TYPES` in `bridge/index.js`. That MIME change is a real behaviour change: a favicon served as `application/octet-stream` is ignored by browsers, and a manifest served as `text/plain` is never read as a manifest. Baseline after the reskin: 21 suites, 323 tests.
 
 L14 — Transient RED window, recorded so it is not mistaken for a worker defect: the phone-client worker reported 3 brand-asset failures because it ran `npm test` between the icon copy and the MIME change. The final suite is green; the failure was a coordination artefact of overlapping work, not a stylesheet defect.
+
+L15 — User, verbatim: "ok perfecto se ve bien. me falta el fondo del p5-collage actualmente sigue con el background antiguo". Correct observation and a gap in this feature's original scope: S3 reskinned chrome only, and the projected field is drawn by the WebGL shader in `p5-collage/background-texture.js` (`gfx.fill(235, 217, 179)` at :20 and :33, warm shader base), not by CSS. Removing the paper `body` colour did not touch it. Basis for S10 and T9.
+
+L16 — Field decision: the user chose "Negro con ruido monocromo" over pure black and over white paper. Rationale of record: a full 1920×1080 white field is a wall of light in a dark room and lowers photo contrast; pure black loses the paper grain that is a signature of the project; black with monochrome noise keeps the tactility and lets the fragments be the only lit thing on screen. The warm-toned border styles are acknowledged as a possible follow-up rather than silently restyled here.
