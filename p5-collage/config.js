@@ -27,3 +27,7 @@ const CONFIG = {
   noiseIntensity: 0.8,
   canvasBgStyle: 'shader-paper',
 };
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { CONFIG };
+}
