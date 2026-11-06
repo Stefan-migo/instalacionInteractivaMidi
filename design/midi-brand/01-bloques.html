@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MIDI · Dirección 01 — Bloques</title>
+<style>
+  /* ============================================================
+     DIRECCIÓN 01 — BLOQUES
+     Estrategia: separar por CANALES, nunca por bordes.
+     La UI se construye como el símbolo: bloques macizos con
+     huecos rectos de 12 unidades entre ellos.
+     ============================================================ */
+
+  :root {
+    --ink: #000000;
+    --paper: #ffffff;
+    /* Tono de canal: derivado del blanco, no es color de marca */
+    --channel: rgba(255, 255, 255, 0.62);
+    --channel-ink: rgba(0, 0, 0, 0.62);
+    --gap: 12px;
+    --gap-sm: 6px;
+    --unit: 19px;
+    --display: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace;
+    --text: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--text);
+    width: 1660px;
+    padding: 30px 32px 34px;
+  }
+
+  :focus-visible { outline: 2px solid var(--paper); outline-offset: 3px; }
+
+  /* ---------- Tablero ---------- */
+  .board-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+    border-bottom: 2px solid var(--paper);
+    padding-bottom: 14px;
+    margin-bottom: 26px;
+  }
+  .board-head h1 {
+    font-family: var(--display);
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .board-head h1 .idx { color: var(--channel); margin-right: 14px; }
+  .board-head .tradeoff {
+    font-family: var(--display);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--channel);
+    max-width: 460px;
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  .stage { display: flex; gap: 28px; align-items: flex-start; }
+  .phones { display: flex; gap: 24px; }
+
+  /* ---------- Marco de teléfono ---------- */
+  .phone {
+    width: 375px;
+    height: 812px;
+    background: var(--ink);
+    border: 2px solid var(--paper);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .phone-tag {
+    position: absolute;
+    top: -1px; left: -1px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--display);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    padding: 3px 7px;
+    z-index: 5;
+  }
+
+  /* ---------- Tipografía de marca ---------- */
+  .display {
+    font-family: var(--display);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 0.94;
+  }
+
+  /* ---------- Bloque / botón ---------- */
+  .block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 17px 12px;
+    border: none;
+    cursor: pointer;
+  }
+  .block--ghost {
+    background: transparent;
+    color: var(--paper);
+    box-shadow: inset 0 0 0 2px var(--paper);
+  }
+  .block--sm { padding: 11px 8px; font-size: 10px; letter-spacing: 0.1em; }
+  .block--tall { flex-direction: column; gap: 7px; padding: 14px 6px; min-height: 82px; }
+  .block--tall .glyph { font-size: 21px; line-height: 1; }
+  .block--tall .lbl { font-size: 9px; letter-spacing: 0.08em; text-align: center; }
+  .block[aria-pressed="true"] { background: var(--paper); color: var(--ink); }
+
+  /* ---------- Canales: la firma de esta dirección ---------- */
+  .channels { display: flex; gap: var(--gap-sm); }
+  .chan { height: 6px; background: var(--paper); }
+  .chan-dim { background: var(--channel); }
+
+  /* ---------- Splash ---------- */
+  .splash { flex: 1; display: flex; flex-direction: column; padding: 34px 26px 26px; }
+  .splash .mark { width: 104px; margin-bottom: 26px; }
+  .splash .mark svg { display: block; width: 100%; height: auto; }
+  .splash h2 { font-size: 62px; }
+  .splash .sub {
+    margin-top: 18px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--channel);
+    max-width: 260px;
+  }
+  .splash .spacer { flex: 1; }
+  .splash .meta {
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    color: var(--channel);
+    margin-bottom: 14px;
+    line-height: 1.9;
+  }
+
+  /* ---------- Permiso ---------- */
+  .perm { flex: 1; display: flex; flex-direction: column; padding: 34px 26px 26px; }
+  .eyebrow {
+    font-family: var(--display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--channel);
+  }
+  .perm h2 { font-size: 34px; margin: 14px 0 0; }
+  .perm p { font-size: 14px; line-height: 1.6; color: var(--channel); margin-top: 16px; }
+  .perm .spacer { flex: 1; }
+  .alert {
+    border-left: 4px solid var(--paper);
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--paper);
+    background: rgba(255,255,255,0.08);
+  }
+
+  /* ---------- Dashboard ---------- */
+  .dash { flex: 1; display: flex; flex-direction: column; }
+  .status-row {
+    display: flex;
+    align-items: stretch;
+    gap: var(--gap-sm);
+    padding: 12px 14px 10px;
+  }
+  .slot {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    background: var(--paper);
+    color: var(--ink);
+    padding: 7px 9px;
+  }
+  .slot .n { font-family: var(--display); font-size: 19px; font-weight: 700; line-height: 1; }
+  .slot .l { font-family: var(--display); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; }
+  .conn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 10px;
+    box-shadow: inset 0 0 0 2px var(--paper);
+  }
+  .conn .sq { width: 9px; height: 9px; background: var(--paper); flex: none; }
+  .conn .t {
+    font-family: var(--display);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .help {
+    width: 42px;
+    display: grid;
+    place-items: center;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--display);
+    font-size: 17px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* Marco de foto con borde rasgado (se conserva del sistema actual) */
+  .frame { position: relative; margin: 4px 14px 0; height: 322px; flex: none; }
+  .frame img, .frame .fill {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: #2b2b2b;
+    clip-path: polygon(0 2%, 13% 0, 31% 1.4%, 52% 0, 71% 1.1%, 88% 0, 100% 1.8%, 99% 18%, 100% 38%, 98.6% 58%, 100% 77%, 99.2% 91%, 100% 98.6%, 86% 100%, 69% 98.7%, 48% 100%, 29% 98.5%, 11% 100%, 0 98.2%, 1.2% 79%, 0 61%, 1.4% 42%, 0 24%);
+  }
+  .frame .fill {
+    background:
+      repeating-linear-gradient(135deg, #1b1b1b 0 10px, #232323 10px 20px);
+  }
+  .frame .cap {
+    position: absolute;
+    bottom: 10px; left: 10px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 8px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 4px 7px;
+  }
+
+  /* HUD */
+  .hud { display: flex; gap: 6px; padding: 10px 14px 0; }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--display);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 8px;
+  }
+  .chip .sq { width: 7px; height: 7px; background: var(--ink); }
+  .chip--inv { background: transparent; color: var(--paper); box-shadow: inset 0 0 0 2px var(--paper); }
+  .chip--inv .sq { background: var(--paper); }
+
+  .dash .spacer { flex: 1; }
+
+  /* ---------- Hoja de herramientas ---------- */
+  .sheet {
+    background: var(--ink);
+    border-top: 2px solid var(--paper);
+    padding: 0 12px 14px;
+  }
+  .sheet-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+    margin-bottom: 6px;
+  }
+  .sheet-handle span { width: 46px; height: 4px; background: var(--paper); }
+
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap-sm); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-sm); margin-top: var(--gap-sm); }
+
+  .ctl { margin-top: var(--gap); }
+  .ctl-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .ctl-head .v { font-size: 13px; font-weight: 700; }
+  .range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: transparent;
+    box-shadow: inset 0 0 0 2px var(--paper);
+    cursor: pointer;
+  }
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px; height: 22px;
+    background: var(--paper);
+    border: none;
+    cursor: pointer;
+  }
+  .range::-moz-range-thumb {
+    width: 22px; height: 22px;
+    background: var(--paper);
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+  }
+  .tabs { display: flex; gap: var(--gap-sm); margin-top: var(--gap); }
+  .tab {
+    flex: 1;
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 9px 0;
+    background: transparent;
+    color: var(--channel);
+    border: none;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.28);
+    cursor: pointer;
+  }
+  .tab[aria-selected="true"] { background: var(--paper); color: var(--ink); box-shadow: none; }
+
+  /* ---------- Panel del operador ---------- */
+  .panel {
+    width: 360px;
+    flex: none;
+    background: var(--ink);
+    border: 2px solid var(--paper);
+  }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 14px;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .panel-head h3 {
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .panel-head .chev { font-family: var(--display); font-size: 14px; font-weight: 700; }
+  .panel-body { padding: 14px; display: flex; flex-direction: column; gap: 16px; }
+  .sec-label {
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--channel);
+    margin-bottom: 9px;
+  }
+  .presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap-sm); }
+  .preset {
+    font-family: var(--display);
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 2px;
+    background: transparent;
+    color: var(--paper);
+    box-shadow: inset 0 0 0 2px var(--paper);
+    border: none;
+    cursor: pointer;
+  }
+  .preset[aria-pressed="true"] { background: var(--paper); color: var(--ink); box-shadow: none; }
+
+  .catalog { display: flex; flex-direction: column; gap: var(--gap-sm); }
+  .entry {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 6px;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.34);
+    cursor: pointer;
+  }
+  .entry[aria-current="true"] { box-shadow: inset 0 0 0 2px var(--paper); background: rgba(255,255,255,0.08); }
+  .thumb { width: 38px; height: 27px; flex: none; background: #2b2b2b; }
+  .entry .t { font-family: var(--display); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; flex: 1; }
+  .entry .s { font-family: var(--display); font-size: 9px; color: var(--channel); }
+
+  /* ---------- Ficha de sistema ---------- */
+  .spec {
+    margin-top: 26px;
+    border-top: 2px solid var(--paper);
+    padding-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 26px;
+  }
+  .spec h4 {
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--channel);
+    margin-bottom: 9px;
+  }
+  .spec p, .spec li {
+    font-family: var(--display);
+    font-size: 10px;
+    line-height: 1.75;
+    letter-spacing: 0.04em;
+  }
+  .spec ul { list-style: none; }
+  .spec .swatch-row { display: flex; gap: 6px; }
+  .spec .sw { width: 46px; height: 30px; }
+  .spec .sw--ink { background: #000; box-shadow: inset 0 0 0 1px #fff; }
+  .spec .sw--paper { background: #fff; }
+  .spec .sw--chan { background: rgba(255,255,255,0.62); }
+</style>
+</head>
+<body>
+
+<header class="board-head">
+  <h1><span class="idx">01</span>Bloques</h1>
+  <p class="tradeoff">Se separa por canales, nunca por bordes · estructura más próxima al símbolo · riesgo: en pantallas chicas los bloques compiten con la foto</p>
+</header>
+
+<main class="stage">
+  <div class="phones">
+
+    <!-- ===== SPLASH ===== -->
+    <div class="phone">
+      <span class="phone-tag">01 · SPLASH</span>
+      <div class="splash">
+        <div class="mark">
+          <!-- Símbolo real del pack: viewBox 728×620 -->
+          <svg viewBox="0 0 728 620" role="img" aria-label="MIDI">
+            <path fill="#ffffff" d="M37 0h462v192h-462zM535 0h193v192h-193zM0 192h193v428h-193zM268 192h192v428h-192zM536 228h192v1h-192zM535 229h193v391h-193z"/>
+          </svg>
+        </div>
+        <h2 class="display">Collage<br>interactivo</h2>
+        <p class="sub">Treinta fragmentos. Un teléfono por persona. Movés tu parte del collage con el cuerpo.</p>
+        <div class="spacer"></div>
+        <p class="meta">MIDI · COLECTIVO ARTÍSTICO<br>1920 × 1080 · 30 FRAGMENTOS</p>
+        <button class="block">Participar</button>
+      </div>
+    </div>
+
+    <!-- ===== PERMISO ===== -->
+    <div class="phone">
+      <span class="phone-tag">02 · PERMISO</span>
+      <div class="perm">
+        <p class="eyebrow">Paso 02 / 03</p>
+        <h2 class="display">Necesitamos<br>tus sensores</h2>
+        <p>El movimiento del teléfono mueve tu fragmento. Sin acceso a los sensores, solo puedes usar los controles en pantalla.</p>
+        <div class="spacer"></div>
+        <div class="alert">No pudimos activar los sensores. Revisá los permisos del navegador y volvé a intentar.</div>
+        <button class="block" style="margin-bottom:6px">Permitir sensores</button>
+        <button class="block block--ghost">Recargar</button>
+      </div>
+    </div>
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="phone">
+      <span class="phone-tag">03 · DASHBOARD</span>
+      <div class="dash">
+        <div class="status-row">
+          <div class="slot"><span class="n">07</span><span class="l">Fragmento</span></div>
+          <div class="conn"><span class="sq"></span><span class="t">Conectado</span></div>
+          <button class="help" aria-label="Ayuda">?</button>
+        </div>
+
+        <div class="hud">
+          <span class="chip"><span class="sq"></span>REC 00:03</span>
+          <span class="chip chip--inv"><span class="sq"></span>Látigo</span>
+        </div>
+
+        <div class="frame">
+          <div class="fill" role="img" aria-label="Fragmento 07 sin imagen asignada"></div>
+          <span class="cap">Fragmento 07</span>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="sheet">
+          <div class="sheet-handle"><span></span></div>
+          <div class="grid3">
+            <button class="block block--tall"><span class="glyph">◎</span><span class="lbl">Esparcir</span></button>
+            <button class="block block--tall"><span class="glyph">↑</span><span class="lbl">Al frente</span></button>
+            <button class="block block--tall"><span class="glyph">✳</span><span class="lbl">Filtro</span></button>
+            <button class="block block--tall"><span class="glyph">▣</span><span class="lbl">Borde</span></button>
+            <button class="block block--tall"><span class="glyph">◀</span><span class="lbl">Anterior</span></button>
+            <button class="block block--tall"><span class="glyph">▶</span><span class="lbl">Siguiente</span></button>
+          </div>
+
+          <div class="tabs">
+            <button class="tab" aria-selected="true">Forma</button>
+            <button class="tab" aria-selected="false">Gestos</button>
+            <button class="tab" aria-selected="false">Guía</button>
+          </div>
+
+          <div class="ctl">
+            <div class="ctl-head"><span>Opacidad</span><span class="v">75</span></div>
+            <input class="range" type="range" min="0" max="100" value="75" aria-label="Opacidad">
+          </div>
+          <div class="ctl">
+            <div class="ctl-head"><span>Rotación</span><span class="v">-12°</span></div>
+            <input class="range" type="range" min="-180" max="180" value="-12" aria-label="Rotación">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== PANEL DEL OPERADOR ===== -->
+  <aside class="panel" aria-label="Controles del proyector">
+    <div class="panel-head">
+      <h3>Projector Controls</h3>
+      <span class="chev">☰</span>
+    </div>
+    <div class="panel-body">
+      <div>
+        <p class="sec-label">Presets de layout</p>
+        <div class="presets">
+          <button class="preset" aria-pressed="true">Grid</button>
+          <button class="preset" aria-pressed="false">Scatter</button>
+          <button class="preset" aria-pressed="false">Stack</button>
+          <button class="preset" aria-pressed="false">Spiral</button>
+          <button class="preset" aria-pressed="false">Row</button>
+          <button class="preset" aria-pressed="false">Salón</button>
+        </div>
+      </div>
+
+      <div>
+        <p class="sec-label">Escala de dispersión</p>
+        <div class="ctl-head"><span>0.40 — 1.60</span><span class="v">1.00</span></div>
+        <input class="range" type="range" min="40" max="160" value="100" aria-label="Escala de dispersión">
+      </div>
+
+      <div>
+        <p class="sec-label">Catálogo de celdas</p>
+        <div class="catalog">
+          <div class="entry" aria-current="true">
+            <span class="thumb"></span>
+            <span class="t">Fragmento 01</span>
+            <span class="s">#01</span>
+          </div>
+          <div class="entry" aria-current="false">
+            <span class="thumb"></span>
+            <span class="t">Fragmento 02</span>
+            <span class="s">#02</span>
+          </div>
+          <div class="entry" aria-current="false">
+            <span class="thumb"></span>
+            <span class="t">Fragmento 03</span>
+            <span class="s">#03</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="sec-label">Esparcir todo</p>
+        <div class="grid2" style="margin-top:0">
+          <button class="block block--sm">Esparcir</button>
+          <button class="block block--sm block--ghost">Reset</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<section class="spec">
+  <div>
+    <h4>Color</h4>
+    <div class="swatch-row">
+      <span class="sw sw--ink" title="#000000"></span>
+      <span class="sw sw--paper" title="#FFFFFF"></span>
+      <span class="sw sw--chan" title="canal"></span>
+    </div>
+    <p style="margin-top:9px">#000000 · #FFFFFF<br>Canal: blanco al 62%<br>Sin color de acento</p>
+  </div>
+  <div>
+    <h4>Geometría</h4>
+    <ul>
+      <li>Radio: 0</li>
+      <li>Separación: canal 12 / 6</li>
+      <li>Borde: 2 px macizo o ninguno</li>
+      <li>Sombra: ninguna</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Tipografía</h4>
+    <ul>
+      <li>Display: mono negra versal</li>
+      <li>Texto: system-ui</li>
+      <li>Tracking display: −0.01em</li>
+      <li>Sin webfonts</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Motivo</h4>
+    <ul>
+      <li>Canales rectos del símbolo</li>
+      <li>Banda doble: 0 / 192 / 229</li>
+      <li>Grilla de 3 columnas</li>
+      <li>Sin curvas en ninguna pieza</li>
+    </ul>
+  </div>
+</section>
+
+</body>
+</html>

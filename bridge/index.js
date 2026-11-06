@@ -22,6 +22,10 @@ const MIME_TYPES = {
   '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript',
   '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
+  // Brand assets: a favicon served as octet-stream is ignored by browsers, and a
+  // manifest served as text/plain is never read as a manifest.
+  '.svg': 'image/svg+xml', '.ico': 'image/x-icon',
+  '.webmanifest': 'application/manifest+json',
 };
 
 const GESTURE_ACTIONS = {

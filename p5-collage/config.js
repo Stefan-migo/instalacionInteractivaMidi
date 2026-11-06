@@ -11,7 +11,7 @@ const CONFIG = {
   imagePoolSize: 10,
   bridgePort: 8080,
   sensorSendInterval: 33,
-  fullscreenBg: '#0a0a0a',
+  fullscreenBg: '#000000',
   defaultPreset: 'scatter',
   presetList: ['scatter', 'spiral', 'polaroid-stack', 'neat-grid', 'vignette', 'random'],
   scatterScale: 1.0,

@@ -1,0 +1,28 @@
+{
+  "title": "MIDI brand reskin",
+  "brief": "Apply the MIDI brand pack identity to the interactive collage installation: pure #000000 and #FFFFFF, orthogonal geometry inherited from the mark's modular grid, zero radius, zero soft shadow. Each direction shows the three phone-client screens plus the projector operator panel, so the whole interface can be compared at once.",
+  "feature": "odd/tasks/midi-brand-identity.md",
+  "artboards": [
+    {
+      "file": "01-bloques.html",
+      "title": "01 · Bloques",
+      "tradeoff": "Separation by channels instead of borders — the closest structural reading of the symbol. Risk: on a small screen the solid blocks compete with the photo.",
+      "width": 1660,
+      "height": 1070
+    },
+    {
+      "file": "02-ficha.html",
+      "title": "02 · Ficha",
+      "tradeoff": "The interface as a printed technical form: 1px rules, tabular alignment, state carried by filled/empty squares because colour is unavailable. Risk: denser and more administrative, less physical.",
+      "width": 1660,
+      "height": 1070
+    },
+    {
+      "file": "03-registro.html",
+      "title": "03 · Registro",
+      "tradeoff": "Bands anchored to the screen edges with large numerals and 19-unit offsets, echoing the symbol's shifted top band. Risk: heavy border surface, the thumb competes with the content.",
+      "width": 1660,
+      "height": 1070
+    }
+  ]
+}

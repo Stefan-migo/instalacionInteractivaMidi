@@ -40,8 +40,8 @@ describe('drawBackgroundTexture', () => {
     mockGfx.clear.mockClear();
     mockGfx.rect.mockClear();
     drawBackgroundTexture(mockP, 1920, 1080, 1.0, 42, 'aged-paper');
-    // Should draw a solid warm fill rect
-    expect(mockGfx.fill).toHaveBeenCalledWith(235, 217, 179);
+    // Should draw a solid black fill rect
+    expect(mockGfx.fill).toHaveBeenCalledWith(0, 0, 0);
     expect(mockGfx.rect).toHaveBeenCalledWith(0, 0, 1920, 1080);
   });
 
@@ -49,7 +49,7 @@ describe('drawBackgroundTexture', () => {
     mockGfx.clear.mockClear();
     mockGfx.rect.mockClear();
     drawBackgroundTexture(mockP, 1920, 1080, 1.0, 42, 'unknown');
-    expect(mockGfx.fill).toHaveBeenCalledWith(235, 217, 179);
+    expect(mockGfx.fill).toHaveBeenCalledWith(0, 0, 0);
     expect(mockGfx.rect).toHaveBeenCalled();
   });
 
@@ -61,7 +61,7 @@ describe('drawBackgroundTexture', () => {
 
   test('shader-paper style falls back gracefully when WebGL unavailable', () => {
     // In test env there's no WebGL/webcam, so shader-paper falls back
-    // to a solid warm fill without throwing
+    // to a solid black fill without throwing
     mockGfx.clear.mockClear();
     mockGfx.rect.mockClear();
     expect(function () {
