@@ -17,7 +17,7 @@ function drawBackgroundTexture(p, w, h, intensity, seed, style) {
   if (style !== 'shader-paper') {
     gfx.clear();
     gfx.noStroke();
-    gfx.fill(235, 217, 179);
+    gfx.fill(0, 0, 0);
     gfx.rect(0, 0, w, h);
     return gfx;
   }
@@ -30,7 +30,7 @@ function drawBackgroundTexture(p, w, h, intensity, seed, style) {
     // WebGL not available — solid warm fill as fallback
     gfx.clear();
     gfx.noStroke();
-    gfx.fill(235, 217, 179);
+    gfx.fill(0, 0, 0);
     gfx.rect(0, 0, w, h);
   }
 
@@ -126,9 +126,8 @@ var _FRAG_SRC = [
   '',
   'void main() {',
   '  vec2 uv = gl_FragCoord.xy / u_resolution;',
-  '  vec3 col = vec3(0.92, 0.85, 0.70);',
   '  float noise = paperNoise(gl_FragCoord.xy) * 0.3 * u_intensity;',
-  '  col += noise;',
+  '  vec3 col = vec3(clamp(noise, 0.0, 0.10));',
   '  gl_FragColor = vec4(col, 1.0);',
   '}'
 ].join('\n');
