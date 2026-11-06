@@ -45,6 +45,7 @@
     var toggleBtn = document.createElement('button');
     toggleBtn.id = 'panel-toggle';
     toggleBtn.title = 'Toggle panel';
+    toggleBtn.setAttribute('aria-label', 'Toggle panel');
     toggleBtn.textContent = '\u2630';
     toggleBtn.addEventListener('click', togglePanel);
     document.body.appendChild(toggleBtn);
@@ -187,7 +188,7 @@
 
       // ── Presets ──
       + '<div class="panel-section">'
-      + '<div class="panel-section-title">Layout Presets</div>'
+      + '<div class="panel-section-title"><span class="section-index">01</span> Layout presets</div>'
       + '<div class="preset-grid" id="preset-grid">'
       + presetBtn('scatter', 'Scatter')
       + presetBtn('spiral', 'Spiral')
@@ -199,7 +200,7 @@
 
       // ── Scatter Scale ──
       + '<div class="panel-section">'
-      + '<div class="panel-section-title">Scatter Scale</div>'
+      + '<div class="panel-section-title"><span class="section-index">02</span> Dispersión</div>'
       + '<div class="slider-row">'
       + '<label>Scale</label>'
       + '<input type="range" id="scatter-scale" min="0.4" max="1.6" step="0.05" value="' + scatterVal / 100 + '">'
@@ -224,13 +225,13 @@
 
       // ── Cell Catalog ──
       + '<div class="panel-section">'
-      + '<div class="panel-section-title">Cell Catalog</div>'
+      + '<div class="panel-section-title"><span class="section-index">03</span> Catálogo</div>'
       + '<div id="catalog-list"></div>'
       + '</div>'
 
       // ── Per-cell editor ──
       + '<div id="per-cell-editor">'
-      + '<div class="panel-section-title">Cell Editor &mdash; Slot <span id="editor-slot-label">&mdash;</span></div>'
+      + '<div class="panel-section-title">Editor &mdash; Slot <span id="editor-slot-label">&mdash;</span></div>'
       + '<div class="editor-row">'
       + '<label>Filter</label>'
       + '<select id="editor-filter">'
@@ -272,6 +273,7 @@
 
       // ── Esparcir Todo ──
       + '<div class="panel-section">'
+      + '<div class="panel-section-title"><span class="section-index">04</span> Esparcir todo</div>'
       + '<button id="esparcir-todo">Esparcir Todo</button>'
       + '</div>'
 

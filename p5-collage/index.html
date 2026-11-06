@@ -2,85 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Collage Interactivo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MIDI · Proyector</title>
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="/phone-client/icons/favicon.ico" sizes="any">
+  <link rel="icon" href="/phone-client/icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/phone-client/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/phone-client/icons/site.webmanifest">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <link rel="stylesheet" href="/p5-collage/control-panel.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 100%; height: 100%; overflow: hidden; }
     
-    /* Default: aged-paper background */
     body {
-      background: #f7eedd;
+      background: #000000;
+      color: #FFFFFF;
       font-family: system-ui, sans-serif;
-    }
-    body.canvas-wood {
-      background: #2c1d11;
-      background-image: radial-gradient(#503823 1px, transparent 1px);
-      background-size: 24px 24px;
-    }
-    body.canvas-canvas {
-      background: #eedbc5;
-      background-image: radial-gradient(#dda476 0.5px, transparent 0.5px);
-      background-size: 8px 8px;
-    }
-    body.canvas-dark-wool {
-      background: #1b1c1e;
-      background-image: 
-        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-      background-size: 16px 16px;
-    }
-    body.canvas-aged-paper {
-      background: #f7eedd;
-    }
-    body.canvas-scanlines {
-      background: #f0ece2;
-    }
-    body.canvas-watercolor {
-      background: #f2ebdc;
-    }
-    body.canvas-halftone {
-      background: #f5f0e4;
-    }
-
-    /* Aged paper grid overlay */
-    body.canvas-aged-paper::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      mix-blend-mode: multiply;
-      opacity: 0.15;
-      background-image: radial-gradient(#8f7b57 1px, transparent 1px);
-      background-size: 20px 20px;
-      z-index: 1;
     }
 
     #loading {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background: #f7eedd; color: #3d3830; font-family: system-ui, sans-serif; z-index: 999;
+      background: #000000; color: #FFFFFF; font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace; z-index: 999;
+      text-transform: uppercase; letter-spacing: 0.14em;
     }
-    #loading .spinner { width: 48px; height: 48px; border: 4px solid #d4cfc3; border-top-color: #a67c52; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 1rem; }
+    #loading .spinner { width: 48px; height: 48px; border: 2px solid #FFFFFF; border-top-color: #000000; animation: spin 0.8s linear infinite; margin-bottom: 1rem; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    #loading p { font-size: 1rem; color: #5c5446; }
-    #loading .count { font-size: 0.875rem; color: #8f7b57; margin-top: 0.5rem; }
-    
+    #loading p { font-size: 1rem; color: #FFFFFF; }
+    #loading .count { font-size: 0.875rem; color: rgba(255,255,255,.6); margin-top: 0.5rem; }
+
     #status-hud {
       position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
-      background: rgba(0,0,0,0.8); color: #9ca3af; padding: 0.5rem 1rem;
-      border-radius: 8px; font-family: monospace; font-size: 0.75rem;
-      border: 1px solid #1f2937; z-index: 100;
+      background: #000000; color: #FFFFFF; padding: 0.5rem 1rem;
+      font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace; font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 0.14em;
+      border: 1px solid #FFFFFF; z-index: 100;
     }
     #qr-wrapper {
       position: fixed; bottom: 1rem; right: 1rem; z-index: 100;
-      background: rgba(0,0,0,0.85); border-radius: 8px;
-      padding: 6px; border: 1px solid #1f2937;
+      background: #000000;
+      padding: 6px; border: 2px solid #FFFFFF;
       display: flex; flex-direction: column; align-items: center; gap: 4px;
     }
-    #qr-wrapper img { display: block; width: 80px; height: 80px; border-radius: 4px; }
-    #qr-wrapper .qr-label { color: #9ca3af; font-size: 0.6rem; font-family: system-ui, sans-serif; }
+    #qr-wrapper img { display: block; width: 80px; height: 80px; }
+    #qr-wrapper .qr-label { color: #FFFFFF; font-size: 0.6rem; font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.14em; }
     
     /* Paint layer overlay: film grain */
     #p5_loading { display: none; }
