@@ -26,4 +26,25 @@ describe('brand mark placements', () => {
     expect(markStyle[1]).toMatch(/pointer-events:\s*none/);
     expect(markStyle[1]).toMatch(/opacity:\s*\.6\b/);
   });
+
+  // Regression: the mark shipped invisible once. #brand-mark was placed on the <svg>
+  // itself, so the "#brand-mark svg" rule never matched, no fill was applied, and the
+  // path fell back to SVG's default black on a near-black canvas. The wrapper shape is
+  // now part of the contract because the styling rule depends on it.
+  test('the collage mark is a wrapper around the svg, so its fill rule can match', () => {
+    const html = read('p5-collage/index.html');
+    expect(html).not.toMatch(/<svg[^>]*\bid="brand-mark"/);
+    expect(html).toMatch(/<[a-z]+[^>]*\bid="brand-mark"[^>]*>\s*<svg\b/s);
+    const fillRule = html.match(/#brand-mark svg\s*\{([^}]*)\}/s);
+    expect(fillRule).not.toBeNull();
+    expect(fillRule[1]).toMatch(/fill:\s*currentColor/);
+  });
+
+  test('the phone header carries the mark and drops the fragment label', () => {
+    const html = read('phone-client/index.html');
+    expect(html).not.toMatch(/class="slot-label"/);
+    expect(html).toMatch(/<svg[^>]*class="header-mark"[^>]*aria-label="MIDI"/);
+    const css = read('phone-client/style.css');
+    expect(css).toMatch(/\.header-mark\s*\{[^}]*fill:\s*currentColor/s);
+  });
 });

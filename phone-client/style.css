@@ -80,7 +80,8 @@ header { position: absolute; inset: 0 0 auto; z-index: 50; padding: var(--space-
 .help-btn { width: 36px; height: 36px; font-size: var(--font-size-lg); flex-shrink: 0; }
 .help-btn:active { background: var(--ink); color: var(--paper); }
 .slot-badge { min-width: 2.5rem; padding: 2px var(--space-sm); border: var(--hair) solid var(--ink); font: 700 var(--font-size-md) var(--font-display); text-align: center; font-variant-numeric: tabular-nums; }
-.slot-label, .connection-text { font: 700 var(--font-size-xs) var(--font-display); letter-spacing: var(--tracking); text-transform: uppercase; color: var(--quiet); }
+.header-mark { width: 24px; height: auto; flex: none; fill: currentColor; }
+.connection-text { font: 700 var(--font-size-xs) var(--font-display); letter-spacing: var(--tracking); text-transform: uppercase; color: var(--quiet); }
 .connection-status { font-size: var(--font-size-lg); margin-left: auto; }
 .connection-status.connected { color: var(--ink); }
 .connection-status.disconnected { color: var(--paper); -webkit-text-stroke: 1px var(--ink); }
