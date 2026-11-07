@@ -1,11 +1,6 @@
 :root {
-  --ink: #000000;
-  --paper: #ffffff;
-  --quiet: rgba(0, 0, 0, 0.58);
   --hair: 1px;
   --rule: 2px;
-  --rule-color: #000000;
-  --rule-soft: rgba(0, 0, 0, 0.22);
   --font-display: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace;
   --font-text: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-size-xs: 0.6875rem;
@@ -58,6 +53,7 @@ body {
 .screen.hidden { display: none !important; }
 #splash-screen, #permission-screen { text-align: center; }
 .splash-content, .permission-content { display: flex; flex-direction: column; align-items: center; gap: var(--space-xl); max-width: 320px; margin: 0 auto; }
+#splash-mark { width: min(58%, 190px); height: auto; margin-bottom: var(--space-sm); fill: currentColor; }
 .splash-tagline, #permission-screen h2 { font-family: var(--font-display); font-size: var(--font-size-xxl); font-weight: 700; letter-spacing: var(--tracking-tight); text-transform: uppercase; line-height: 1; }
 #permission-screen h2 { font-size: var(--font-size-xl); }
 #permission-screen p { color: var(--quiet); line-height: 1.6; }
@@ -84,7 +80,8 @@ header { position: absolute; inset: 0 0 auto; z-index: 50; padding: var(--space-
 .help-btn { width: 36px; height: 36px; font-size: var(--font-size-lg); flex-shrink: 0; }
 .help-btn:active { background: var(--ink); color: var(--paper); }
 .slot-badge { min-width: 2.5rem; padding: 2px var(--space-sm); border: var(--hair) solid var(--ink); font: 700 var(--font-size-md) var(--font-display); text-align: center; font-variant-numeric: tabular-nums; }
-.slot-label, .connection-text { font: 700 var(--font-size-xs) var(--font-display); letter-spacing: var(--tracking); text-transform: uppercase; color: var(--quiet); }
+.header-mark { width: 24px; height: auto; flex: none; fill: currentColor; }
+.connection-text { font: 700 var(--font-size-xs) var(--font-display); letter-spacing: var(--tracking); text-transform: uppercase; color: var(--quiet); }
 .connection-status { font-size: var(--font-size-lg); margin-left: auto; }
 .connection-status.connected { color: var(--ink); }
 .connection-status.disconnected { color: var(--paper); -webkit-text-stroke: 1px var(--ink); }
