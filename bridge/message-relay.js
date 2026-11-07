@@ -2,7 +2,7 @@ const VALID_ACTIONS = [
   'shuffle',
   'record-start', 'record-stop',
   'opacity', 'rotation', 'filter', 'move',
-  'scale', 'border-next', 'filter-next',
+  'scale', 'filter-next',
   'cell-next', 'cell-prev',
   'bring-front',
 ];

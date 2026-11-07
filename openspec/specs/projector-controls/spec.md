@@ -56,12 +56,11 @@ Sidebar MUST show a catalog of all 30 cells with thumbnail, title, and hide/show
 
 ### R-CPS-6: Per-Cell Editor
 
-When a cell is selected, the sidebar MUST show per-cell controls: filter selector, border selector, rotation slider (−180° to +180°, step 1, with 0° at center upright), scale slider (0.4–1.8, step 0.05), opacity slider (0.30–1.0, step 0.05).
+When a cell is selected, the sidebar MUST show per-cell controls: filter selector, rotation slider (−180° to +180°, step 1, with 0° at center upright), scale slider (0.4–1.8, step 0.05), opacity slider (0.30–1.0, step 0.05).
 
 | Scenario | GIVEN | WHEN | THEN |
 |----------|-------|------|------|
 | Filter applies | Cell #3 selected | Operator selects "sepia" filter | Sepia filter applied to cell #3 immediately |
-| Border applies | Cell #3 selected | Operator selects "gold" | Gold museum border renders on cell #3 |
 | Positive rotation | Cell #3 selected | Operator drags rotation to 45° | Cell rotates to 45° |
 | Negative rotation | Cell #3 selected | Operator drags rotation to −90° | Cell rotates to −90° |
 | Zero centered | Cell at 45° | Operator sets rotation to 0° | Cell returns to upright |

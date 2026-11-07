@@ -36,9 +36,6 @@ function createCellActionHandler(ctx) {
         // Adapt cell frame to the new cell's image aspect ratio
         if (typeof ctx.adaptCellToImage === 'function') {
           ctx.adaptCellToImage(s);
-        } else {
-          // Fallback: generate border at current size
-          s.borderVerts = ctx.generateTornBorder(-s.pos.w / 2, -s.pos.h / 2, s.pos.w, s.pos.h, ctx.config.borderSegments, ctx.config.borderJitter, slot);
         }
         ctx.sendImageUpdate(slot, newCell.imageFile);
         break;
@@ -46,12 +43,6 @@ function createCellActionHandler(ctx) {
         const filters = Object.keys(ctx.config.filterMap);
         const curIdx = filters.indexOf(s.filterType);
         s.filterType = filters[(curIdx + 1) % filters.length];
-        break;
-      }
-      case 'border-next': {
-        const styles = ctx.config.borderStyleMap;
-        const curIdx2 = styles.indexOf(s.borderStyle);
-        s.borderStyle = styles[(curIdx2 + 1) % styles.length];
         break;
       }
       case 'opacity':

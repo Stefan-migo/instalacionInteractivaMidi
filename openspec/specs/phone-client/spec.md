@@ -98,18 +98,19 @@ Gallery overlay: 3 example cards + "Crear mi gesto". Teaches through practice be
 
 | Scenario | GIVEN | WHEN | THEN |
 |----------|-------|------|------|
-| Open gallery | Dashboard visible | User taps "Gestos" | Gallery opens with 3 cards + "Crear mi gesto" |
+| Open gallery | Dashboard visible | User taps "Gestos" | Gallery opens with 2 cards + "Crear mi gesto" |
 | Dismiss × | Gallery open | User taps × | Gallery closes; dashboard visible |
 | Dismiss outside | Gallery open | User taps outside card | Gallery closes |
 
 #### R-GG-2: Gesture Cards
 
-Gallery SHALL show 3 cards + "Crear mi gesto". Each card: icon, name, description, [Practicar].
+Gallery SHALL show 2 cards + "Crear mi gesto". Each card: icon, name, description, [Practicar].
 
 | Gesture | Icon | Name | Description | Effect |
 |---------|------|------|-------------|--------|
-| Girar | ⟳ | Girar | Cambia el borde | Cycles border |
 | Sacudir | 𝄐 | Sacudir | Cambia la foto | Shuffles image |
+
+> The forward-tilt gesture is retired from the gallery until a target parameter is chosen. Its client-side detector remains in the code, unmapped.
 | Elevar | ↕ | Elevar | Cambia el filtro | Cycles filter |
 
 #### R-GG-3: Practice Flow
@@ -118,7 +119,6 @@ User taps [Practicar] → practice overlay with instruction text. While open, cl
 
 | Scenario | GIVEN | WHEN | THEN |
 |----------|-------|------|------|
-| Practice Girar | Practice overlay for Girar open | User rotates phone >30° gamma | Sends border-next, vibrates, green check 2s |
 | Practice Sacudir | Practice overlay for Sacudir open | User shakes phone (jerk >15) | Sends shuffle, vibrates, green check 2s |
 | Practice Elevar | Practice overlay for Elevar open | User jerks up (accel.y < -12) | Cycles filter, vibrates, green check 2s |
 | False positive | Practice for Girar open | User rotates slowly (gamma <30°) | No action sent |

@@ -2,7 +2,7 @@
 
 A phone-controlled collage installation. Visitors open a web page on their phone; the phone's motion sensors, gestures and on-screen controls move one fragment of a shared collage projected on a 1920×1080 canvas. Up to 30 phones participate at once.
 
-The repository is content-neutral: it ships the system, not a dataset. With no images loaded it runs 30 empty cells with torn borders, which is a useful state for development.
+The repository is content-neutral: it ships the system, not a dataset. With no images loaded it runs 30 empty cells, which is a useful state for development.
 
 ## How it works
 
@@ -14,7 +14,7 @@ Phone ──WebSocket──► Bridge (Node.js) ──WebSocket──► p5.js c
 
 - **Bridge** — assigns a slot to each phone, validates and relays every message, records and matches gestures.
 - **Phone client** — three screens (splash → sensor permission → dashboard), sensors, gesture wizard, help overlay.
-- **Collage** — 30 cells, six layout presets, eight border styles, six image filters, a WebGL paper background, drag & drop, and an operator sidebar.
+- **Collage** — 30 cells, six layout presets, six image filters, a WebGL paper background, and drag & drop.
 
 ## Requirements
 
@@ -49,7 +49,7 @@ npm run generate-layout  # rebuild images/layout.json from images/manifest.json
 
 3. Run `npm run generate-layout` to lay out the 30 cells.
 
-Cells without an image render their border only, so partial datasets are fine. `generate-layout` refuses an empty manifest instead of overwriting the layout.
+Cells without an image stay empty, so partial datasets are fine. `generate-layout` refuses an empty manifest instead of overwriting the layout.
 
 ## Phone sensors need HTTPS
 

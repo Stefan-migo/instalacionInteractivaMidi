@@ -1,6 +1,6 @@
 /**
  * Generates a CSS clip-path polygon with pseudo-random torn edges.
- * Mirrors the p5.js generateTornBorder() LCG algorithm.
+ * Uses the same LCG algorithm the collage once used for torn cell borders.
  *
  * @param {number} segments - Number of vertices per side (6 recommended)
  * @param {number} jitter - Maximum deviation as percentage (3 recommended)

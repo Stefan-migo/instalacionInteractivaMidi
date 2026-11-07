@@ -56,7 +56,6 @@ function createRenderer() {
     config: CONFIG,
     sendImageUpdate,
     adaptCellToImage,
-    generateTornBorder,
     getSortedSlots,
     getRendererCellStates: () => deviceManager ? deviceManager.renderer.cellStates : {},
     onZOrderChanged: () => { activeSlots = getSortedSlots(); },
@@ -77,14 +76,12 @@ function createRenderer() {
         flipH: false, flipV: false,
         locked: false,
         filterType: 'none',
-        borderStyle: 'torn',
         phoneConnected: false,
         // Store the original layout dimensions as the bounding budget for adaptation
         _layoutX: cell.x,
         _layoutY: cell.y,
         _layoutW: cell.w,
         _layoutH: cell.h,
-        borderVerts: generateTornBorder(-cell.w / 2, -cell.h / 2, cell.w, cell.h, CONFIG.borderSegments, CONFIG.borderJitter, cell.slot),
         transition: new TransitionRenderer({ transitionDuration: CONFIG.transitionDuration }),
         currentImageFile: cell.imageFile,
       };
@@ -111,7 +108,6 @@ function createRenderer() {
         adaptCellToImage(s, 'layout');
       } else {
         s.pos = pos;
-        s.borderVerts = generateTornBorder(-pos.w / 2, -pos.h / 2, pos.w, pos.h, CONFIG.borderSegments, CONFIG.borderJitter, slot);
       }
     },
     removeCell(slot) {
@@ -151,7 +147,6 @@ function connectWebSocket() {
 
   ws.onopen = () => {
     ws.send(JSON.stringify({ type: 'register', role: 'player' }));
-    updateHUD();
   };
 
   ws.onmessage = e => {
@@ -159,10 +154,8 @@ function connectWebSocket() {
       const msg = JSON.parse(e.data);
       if (msg.type === 'device') {
         deviceManager.updateSensor(msg.slot, msg.accel, msg.gyro, msg.orientation);
-        updateHUD();
       } else if (msg.type === 'action') {
         deviceManager.handleAction(msg.slot, msg.action, msg);
-        updateHUD();
       } else if (msg.type === 'gesture-event') {
         if (msg.event === 'matched' && msg.action) {
           deviceManager.handleAction(msg.slot, msg.action);
@@ -175,14 +168,12 @@ function connectWebSocket() {
           deviceManager.disconnect(msg.slot);
           activeSlots = getSortedSlots();
         }
-        updateHUD();
       }
     } catch {}
   };
 
   ws.onclose = () => {
     setTimeout(connectWebSocket, 2000);
-    updateHUD();
   };
 }
 
@@ -310,13 +301,6 @@ function touchEnded(event) {
   return false;
 }
 
-function updateHUD() {
-  const hud = document.getElementById('status-hud');
-  if (!hud) return;
-  const count = deviceManager?.count || 0;
-  hud.textContent = `Conectados: ${count} / ${collageLayout?.cells?.length || 30}`;
-}
-
 let _bgTexture = null;
 let _bgSeed = Math.floor(Math.random() * 100000);
 
@@ -388,9 +372,6 @@ function drawCell(s, dt) {
   } else {
     drawImg(s.img, s.flipH, s.flipV, -w / 2, -h / 2, w, h, s.opacity, s.filterType);
   }
-
-  // Draw border using the modular border-renderer
-  drawBorder(s, window, s.borderStyle || 'torn');
 
   // Selection highlight — dashed golden border when cell is selected
   if (selectedSlot !== null && s.cell && s.cell.slot === selectedSlot) {

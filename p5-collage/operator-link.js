@@ -13,7 +13,6 @@
       case 'setNoiseIntensity': api.CONFIG.noiseIntensity = message.value / 100; api.setBackgroundTexture(null); api.redraw(); break;
       case 'selectCell': api.selectCell(message.slot); api.redraw(); break;
       case 'setFilter': if (!cell) return false; cell.filterType = message.value; api.redraw(); break;
-      case 'setBorder': if (!cell) return false; cell.borderStyle = message.value; api.redraw(); break;
       case 'setRotation': if (!cell || !cell.pos) return false; cell.pos.rotation = message.value; api.redraw(); break;
       case 'setScale': if (!cell) return false; cell._editorScale = message.value; api.redraw(); break;
       case 'setOpacity': if (!cell) return false; cell.opacity = message.value; api.redraw(); break;
@@ -37,7 +36,7 @@
     if (!manager || !api.collageLayout) return null;
     var cells = api.collageLayout.cells.map(function (item) {
       var state = manager.renderer.cellStates[item.slot] || {};
-      return { slot: item.slot, imageFile: state.currentImageFile || item.imageFile || null, filterType: state.filterType || 'none', borderStyle: state.borderStyle || 'torn', rotation: state.pos ? state.pos.rotation || 0 : 0, scale: state._editorScale || 1, opacity: state.opacity == null ? 1 : state.opacity };
+      return { slot: item.slot, imageFile: state.currentImageFile || item.imageFile || null, filterType: state.filterType || 'none', rotation: state.pos ? state.pos.rotation || 0 : 0, scale: state._editorScale || 1, opacity: state.opacity == null ? 1 : state.opacity };
     });
     return { state: cells, preset: manager.layoutEngine.getCurrentPreset(), scatterScale: api.CONFIG.scatterScale, noiseIntensity: Math.round(api.CONFIG.noiseIntensity * 100), selectedSlot: api.selectedSlot, connected: manager.count || 0, total: cells.length, cells: cells };
   }
