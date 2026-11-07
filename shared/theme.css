@@ -1,4 +1,6 @@
 :root {
+  /* Canvas shader stays near-black in every UI theme; keep the watermark visible. */
+  --mark-on-canvas: #ffffff;
   color-scheme: dark;
   --ink: #ffffff;
   --paper: #000000;
