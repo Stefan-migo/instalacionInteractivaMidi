@@ -2,114 +2,10 @@ let collageLayout, deviceManager, imageLoader, ws;
 let activeSlots = [];
 let lastFrameTime = 0;
 let selectedSlot = null;
-let _floatingBar = null; // floating control bar DOM element
-let _floatingCanvasRect = null; // cached canvas rect for floating bar positioning
 
 function sendImageUpdate(slot, imageFile) {
   if (ws && ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify({ type: 'image-update', slot, imageFile }));
-  }
-}
-
-/**
- * Create the floating control bar overlay (hidden initially).
- * Appended to body, positioned absolutely over the canvas.
- */
-function createFloatingBar() {
-  if (_floatingBar) return;
-
-  _floatingBar = document.createElement('div');
-  _floatingBar.id = 'floating-bar';
-  _floatingBar.className = 'floating-bar hidden';
-  _floatingBar.innerHTML = ''
-    + '<button class="float-btn" data-action="rotateL" title="Rotate left -15\u00B0">\u21BA</button>'
-    + '<button class="float-btn" data-action="rotateR" title="Rotate right +15\u00B0">\u21BB</button>'
-    + '<button class="float-btn" data-action="bringToFront" title="Bring to front">\u2B06</button>'
-    + '<button class="float-btn" data-action="hide" title="Hide cell">\u25CB</button>';
-
-  // Bind floating bar button clicks
-  _floatingBar.addEventListener('click', function (e) {
-    var btn = e.target.closest('.float-btn');
-    if (!btn) return;
-    e.stopPropagation();
-
-    var action = btn.dataset.action;
-    if (selectedSlot === null || selectedSlot === undefined) return;
-
-    var s = deviceManager.renderer.cellStates[selectedSlot];
-    if (!s) return;
-
-    switch (action) {
-      case 'rotateL':
-        s.pos.rotation = (((s.pos.rotation || 0) - 15) % 360 + 360) % 360;
-        break;
-      case 'rotateR':
-        s.pos.rotation = (((s.pos.rotation || 0) + 15) % 360 + 360) % 360;
-        break;
-      case 'bringToFront':
-        (function () {
-          var maxZ = 0;
-          var sorted = typeof getSortedSlots === 'function' ? getSortedSlots() : [];
-          for (var i = 0; i < sorted.length; i++) {
-            var other = deviceManager.renderer.cellStates[sorted[i].slot];
-            if (other && other.pos.zIndex > maxZ) maxZ = other.pos.zIndex;
-          }
-          s.pos.zIndex = maxZ + 1;
-          activeSlots = getSortedSlots();
-        })();
-        break;
-      case 'hide':
-        s.opacity = 0;
-        // Close floating bar after hiding
-        hideFloatingBar();
-        break;
-    }
-    if (typeof redraw === 'function') redraw();
-  });
-
-  document.body.appendChild(_floatingBar);
-}
-
-/**
- * Position and show the floating bar over the given cell slot.
- * @param {number} slot
- */
-function showFloatingBar(slot) {
-  if (!_floatingBar) return;
-  var s = deviceManager.renderer.cellStates[slot];
-  if (!s) { hideFloatingBar(); return; }
-
-  var canvas = document.querySelector('canvas');
-  if (!canvas) return;
-
-  _floatingCanvasRect = canvas.getBoundingClientRect();
-  var pos = s.pos;
-
-  // Position the bar centered above the cell
-  var barW = _floatingBar.offsetWidth || 160;
-  var centerX = _floatingCanvasRect.left + pos.x + pos.w / 2;
-  var topY = _floatingCanvasRect.top + pos.y - 44; // above cell with gap
-
-  _floatingBar.style.left = Math.round(centerX - barW / 2) + 'px';
-  _floatingBar.style.top = Math.max(8, Math.round(topY)) + 'px';
-  _floatingBar.classList.remove('hidden');
-}
-
-function hideFloatingBar() {
-  if (_floatingBar) {
-    _floatingBar.classList.add('hidden');
-  }
-}
-
-/**
- * Update floating bar position for the current selectedSlot.
- * Call after selection changes or cell moves (drag, preset recalc).
- */
-function updateFloatingBar() {
-  if (selectedSlot !== null && selectedSlot !== undefined) {
-    showFloatingBar(selectedSlot);
-  } else {
-    hideFloatingBar();
   }
 }
 
@@ -119,9 +15,6 @@ function setup() {
 
   const bridgeUrl = location.protocol === 'https:' ? '' : `http://${location.hostname}:${CONFIG.bridgePort}`;
   imageLoader = new ImageLoader(bridgeUrl);
-
-  // Set initial body class from CONFIG
-  document.body.className = 'canvas-' + CONFIG.canvasBgStyle;
 
   Promise.all([
     imageLoader.loadLayout(),
@@ -145,13 +38,6 @@ function setup() {
     // Init ALL cells immediately — they stay visible forever
     deviceManager.initAll();
     activeSlots = getSortedSlots();
-
-    // Build and populate the projector control sidebar
-    if (typeof buildControlPanel === 'function') buildControlPanel();
-    if (typeof populateCatalog === 'function') populateCatalog();
-
-    // Create floating control bar (hidden initially)
-    createFloatingBar();
 
     connectWebSocket();
     setInterval(() => { try { redraw(); } catch (e) {} }, 33);
@@ -336,26 +222,15 @@ function handleCanvasClick(px, py) {
     selectedSlot = null;
   }
 
-  // Sync selection state to control panel
-  if (typeof selectCell === 'function') {
-    selectCell(selectedSlot);
-  }
-
-  // Update floating control bar
-  updateFloatingBar();
+  selectCell(selectedSlot);
 }
 
-/**
- * Check if a mouse/touch event originated from an HTML overlay element
- * (sidebar, floating bar, toggle button). Skip p5 processing for those.
- */
-function isOverlayEvent(event) {
-  if (!event || !event.target) return false;
-  if (typeof event.target.closest !== 'function') return false;
-  return !!(event.target.closest('#floating-bar') ||
-            event.target.closest('#control-panel') ||
-            event.target.closest('#panel-toggle'));
+function selectCell(slot) {
+  selectedSlot = slot;
+  if (typeof redraw === 'function') redraw();
 }
+
+function isOverlayEvent() { return false; }
 
 function mousePressed(event) {
   if (!deviceManager) return false;
@@ -390,9 +265,8 @@ function mouseReleased(event) {
       // Click (below threshold) — select and bring to front
       handleCanvasClick(mouseX, mouseY);
     } else {
-      // Was a drag — update floating bar position for the moved cell
+      // Was a drag.
       selectedSlot = result.slot;
-      updateFloatingBar();
       if (typeof redraw === 'function') redraw();
     }
   }
@@ -430,7 +304,6 @@ function touchEnded(event) {
       handleCanvasClick(mouseX, mouseY);
     } else {
       selectedSlot = result.slot;
-      updateFloatingBar();
       if (typeof redraw === 'function') redraw();
     }
   }
@@ -473,8 +346,6 @@ function draw() {
     if (!deviceManager || !collageLayout) return;
     drawGrid(dt);
 
-    // Keep floating bar position synced with cell position
-    updateFloatingBar();
   } catch (e) {
     console.error('[draw]', e);
   }

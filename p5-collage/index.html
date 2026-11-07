@@ -4,49 +4,50 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MIDI · Proyector</title>
-  <meta name="theme-color" content="#000000">
   <link rel="icon" href="/phone-client/icons/favicon.ico" sizes="any">
   <link rel="icon" href="/phone-client/icons/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/phone-client/icons/apple-touch-icon.png">
   <link rel="manifest" href="/phone-client/icons/site.webmanifest">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-  <link rel="stylesheet" href="/p5-collage/control-panel.css">
+  <link rel="stylesheet" href="/shared/theme.css">
+  <script src="/shared/theme.js"></script>
+  <script>MidiTheme.getTheme();</script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 100%; height: 100%; overflow: hidden; }
     
     body {
-      background: #000000;
-      color: #FFFFFF;
+      background: var(--paper);
+      color: var(--ink);
       font-family: system-ui, sans-serif;
     }
 
     #loading {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background: #000000; color: #FFFFFF; font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace; z-index: 999;
+      background: var(--paper); color: var(--ink); font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace; z-index: 999;
       text-transform: uppercase; letter-spacing: 0.14em;
     }
-    #loading .spinner { width: 48px; height: 48px; border: 2px solid #FFFFFF; border-top-color: #000000; animation: spin 0.8s linear infinite; margin-bottom: 1rem; }
+    #loading .spinner { width: 48px; height: 48px; border: 2px solid var(--rule-color); border-top-color: var(--paper); animation: spin 0.8s linear infinite; margin-bottom: 1rem; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    #loading p { font-size: 1rem; color: #FFFFFF; }
-    #loading .count { font-size: 0.875rem; color: rgba(255,255,255,.6); margin-top: 0.5rem; }
+    #loading p { font-size: 1rem; color: var(--ink); }
+    #loading .count { font-size: 0.875rem; color: var(--quiet); margin-top: 0.5rem; }
 
     #status-hud {
       position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
-      background: #000000; color: #FFFFFF; padding: 0.5rem 1rem;
+      background: var(--paper); color: var(--ink); padding: 0.5rem 1rem;
       font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace; font-size: 0.75rem;
       text-transform: uppercase; letter-spacing: 0.14em;
-      border: 1px solid #FFFFFF; z-index: 100;
+      border: 1px solid var(--rule-color); z-index: 100;
     }
     #qr-wrapper {
       position: fixed; bottom: 1rem; right: 1rem; z-index: 100;
-      background: #000000;
-      padding: 6px; border: 2px solid #FFFFFF;
+      background: var(--paper);
+      padding: 6px; border: 2px solid var(--rule-color);
       display: flex; flex-direction: column; align-items: center; gap: 4px;
     }
     #qr-wrapper img { display: block; width: 80px; height: 80px; }
-    #qr-wrapper .qr-label { color: #FFFFFF; font-size: 0.6rem; font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.14em; }
+    #qr-wrapper .qr-label { color: var(--ink); font-size: 0.6rem; font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.14em; }
     
     /* Paint layer overlay: film grain */
     #p5_loading { display: none; }
@@ -87,8 +88,8 @@
   <script src="/p5-collage/border-renderer.js"></script>
   <script src="/p5-collage/background-texture.js"></script>
   <script src="/p5-collage/drag-manager.js"></script>
-  <script src="/p5-collage/control-panel.js"></script>
   <script src="/p5-collage/cell-actions.js"></script>
   <script src="/p5-collage/sketch.js"></script>
+  <script src="/p5-collage/operator-link.js"></script>
 </body>
 </html>
