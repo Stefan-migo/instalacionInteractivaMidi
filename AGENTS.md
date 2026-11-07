@@ -2,7 +2,7 @@
 
 Phone-sensor-controlled collage installation. Every connected phone owns one fragment of a shared 1920×1080 canvas and drives it with motion, gestures and direct controls.
 
-The repository ships **no image content**. It runs with 30 empty cells (borders only) until you add images. See [Content](#content).
+The repository ships **no image content**. It runs with 30 empty cells (no photos) until you add images. See [Content](#content).
 
 ## Architecture
 
@@ -27,8 +27,7 @@ The bridge serves both clients and the assets, so a single origin covers HTTP an
 | `p5-collage/device-manager.js` | 30 cells, phone↔slot wiring, sensor mapping |
 | `p5-collage/control-panel.js` | Operator sidebar (layout presets, background, per-cell editor) |
 | `p5-collage/layout-preset-engine.js` | Six deterministic layout presets |
-| `p5-collage/cell-renderer.js` | Per-cell drawing, filters, object-fit cover |
-| `p5-collage/border-renderer.js` | Eight border styles in Canvas2D |
+| `p5-collage/cell-renderer.js` | Per-cell drawing, filters, object-fit contain |
 | `p5-collage/background-texture.js` | WebGL simplex-noise paper background |
 | `p5-collage/drag-manager.js` | Hit-testing and drag state machine |
 | `phone-client/app.js` | Three-screen flow, sensors, gestures, controls, hint engine |
@@ -65,7 +64,7 @@ Valid actions and value ranges (`bridge/message-relay.js`):
 
 | Action | Value |
 |--------|-------|
-| `shuffle`, `bring-front`, `cell-next`, `cell-prev`, `border-next`, `filter-next` | — |
+| `shuffle`, `bring-front`, `cell-next`, `cell-prev`, `filter-next` | — |
 | `opacity` | integer `0..100` |
 | `scale` | integer `40..180` |
 | `rotation` | finite number |
@@ -92,9 +91,9 @@ The system is data-driven. To load a dataset:
    { "001": { "file": "001.jpg", "w": 1600, "h": 977 } }
    ```
 
-3. Run `npm run generate-layout` to rebuild `images/layout.json` (30 cells, positions, rotation, z-order, border style).
+3. Run `npm run generate-layout` to rebuild `images/layout.json` (30 cells, positions, rotation, z-order).
 
-A cell with `imageFile: null` renders its border with no photo, so the installation still runs with zero content. `generate-layout` refuses to run against an empty manifest and leaves the existing layout untouched.
+A cell with `imageFile: null` renders nothing, so the installation still runs with zero content. `generate-layout` refuses to run against an empty manifest and leaves the existing layout untouched.
 
 ## Running
 

@@ -2,7 +2,7 @@ const { applyCommand, makeSnapshot } = require('../p5-collage/operator-link');
 const operatorPage = require('../operator/operator');
 
 function fixture() {
-  const state = { 2: { pos: { rotation: 350, zIndex: 2 }, opacity: .5, filterType: 'none', borderStyle: 'torn' } };
+  const state = { 2: { pos: { rotation: 350, zIndex: 2 }, opacity: .5, filterType: 'none' } };
   const calls = [];
   const manager = { renderer: { cellStates: state }, layoutEngine: { setPreset: value => calls.push(['preset', value]), getCurrentPreset: () => 'spiral' }, _recalculateLayout: () => calls.push(['layout']), count: 1 };
   const api = { deviceManager: manager, collageLayout: { cells: [{ slot: 2, imageFile: '002.jpg' }] }, CONFIG: { scatterScale: 1, noiseIntensity: .8 }, selectedSlot: 2, activeSlots: [], getSortedSlots: () => [{ slot: 2, zIndex: state[2].pos.zIndex }], redraw: () => calls.push(['redraw']), selectCell: slot => { api.selectedSlot = slot; calls.push(['select', slot]); }, setBackgroundTexture: value => calls.push(['texture', value]), publish: () => calls.push(['publish']) };
@@ -30,8 +30,10 @@ describe('operator page controls', () => {
     expect(button.attrs['aria-pressed']).toBe('false');
   });
 
-  test('operator command vocabulary contains all fifteen frozen contract types', () => {
-    expect(operatorPage.COMMAND_TYPES).toEqual(['setPreset', 'setScatterScale', 'setNoiseIntensity', 'selectCell', 'setFilter', 'setBorder', 'setRotation', 'setScale', 'setOpacity', 'toggleVisibility', 'rotateSelected', 'bringToFront', 'hideCell', 'esparcirTodo', 'requestState']);
+  test('operator command vocabulary exposes the frozen contract types without borders', () => {
+    expect(operatorPage.COMMAND_TYPES).toEqual(['setPreset', 'setScatterScale', 'setNoiseIntensity', 'selectCell', 'setFilter', 'setRotation', 'setScale', 'setOpacity', 'toggleVisibility', 'rotateSelected', 'bringToFront', 'hideCell', 'esparcirTodo', 'requestState']);
+    expect(operatorPage.COMMAND_TYPES).not.toContain('setBorder');
+    expect(operatorPage.BORDERS).toBeUndefined();
   });
 });
 
@@ -55,7 +57,7 @@ describe('operator-link command contract', () => {
     applyCommand({ type: 'bringToFront', slot: 2 }, api);
     const snapshot = makeSnapshot(api);
     expect(snapshot).toEqual(expect.objectContaining({ preset: 'spiral', scatterScale: 1, noiseIntensity: 80, selectedSlot: 2, connected: 1, total: 1 }));
-    expect(snapshot.cells[0]).toEqual({ slot: 2, imageFile: '002.jpg', filterType: 'none', borderStyle: 'torn', rotation: 5, scale: 1, opacity: .5 });
+    expect(snapshot.cells[0]).toEqual({ slot: 2, imageFile: '002.jpg', filterType: 'none', rotation: 5, scale: 1, opacity: .5 });
   });
 
   test('ignores commands before manager readiness and publishes on state request', () => {

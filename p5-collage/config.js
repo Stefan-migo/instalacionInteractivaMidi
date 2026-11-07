@@ -1,8 +1,6 @@
 const CONFIG = {
   totalSlots: 30,
   cellSpacing: 4,
-  borderSegments: 32,
-  borderJitter: 6,
   movementThreshold: 0.5,
   transitionDuration: 300,
   dtwThreshold: 0.3,
@@ -23,7 +21,6 @@ const CONFIG = {
     vintage: 'sepia(0.35) saturate(0.7) contrast(0.95) brightness(1.03)',
     none: '',
   },
-  borderStyleMap: ['torn', 'polaroid', 'stamp', 'gold', 'minimal', 'deckled-edge', 'double-line', 'shadow-box'],
   noiseIntensity: 0.8,
   canvasBgStyle: 'shader-paper',
 };

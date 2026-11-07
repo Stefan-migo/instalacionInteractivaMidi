@@ -161,7 +161,7 @@ describe('drawImg', () => {
   });
 });
 
-const { generateTornBorder, getCombinedFilters } = require('../p5-collage/cell-renderer');
+const { getCombinedFilters } = require('../p5-collage/cell-renderer');
 
 describe('getCombinedFilters', () => {
   test('returns sepia filter string for sepia type', () => {
@@ -200,32 +200,9 @@ describe('getCombinedFilters', () => {
   });
 });
 
-describe('generateTornBorder', () => {
-  test('returns 4*segments vertices for a rectangle', () => {
-    const verts = generateTornBorder(100, 100, 200, 150, 16, 4, 42);
-    expect(verts).toBeInstanceOf(Array);
-    expect(verts.length).toBe(4 * 16);
-  });
-
-  test('each vertex has x and y within expected bounds', () => {
-    const verts = generateTornBorder(100, 100, 200, 150, 16, 4, 42);
-    for (const v of verts) {
-      expect(v).toHaveProperty('x');
-      expect(v).toHaveProperty('y');
-      expect(typeof v.x).toBe('number');
-      expect(typeof v.y).toBe('number');
-    }
-  });
-
-  test('same seed produces identical vertices', () => {
-    const a = generateTornBorder(100, 100, 200, 150, 16, 4, 42);
-    const b = generateTornBorder(100, 100, 200, 150, 16, 4, 42);
-    expect(a).toEqual(b);
-  });
-
-  test('different seed produces different vertices', () => {
-    const a = generateTornBorder(100, 100, 200, 150, 16, 4, 42);
-    const b = generateTornBorder(100, 100, 200, 150, 16, 4, 99);
-    expect(a).not.toEqual(b);
+describe('cell-renderer public surface', () => {
+  test('no longer exports the retired torn-border geometry', () => {
+    const renderer = require('../p5-collage/cell-renderer');
+    expect(Object.keys(renderer).sort()).toEqual(['adaptCellToImage', 'drawImg', 'getCombinedFilters']);
   });
 });

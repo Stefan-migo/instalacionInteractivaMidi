@@ -370,8 +370,13 @@ describe('MessageRelay', () => {
       }
     });
 
-    test('contains border-next', () => {
-      expect(VALID_ACTIONS).toContain('border-next');
+    test('rejects the retired border-next action', () => {
+      expect(VALID_ACTIONS).not.toContain('border-next');
+      const relay = new MessageRelay();
+      expect(relay.validateSensorMessage({ type: 'action', action: 'border-next' })).toEqual({
+        valid: false,
+        error: 'invalid action: border-next',
+      });
     });
 
     test('contains shuffle', () => {

@@ -46,7 +46,7 @@ The system MUST accept `{type: "action", action: "set-layout", value: "<preset-n
 
 - GIVEN 5 active slots with `neat-grid` preset active
 - WHEN a `set-layout: "spiral"` action arrives
-- THEN all 5 slot positions SHALL update to the `spiral` preset within 100ms, preserving each cell's image, filter, border style, and opacity
+- THEN all 5 slot positions SHALL update to the `spiral` preset within 100ms, preserving each cell's image, filter, and opacity
 
 #### Scenario: Invalid preset name ignored
 
@@ -56,7 +56,7 @@ The system MUST accept `{type: "action", action: "set-layout", value: "<preset-n
 
 ### Requirement: State preservation on recalc
 
-When position recalculation occurs (connect, disconnect, preset switch) the system MUST preserve per-cell state: image, opacity, flip, lock, filter style, border style, blend mode.
+When position recalculation occurs (connect, disconnect, preset switch) the system MUST preserve per-cell state: image, opacity, flip, lock, filter style, blend mode.
 
 #### Scenario: Cell state survives slot recalc
 

@@ -5,9 +5,9 @@ describe('CollageLayout', () => {
     canvas: { w: 1920, h: 1080 },
     totalSlots: 30,
     cells: [
-      { slot: 0, cellId: 'cell_00', x: 0, y: 0, w: 400, h: 300, rotation: 2, zIndex: 5, borderStyle: 'torn', imageId: '001', imageFile: '001.jpg' },
-      { slot: 1, cellId: 'cell_01', x: 300, y: 200, w: 350, h: 450, rotation: -3, zIndex: 10, borderStyle: 'torn', imageId: '002', imageFile: '002.jpg' },
-      { slot: 2, cellId: 'cell_02', x: 100, y: 100, w: 300, h: 300, rotation: 0, zIndex: 1, borderStyle: 'torn', imageId: '003', imageFile: '003.jpg' },
+      { slot: 0, cellId: 'cell_00', x: 0, y: 0, w: 400, h: 300, rotation: 2, zIndex: 5, imageId: '001', imageFile: '001.jpg' },
+      { slot: 1, cellId: 'cell_01', x: 300, y: 200, w: 350, h: 450, rotation: -3, zIndex: 10, imageId: '002', imageFile: '002.jpg' },
+      { slot: 2, cellId: 'cell_02', x: 100, y: 100, w: 300, h: 300, rotation: 0, zIndex: 1, imageId: '003', imageFile: '003.jpg' },
     ],
   };
 

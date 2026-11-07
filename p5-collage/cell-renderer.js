@@ -1,52 +1,3 @@
-function generateTornBorder(x, y, w, h, segments, jitter, seed) {
-  const verts = [];
-
-  function seededRandom(seedVal) {
-    let s = seedVal;
-    return function () {
-      s = (s * 1103515245 + 12345) & 0x7fffffff;
-      return s / 0x7fffffff;
-    };
-  }
-
-  const rng = seededRandom(seed);
-
-  for (let i = 0; i < segments; i++) {
-    const t = i / segments;
-    verts.push({
-      x: lerp(x, x + w, t) + (rng() - 0.5) * 2 * jitter,
-      y: y + (rng() - 0.5) * jitter,
-    });
-  }
-  for (let i = 0; i < segments; i++) {
-    const t = i / segments;
-    verts.push({
-      x: x + w + (rng() - 0.5) * jitter,
-      y: lerp(y, y + h, t) + (rng() - 0.5) * 2 * jitter,
-    });
-  }
-  for (let i = 0; i < segments; i++) {
-    const t = i / segments;
-    verts.push({
-      x: lerp(x + w, x, t) + (rng() - 0.5) * 2 * jitter,
-      y: y + h + (rng() - 0.5) * jitter,
-    });
-  }
-  for (let i = 0; i < segments; i++) {
-    const t = i / segments;
-    verts.push({
-      x: x + (rng() - 0.5) * jitter,
-      y: lerp(y + h, y, t) + (rng() - 0.5) * 2 * jitter,
-    });
-  }
-
-  return verts;
-}
-
-function lerp(a, b, t) {
-  return a + (b - a) * t;
-}
-
 function getCombinedFilters(filterType) {
   const map = {
     sepia: 'sepia(0.85) contrast(1.1)',
@@ -98,7 +49,7 @@ function drawImg(img, flipH, flipV, x, y, w, h, opacity, filterType) {
  * Adapt a cell's dimensions to match the displayed image's aspect ratio.
  *
  * Fits the image INSIDE the original layout bounds (contain mode),
- * then updates cellState.pos.w/h and regenerates the border vertices.
+ * then updates cellState.pos.w/h.
  * Call after setting/replacing a cell's image.
  *
  * @param {object} cellState — the cell state object with .img and .pos
@@ -143,17 +94,9 @@ function adaptCellToImage(cellState, centerAt) {
   cellState.pos.w = newW;
   cellState.pos.h = newH;
 
-  // Regenerate torn border for the new size
-  if (typeof generateTornBorder !== 'undefined') {
-    const segments = (typeof CONFIG !== 'undefined' && CONFIG.borderSegments) || 32;
-    const jitter = (typeof CONFIG !== 'undefined' && CONFIG.borderJitter) || 6;
-    const slot = (cellState.cell && cellState.cell.slot) || 0;
-    cellState.borderVerts = generateTornBorder(-newW / 2, -newH / 2, newW, newH, segments, jitter, slot);
-  }
-
   return true;
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { generateTornBorder, drawImg, getCombinedFilters, adaptCellToImage };
+  module.exports = { drawImg, getCombinedFilters, adaptCellToImage };
 }

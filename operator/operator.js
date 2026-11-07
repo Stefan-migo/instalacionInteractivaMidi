@@ -3,8 +3,7 @@
   var PRESETS = ['scatter', 'spiral', 'polaroid-stack', 'neat-grid', 'vignette', 'random'];
   // Source of truth: p5-collage/config.js. Classic scripts cannot import its CONFIG.
   var FILTERS = ['none', 'sepia', 'grayscale', 'cyanotype', 'polaroid', 'vintage'];
-  var BORDERS = ['torn', 'polaroid', 'stamp', 'gold', 'minimal', 'deckled-edge', 'double-line', 'shadow-box'];
-  var COMMAND_TYPES = ['setPreset', 'setScatterScale', 'setNoiseIntensity', 'selectCell', 'setFilter', 'setBorder', 'setRotation', 'setScale', 'setOpacity', 'toggleVisibility', 'rotateSelected', 'bringToFront', 'hideCell', 'esparcirTodo', 'requestState'];
+  var COMMAND_TYPES = ['setPreset', 'setScatterScale', 'setNoiseIntensity', 'selectCell', 'setFilter', 'setRotation', 'setScale', 'setOpacity', 'toggleVisibility', 'rotateSelected', 'bringToFront', 'hideCell', 'esparcirTodo', 'requestState'];
 
   function visibilityCommand(slot) { return { type: 'toggleVisibility', slot: slot }; }
   function isVisible(opacity) { return opacity > 0; }
@@ -20,7 +19,7 @@
   }
 
   function formatCell(cell) {
-    return { slot: cell.slot, imageFile: cell.imageFile || null, filterType: cell.filterType || 'none', borderStyle: cell.borderStyle || 'torn', rotation: cell.rotation || 0, scale: cell.scale || 1, opacity: cell.opacity == null ? 1 : cell.opacity };
+    return { slot: cell.slot, imageFile: cell.imageFile || null, filterType: cell.filterType || 'none', rotation: cell.rotation || 0, scale: cell.scale || 1, opacity: cell.opacity == null ? 1 : cell.opacity };
   }
   function renderModel(state) {
     return { preset: state.preset, scatterScale: state.scatterScale, noiseIntensity: state.noiseIntensity, selectedSlot: state.selectedSlot, connected: state.connected, total: state.total, cells: (state.cells || []).map(formatCell) };
@@ -37,7 +36,6 @@
     var presets = doc.getElementById('presets');
     presets.innerHTML = PRESETS.map(function (name) { return '<button type="button" data-preset="' + name + '" aria-pressed="false">' + name + '</button>'; }).join('');
     setOptions(doc.getElementById('filter'), FILTERS);
-    setOptions(doc.getElementById('border'), BORDERS);
     function update() {
       if (!latest) return;
       var state = latest;
@@ -67,7 +65,7 @@
       visibilityToggle.setAttribute('aria-pressed', String(cell && isVisible(cell.opacity)));
       visibilityToggle.textContent = cell && isVisible(cell.opacity) ? 'Celda visible' : 'Celda oculta';
       if (!cell) return;
-      [['filter', cell.filterType], ['border', cell.borderStyle], ['rotation', cell.rotation], ['scale', cell.scale], ['opacity', cell.opacity]].forEach(function (entry) { doc.getElementById(entry[0]).value = entry[1]; });
+      [['filter', cell.filterType], ['rotation', cell.rotation], ['scale', cell.scale], ['opacity', cell.opacity]].forEach(function (entry) { doc.getElementById(entry[0]).value = entry[1]; });
       doc.getElementById('rotation-value').textContent = Math.round(cell.rotation) + '°';
       doc.getElementById('scale-value').textContent = Math.round(cell.scale * 100) + '%';
       doc.getElementById('opacity-value').textContent = Math.round(cell.opacity * 100) + '%';
@@ -78,7 +76,7 @@
     doc.getElementById('catalog').addEventListener('click', function (event) { var row = event.target.closest('[data-slot]'); if (row) command('selectCell', { slot: Number(row.dataset.slot) }); });
     doc.getElementById('scatter').addEventListener('input', function (event) { command('setScatterScale', { value: Number(event.target.value) }); });
     doc.getElementById('noise').addEventListener('input', function (event) { command('setNoiseIntensity', { value: Number(event.target.value) }); });
-    ['filter', 'border', 'rotation', 'scale', 'opacity'].forEach(function (key) { doc.getElementById(key).addEventListener(key === 'filter' || key === 'border' ? 'change' : 'input', function (event) { if (!latest || latest.selectedSlot == null) return; var type = { filter: 'setFilter', border: 'setBorder', rotation: 'setRotation', scale: 'setScale', opacity: 'setOpacity' }[key]; command(type, { slot: latest.selectedSlot, value: key === 'filter' || key === 'border' ? event.target.value : Number(event.target.value) }); }); });
+    ['filter', 'rotation', 'scale', 'opacity'].forEach(function (key) { doc.getElementById(key).addEventListener(key === 'filter' ? 'change' : 'input', function (event) { if (!latest || latest.selectedSlot == null) return; var type = { filter: 'setFilter', rotation: 'setRotation', scale: 'setScale', opacity: 'setOpacity' }[key]; command(type, { slot: latest.selectedSlot, value: key === 'filter' ? event.target.value : Number(event.target.value) }); }); });
     doc.getElementById('visibility-toggle').addEventListener('click', function () {
       if (latest && latest.selectedSlot != null) command(visibilityCommand(latest.selectedSlot).type, { slot: latest.selectedSlot });
     });
@@ -88,7 +86,7 @@
     setTimeout(function () { if (!gotState) request(); }, 500);
     return { command: command, renderModel: renderModel, getState: function () { return latest; } };
   }
-  var api = { init: init, renderModel: renderModel, formatCell: formatCell, visibilityCommand: visibilityCommand, isVisible: isVisible, bindThemeToggle: bindThemeToggle, COMMAND_TYPES: COMMAND_TYPES, PRESETS: PRESETS, FILTERS: FILTERS, BORDERS: BORDERS };
+  var api = { init: init, renderModel: renderModel, formatCell: formatCell, visibilityCommand: visibilityCommand, isVisible: isVisible, bindThemeToggle: bindThemeToggle, COMMAND_TYPES: COMMAND_TYPES, PRESETS: PRESETS, FILTERS: FILTERS };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.OperatorPage = api;
   if (root.document && typeof BroadcastChannel !== 'undefined') init(root.document, function (name) { return new BroadcastChannel(name); }, root.MidiTheme);

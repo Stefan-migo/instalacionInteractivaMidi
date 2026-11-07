@@ -120,7 +120,6 @@ function generateLayout() {
       h: Math.round(finalH),
       rotation: parseFloat(rotation.toFixed(1)),
       zIndex,
-      borderStyle: 'torn',
     });
 
     placedRegions.push({ x, y, w: finalW, h: finalH });

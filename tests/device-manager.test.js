@@ -9,8 +9,8 @@ const layoutData = {
   canvas: { w: 1920, h: 1080 },
   totalSlots: 30,
   cells: [
-    { slot: 0, cellId: 'cell_00', x: 0, y: 0, w: 400, h: 300, rotation: 0, zIndex: 1, borderStyle: 'torn', imageId: '001', imageFile: '001.jpg' },
-    { slot: 1, cellId: 'cell_01', x: 100, y: 100, w: 300, h: 250, rotation: 2, zIndex: 2, borderStyle: 'torn', imageId: '002', imageFile: '002.jpg' },
+    { slot: 0, cellId: 'cell_00', x: 0, y: 0, w: 400, h: 300, rotation: 0, zIndex: 1, imageId: '001', imageFile: '001.jpg' },
+    { slot: 1, cellId: 'cell_01', x: 100, y: 100, w: 300, h: 250, rotation: 2, zIndex: 2, imageId: '002', imageFile: '002.jpg' },
   ],
 };
 
@@ -134,7 +134,6 @@ describe('DeviceManager', () => {
             flipV: false,
             locked: false,
             filterType: 'none',
-            borderStyle: 'torn',
             phoneConnected: false,
             currentImageFile: cell.imageFile,
           };

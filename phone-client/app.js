@@ -223,14 +223,14 @@
   }
 
   // --- Gesture Gallery State Machine ---
+  // 'inclinar' (forward tilt) is deliberately unmapped: its detector stays wired
+  // so the gesture keeps working once we decide which parameter it should drive.
   var gestureActionMap = {
-    inclinar: 'border-next',
     latigo: 'shuffle',
     twist: 'filter-next'
   };
 
   var gestureInstructions = {
-    inclinar: 'Incliná el teléfono hacia adelante → cambia borde',
     latigo: 'Sacudí el teléfono → cambia foto',
     twist: 'Girá el teléfono como una perilla → cambia filtro'
   };
@@ -607,19 +607,6 @@
       idx = (idx + 1) % FILTERS.length;
       var name = FILTERS[idx];
       sendActionWithPayload('filter', { value: name });
-    });
-  })();
-
-  // Border button
-  (function initBorderBtn() {
-    var btn = $('border-btn');
-    if (!btn) return;
-    var BORDERS = ['torn', 'polaroid', 'stamp', 'gold', 'minimal'];
-    var idx = 0;
-
-    btn.addEventListener('click', function () {
-      idx = (idx + 1) % BORDERS.length;
-      sendActionWithPayload('border-next', {});
     });
   })();
 

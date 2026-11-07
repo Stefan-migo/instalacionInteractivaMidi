@@ -18,7 +18,6 @@ function createTestContext() {
       img: { file: cell.imageFile },
       opacity: 1,
       filterType: 'none',
-      borderStyle: 'torn',
       currentImageFile: cell.imageFile,
       transition: { startTransition: jest.fn() },
     };
@@ -34,7 +33,6 @@ function createTestContext() {
     config: CONFIG,
     sendImageUpdate: jest.fn(),
     adaptCellToImage: jest.fn(),
-    generateTornBorder: jest.fn(() => ['border']),
     getSortedSlots: jest.fn(() => [{ slot: 0 }, { slot: 1 }, { slot: 2 }]),
     getRendererCellStates: jest.fn(() => state.cellStates),
     onZOrderChanged: jest.fn(),
@@ -123,15 +121,11 @@ describe('production cell action handler — value actions', () => {
     Math.random.mockRestore();
   });
 
-  test('shuffle fallback generates a border when adaptation is unavailable', () => {
-    testContext.ctx.adaptCellToImage = undefined;
-    testContext.handleAction(0, 'shuffle', testContext.imgLoader);
-    expect(testContext.ctx.generateTornBorder).toHaveBeenCalledWith(-200, -150, 400, 300, CONFIG.borderSegments, CONFIG.borderJitter, 0);
-  });
-
-  test('border-next advances configured border style', () => {
-    testContext.handleAction(0, 'border-next');
-    expect(testContext.ctx.state.cellStates[0].borderStyle).toBe(CONFIG.borderStyleMap[1]);
+  test('border-next is retired and changes nothing', () => {
+    const s = testContext.ctx.state.cellStates[0];
+    expect(() => testContext.handleAction(0, 'border-next')).not.toThrow();
+    expect(s.borderStyle).toBeUndefined();
+    expect(testContext.ctx.sendImageUpdate).not.toHaveBeenCalled();
   });
 
   test('scale clamps editor scale', () => {
