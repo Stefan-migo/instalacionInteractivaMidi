@@ -22,8 +22,7 @@
     gyro: { a: 0, b: 0, g: 0 },
     orientation: { a: 0, b: 0, g: 0 },
   };
-  var paperTextureRendered = false;
-  // Stable seed for deterministic decoration (paper texture + torn edges).
+  // Stable seed for deterministic decoration (torn edges).
   var DECOR_SEED = 1337;
   var galleryState = null;
   var gestureDetectors = null;
@@ -61,35 +60,13 @@
       permScreen.classList.remove('hidden');
     } else if (name === 'dashboard') {
       dashboard.classList.remove('hidden');
-      if (!paperTextureRendered) {
-        renderDashboardPaperTexture();
-        paperTextureRendered = true;
-      }
       // Auto-open help overlay on first dashboard entry
       openHelp();
     }
   }
 
-  function renderDashboardPaperTexture() {
-    var canvas = $('paper-canvas');
-    if (!canvas) return;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    var ok = renderPaperTexture(canvas, canvas.width, canvas.height, 0.8, DECOR_SEED);
-    if (ok) {
-      try {
-        var dataUrl = canvas.toDataURL('image/png');
-        document.body.style.setProperty('--user-bg', 'url(' + dataUrl + ')');
-      } catch (e) { /* best-effort */ }
-    }
-    // If WebGL failed, paper-texture.js already filled the offscreen canvas
-    // with the warm fallback color, so the background renders correctly either way.
-  }
-
   // Start on splash
   goToScreen('splash');
-  // Render paper texture immediately so all screens have the shader background
-  renderDashboardPaperTexture();
 
   // --- Splash [Participar] button ---
   $('splash-participar-btn').addEventListener('click', function () {

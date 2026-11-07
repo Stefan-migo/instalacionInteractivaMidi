@@ -52,14 +52,6 @@ body {
   user-select: none;
   overflow: hidden;
 }
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  background: var(--user-bg, var(--paper));
-}
 #app { position: relative; width: 100%; height: 100vh; height: 100dvh; margin: 0 auto; z-index: var(--z-base); display: flex; flex-direction: column; overflow: hidden; }
 .hidden { display: none !important; }
 .screen { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; background: var(--paper); padding: var(--space-xl); }
