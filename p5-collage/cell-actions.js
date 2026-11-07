@@ -4,41 +4,21 @@ function createCellActionHandler(ctx) {
     if (!s) return;
     switch (action) {
       case 'cycle-next': {
-        const result = ctx.imageCycler.cycle(slot, 'next');
-        if (result) {
-          const newImg = imgLoader.get(result.current);
-          if (newImg && s.img) {
-            s._oldImg = s.img;
-            s.img = newImg;
-            s.currentImageFile = result.current;
-            s.transition.startTransition(s._oldImg, newImg);
-            // Adapt the cell frame to the new image's aspect ratio
-            if (typeof ctx.adaptCellToImage === 'function') {
-              ctx.adaptCellToImage(s);
-            }
-            ctx.sendImageUpdate(slot, result.current);
-          }
-        }
+        const result = ctx.deck.advance(slot, 'next');
+        if (result && result.current) ctx.applyImage(slot, result.current);
         break;
       }
-      case 'shuffle':
-        const allCells = ctx.getCells();
-        const others = allCells.filter(c => c.slot !== slot);
-        const newCell = others[Math.floor(Math.random() * others.length)];
-        s.cell = newCell;
-        s.img = imgLoader.get(newCell.imageFile);
-        s.currentImageFile = newCell.imageFile;
-        // Update layout budget for this new cell
-        s._layoutX = newCell.x;
-        s._layoutY = newCell.y;
-        s._layoutW = newCell.w;
-        s._layoutH = newCell.h;
-        // Adapt cell frame to the new cell's image aspect ratio
-        if (typeof ctx.adaptCellToImage === 'function') {
-          ctx.adaptCellToImage(s);
-        }
-        ctx.sendImageUpdate(slot, newCell.imageFile);
+      case 'shuffle': {
+        // Exchange images with another cell. Both stay in use, so the deck is
+        // untouched and no two fragments ever show the same photo.
+        const others = ctx.getCells().filter(c => c.slot !== slot);
+        if (others.length === 0) break;
+        const other = others[Math.floor(Math.random() * others.length)];
+        if (!ctx.deck.swap(slot, other.slot)) break;
+        ctx.applyImage(slot, ctx.deck.current(slot));
+        ctx.applyImage(other.slot, ctx.deck.current(other.slot));
         break;
+      }
       case 'filter-next': {
         const filters = Object.keys(ctx.config.filterMap);
         const curIdx = filters.indexOf(s.filterType);

@@ -1,4 +1,10 @@
-let collageLayout, deviceManager, imageLoader, ws;
+let collageLayout, deviceManager, imageLoader, imageDeck, ws;
+let _cellsReady = 0, _cellsTotal = 0;
+
+function updateLoadCount() {
+  const el = document.getElementById('load-count');
+  if (el) el.textContent = `${_cellsReady} / ${_cellsTotal}`;
+}
 let activeSlots = [];
 let lastFrameTime = 0;
 let selectedSlot = null;
@@ -14,18 +20,15 @@ function setup() {
   noLoop();
 
   const bridgeUrl = location.protocol === 'https:' ? '' : `http://${location.hostname}:${CONFIG.bridgePort}`;
-  imageLoader = new ImageLoader(bridgeUrl);
+  imageLoader = new ImageLoader(bridgeUrl, { maxCached: CONFIG.imageCacheSize });
 
   Promise.all([
     imageLoader.loadLayout(),
     imageLoader.loadManifest(),
   ]).then(([layoutData, manifestData]) => {
     collageLayout = new CollageLayout(layoutData);
-    // Store all image files from manifest for the ImageCycler
-    collageLayout._allImageFiles = Object.values(manifestData).map(e => e.file);
-    return imageLoader.loadAllImages(manifestData);
-  }).then(() => {
-    document.getElementById('loading').style.display = 'none';
+    // The deck is the single authority for which image each cell shows.
+    imageDeck = new ImageDeck(imageLoader.filesFrom(manifestData));
 
     const sm = new SensorMapper(CONFIG);
     const renderer = createRenderer();
@@ -35,10 +38,16 @@ function setup() {
     const imageLoaderGet = { get: (id) => imageLoader.get(id) };
     deviceManager = new DeviceManager(collageLayout, renderer, sm, imageLoaderGet, layoutEngine);
 
-    // Init ALL cells immediately — they stay visible forever
+    // Init ALL cells immediately — they stay visible forever. Each cell claims a
+    // distinct image from the deck; only those 30 bitmaps are decoded up front.
     deviceManager.initAll();
     activeSlots = getSortedSlots();
+    _cellsTotal = Object.keys(renderer.cellStates).length;
+    updateLoadCount();
 
+    return Promise.all(Object.values(renderer.cellStates).map(s => s._readyPromise));
+  }).then(() => {
+    document.getElementById('loading').style.display = 'none';
     connectWebSocket();
     setInterval(() => { try { redraw(); } catch (e) {} }, 33);
   }).catch(err => {
@@ -48,10 +57,16 @@ function setup() {
 
 function createRenderer() {
   const state = { cellStates: {} };
-  const imageCycler = new ImageCycler();
+  const applyImage = createImageApplier({
+    state,
+    imageLoader,
+    adaptCellToImage,
+    sendImageUpdate,
+  }).apply;
   const handleAction = createCellActionHandler({
     state,
-    imageCycler,
+    deck: imageDeck,
+    applyImage,
     getCells: () => collageLayout.cells,
     config: CONFIG,
     sendImageUpdate,
@@ -63,15 +78,13 @@ function createRenderer() {
 
   return {
     cellStates: state.cellStates,
-    imageCycler,
     initCell(slot, cell) {
-      const allImages = collageLayout._allImageFiles || collageLayout.cells.map(c => c.imageFile);
-      imageCycler.initPool(slot, allImages, CONFIG.imagePoolSize);
+      const file = imageDeck.claim(slot);
 
       const cellState = {
         cell,
         pos: { x: cell.x, y: cell.y, w: cell.w, h: cell.h, zIndex: slot, rotation: 0 },
-        img: imageLoader.get(cell.imageFile),
+        img: file ? imageLoader.get(file) : null,
         opacity: 1.0,
         flipH: false, flipV: false,
         locked: false,
@@ -83,15 +96,26 @@ function createRenderer() {
         _layoutW: cell.w,
         _layoutH: cell.h,
         transition: new TransitionRenderer({ transitionDuration: CONFIG.transitionDuration }),
-        currentImageFile: cell.imageFile,
+        currentImageFile: file,
       };
+
+      state.cellStates[slot] = cellState;
 
       // Adapt cell size to the initial image's aspect ratio
       if (typeof adaptCellToImage === 'function') {
         adaptCellToImage(cellState);
       }
 
-      state.cellStates[slot] = cellState;
+      if (!file) {
+        cellState._readyPromise = Promise.resolve(null);
+        return;
+      }
+      imageLoader.pin(file);
+      cellState._readyPromise = applyImage(slot, file).then(() => {
+        _cellsReady++;
+        updateLoadCount();
+        return null;
+      });
     },
     updateCellPosition(slot, pos) {
       const s = state.cellStates[slot];
@@ -147,6 +171,13 @@ function connectWebSocket() {
 
   ws.onopen = () => {
     ws.send(JSON.stringify({ type: 'register', role: 'player' }));
+    // Publish the initial deal so the bridge — and any phone that connects
+    // later — knows which image each cell is actually showing.
+    const states = deviceManager ? deviceManager.renderer.cellStates : {};
+    Object.keys(states).forEach(key => {
+      const s = states[key];
+      if (s && s.currentImageFile) sendImageUpdate(Number(key), s.currentImageFile);
+    });
   };
 
   ws.onmessage = e => {

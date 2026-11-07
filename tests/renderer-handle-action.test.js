@@ -2,7 +2,7 @@
 
 const { createCellActionHandler } = require('../p5-collage/cell-actions');
 const { CONFIG } = require('../p5-collage/config');
-const { ImageCycler } = require('../p5-collage/image-cycler');
+const { ImageDeck } = require('../p5-collage/image-deck');
 
 function createTestContext() {
   const cells = [
@@ -22,13 +22,21 @@ function createTestContext() {
       transition: { startTransition: jest.fn() },
     };
   }
-  const imageCycler = new ImageCycler();
-  imageCycler.initPool(0, ['cycle-a.jpg', 'cycle-b.jpg'], 2);
-  imageCycler._pools[0] = ['cycle-a.jpg', 'cycle-b.jpg'];
-  imageCycler._cursors[0] = 0;
+  // One distinct image per cell; a fourth file stays in the deck so cycling has
+  // somewhere to go. The deck is seeded, so the fixture is deterministic.
+  const deck = new ImageDeck(['cycle-a.jpg', 'cycle-b.jpg', 'cycle-c.jpg', 'cycle-d.jpg'], { rng: () => 0 });
+  deck.claim(0);
+  deck.claim(1);
+  deck.claim(2);
+  for (const cell of cells) {
+    state.cellStates[cell.slot].currentImageFile = deck.current(cell.slot);
+    state.cellStates[cell.slot].img = { file: deck.current(cell.slot) };
+  }
+  const applyImage = jest.fn();
   const ctx = {
     state,
-    imageCycler,
+    deck,
+    applyImage,
     getCells: jest.fn(() => cells),
     config: CONFIG,
     sendImageUpdate: jest.fn(),
@@ -37,7 +45,7 @@ function createTestContext() {
     getRendererCellStates: jest.fn(() => state.cellStates),
     onZOrderChanged: jest.fn(),
   };
-  return { ctx, cells, handleAction: createCellActionHandler(ctx), imgLoader: { get: jest.fn(file => ({ file })) } };
+  return { ctx, cells, deck, applyImage, handleAction: createCellActionHandler(ctx), imgLoader: { get: jest.fn(file => ({ file })) } };
 }
 
 describe('production cell action handler — value actions', () => {
@@ -96,28 +104,29 @@ describe('production cell action handler — value actions', () => {
     });
   });
 
-  test('cycle-next loads, transitions, adapts, and announces the image', () => {
-    const s = testContext.ctx.state.cellStates[0];
+  test('cycle-next advances the deck and applies a different image', () => {
+    const previous = testContext.deck.current(0);
     testContext.handleAction(0, 'cycle-next', testContext.imgLoader);
-    expect(testContext.imgLoader.get).toHaveBeenCalledWith('cycle-b.jpg');
-    expect(s.currentImageFile).toBe('cycle-b.jpg');
-    expect(s.img).toEqual({ file: 'cycle-b.jpg' });
-    expect(s.transition.startTransition).toHaveBeenCalledWith({ file: 'zero.jpg' }, { file: 'cycle-b.jpg' });
-    expect(testContext.ctx.adaptCellToImage).toHaveBeenCalledWith(s);
-    expect(testContext.ctx.sendImageUpdate).toHaveBeenCalledWith(0, 'cycle-b.jpg');
+    const current = testContext.deck.current(0);
+    expect(current).not.toBe(previous);
+    expect(testContext.deck.isInUse(current)).toBe(true);
+    expect(testContext.applyImage).toHaveBeenCalledWith(0, current);
   });
 
-  test('shuffle reassigns cell and image, updates layout budget, adapts, and announces', () => {
+  test('shuffle exchanges images with another cell and leaves the deck untouched', () => {
     jest.spyOn(Math, 'random').mockReturnValue(0.99);
-    const s = testContext.ctx.state.cellStates[0];
+    const deckBefore = testContext.deck.deckFiles();
+    const mine = testContext.deck.current(0);
+    const theirs = testContext.deck.current(2);
+
     testContext.handleAction(0, 'shuffle', testContext.imgLoader);
-    expect(s.cell).toBe(testContext.cells[2]);
-    expect(s.currentImageFile).toBe('two.jpg');
-    expect(s._layoutX).toBe(50); expect(s._layoutY).toBe(60);
-    expect(s._layoutW).toBe(600); expect(s._layoutH).toBe(400);
-    expect(testContext.ctx.adaptCellToImage).toHaveBeenCalledWith(s);
-    expect(testContext.ctx.sendImageUpdate).toHaveBeenCalledWith(0, 'two.jpg');
-    expect(testContext.ctx.getCells).toHaveBeenCalled();
+
+    expect(testContext.deck.deckFiles()).toEqual(deckBefore);
+    expect(testContext.deck.current(0)).toBe(theirs);
+    expect(testContext.deck.current(2)).toBe(mine);
+    expect(testContext.applyImage).toHaveBeenCalledWith(0, theirs);
+    expect(testContext.applyImage).toHaveBeenCalledWith(2, mine);
+    expect(testContext.deck.inUseFiles()).toHaveLength(new Set(testContext.deck.inUseFiles()).size);
     Math.random.mockRestore();
   });
 

@@ -28,6 +28,9 @@ The bridge serves both clients and the assets, so a single origin covers HTTP an
 | `p5-collage/control-panel.js` | Operator sidebar (layout presets, background, per-cell editor) |
 | `p5-collage/layout-preset-engine.js` | Six deterministic layout presets |
 | `p5-collage/cell-renderer.js` | Per-cell drawing, filters, object-fit contain |
+| `p5-collage/cell-image.js` | Applies a deck assignment to a cell without blanking it while the bitmap loads |
+| `p5-collage/image-deck.js` | Global image deck: one distinct image per cell, no repeats on screen |
+| `p5-collage/image-loader.js` | On-demand image loading with a bounded, pinned LRU cache |
 | `p5-collage/background-texture.js` | WebGL simplex-noise paper background |
 | `p5-collage/drag-manager.js` | Hit-testing and drag state machine |
 | `phone-client/app.js` | Three-screen flow, sensors, gestures, controls, hint engine |
@@ -93,7 +96,9 @@ The system is data-driven. To load a dataset:
 
 3. Run `npm run generate-layout` to rebuild `images/layout.json` (30 cells, positions, rotation, z-order).
 
-A cell with `imageFile: null` renders nothing, so the installation still runs with zero content. `generate-layout` refuses to run against an empty manifest and leaves the existing layout untouched.
+The collage renders whatever the image deck assigns, not the layout: `images/layout.json` keeps geometry only. With an empty manifest the deck is empty and every cell renders nothing, so the installation still runs with zero content.
+
+The deck deals distinct images: with at least as many files as cells, no two fragments show the same photo, and cycling returns the released image to the bottom of the deck. Látigo (`shuffle`) exchanges images between two cells instead. Only the visible cells are decoded up front; the rest of the library loads on demand behind a pinned LRU cache (`CONFIG.imageCacheSize`). `generate-layout` refuses to run against an empty manifest and leaves the existing layout untouched.
 
 ## Running
 
