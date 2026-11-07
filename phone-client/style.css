@@ -1,11 +1,6 @@
 :root {
-  --ink: #000000;
-  --paper: #ffffff;
-  --quiet: rgba(0, 0, 0, 0.58);
   --hair: 1px;
   --rule: 2px;
-  --rule-color: #000000;
-  --rule-soft: rgba(0, 0, 0, 0.22);
   --font-display: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace;
   --font-text: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-size-xs: 0.6875rem;

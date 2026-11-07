@@ -1,0 +1,22 @@
+:root {
+  color-scheme: dark;
+  --ink: #ffffff;
+  --paper: #000000;
+  --quiet: rgba(255,255,255,.60);
+  --rule-color: #ffffff;
+  --rule-soft: rgba(255,255,255,.22);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ink: #000000;
+  --paper: #ffffff;
+  --quiet: rgba(0,0,0,.58);
+  --rule-color: #000000;
+  --rule-soft: rgba(0,0,0,.22);
+}
+
+html {
+  background: var(--paper);
+  color: var(--ink);
+}
