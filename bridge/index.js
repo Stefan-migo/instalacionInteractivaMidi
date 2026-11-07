@@ -17,6 +17,8 @@ const LAYOUT_PATH = path.join(ROOT_DIR, 'images', 'layout.json');
 const MANIFEST_PATH = path.join(ROOT_DIR, 'images', 'manifest.json');
 const PHONE_CLIENT_DIR = path.join(ROOT_DIR, 'phone-client');
 const P5_COLLAGE_DIR = path.join(ROOT_DIR, 'p5-collage');
+const OPERATOR_DIR = path.join(ROOT_DIR, 'operator');
+const SHARED_DIR = path.join(ROOT_DIR, 'shared');
 
 const MIME_TYPES = {
   '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript',
@@ -120,6 +122,22 @@ const server = http.createServer((req, res) => {
     let relative = pathname.replace(/^\/p5-collage/, '') || '/';
     if (relative === '/') relative = '/index.html';
     const filePath = path.join(P5_COLLAGE_DIR, relative);
+    serveFile(filePath, res);
+    return;
+  }
+
+  if (pathname === '/operator' || pathname.startsWith('/operator/')) {
+    let relative = pathname.replace(/^\/operator/, '') || '/';
+    if (relative === '/') relative = '/index.html';
+    const filePath = path.join(OPERATOR_DIR, relative);
+    serveFile(filePath, res);
+    return;
+  }
+
+  if (pathname === '/shared' || pathname.startsWith('/shared/')) {
+    let relative = pathname.replace(/^\/shared/, '') || '/';
+    if (relative === '/') relative = '/index.html';
+    const filePath = path.join(SHARED_DIR, relative);
     serveFile(filePath, res);
     return;
   }
