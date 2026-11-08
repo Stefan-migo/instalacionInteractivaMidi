@@ -105,7 +105,20 @@ const server = http.createServer((req, res) => {
   }
 
   if (pathname.startsWith('/images/content/')) {
-    const filePath = path.join(IMAGE_DIR, path.basename(pathname));
+    let imageName;
+    try {
+      imageName = decodeURIComponent(pathname.slice('/images/content/'.length));
+    } catch (e) {
+      res.writeHead(400);
+      res.end('Bad Request');
+      return;
+    }
+    if (imageName === '.' || imageName === '..') {
+      res.writeHead(400);
+      res.end('Bad Request');
+      return;
+    }
+    const filePath = path.join(IMAGE_DIR, path.basename(imageName));
     serveFile(filePath, res);
     return;
   }
