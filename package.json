@@ -26,6 +26,12 @@
   "dependencies": {
     "ws": "^8.21.0"
   },
+  "optionalDependencies": {
+    "@julusian/midi": "3.8.1"
+  },
+  "allowScripts": {
+    "@julusian/midi@3.8.1": true
+  },
   "devDependencies": {
     "jest": "^30.4.2"
   },
