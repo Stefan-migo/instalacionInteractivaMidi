@@ -332,6 +332,23 @@ function touchEnded(event) {
   return false;
 }
 
+let _markColor = null;
+
+/**
+ * The collage mark is painted on the canvas, so it cannot rely on CSS. It reads
+ * the one token that deliberately never follows the light theme.
+ */
+function brandMarkColor() {
+  if (_markColor) return _markColor;
+  let color = '#ffffff';
+  try {
+    const value = getComputedStyle(document.documentElement).getPropertyValue('--mark-on-canvas').trim();
+    if (value) color = value;
+  } catch (e) { /* headless or detached document */ }
+  _markColor = color;
+  return color;
+}
+
 let _bgTexture = null;
 let _bgSeed = Math.floor(Math.random() * 100000);
 
@@ -357,6 +374,15 @@ function draw() {
       }
       image(_bgTexture, 0, 0);
     }
+
+    // Brand mark: on the paper, underneath every fragment. Painting it after
+    // drawGrid would put it on top of the artwork instead of behind it.
+    drawBrandMark(drawingContext, {
+      width: 1920,
+      height: 1080,
+      opacity: 0.6,
+      color: brandMarkColor(),
+    });
 
     if (!deviceManager || !collageLayout) return;
     drawGrid(dt);

@@ -13,31 +13,42 @@ describe('brand mark placements', () => {
     expect(light[1]).not.toMatch(/--mark-on-canvas\s*:/);
   });
 
-  test.each(['p5-collage/index.html', 'phone-client/index.html'])('%s embeds vector geometry without a hardcoded white fill', (file) => {
-    const html = read(file);
+  test('the phone header embeds vector geometry without a hardcoded white fill', () => {
+    const html = read('phone-client/index.html');
     expect(html).toMatch(/<svg\b[^>]*>[\s\S]*?<path\b[^>]*\bd="[^"]+"/);
     expect(html).not.toContain('fill="#ffffff"');
   });
 
-  test('collage watermark cannot intercept interaction and remains translucent', () => {
+  // Regression: the mark was a DOM overlay above the canvas, so no fragment could
+  // ever cover it. It is now part of the canvas composite, on the paper.
+  test('the collage no longer carries a DOM overlay for the mark', () => {
     const html = read('p5-collage/index.html');
-    const markStyle = html.match(/#brand-mark\s*\{([^}]*)\}/s);
-    expect(markStyle).not.toBeNull();
-    expect(markStyle[1]).toMatch(/pointer-events:\s*none/);
-    expect(markStyle[1]).toMatch(/opacity:\s*\.6\b/);
+    expect(html).not.toContain('id="brand-mark"');
+    expect(html).toMatch(/<script src="\/p5-collage\/brand-mark\.js"><\/script>/);
+    expect(html.indexOf('brand-mark.js')).toBeLessThan(html.indexOf('sketch.js'));
   });
 
-  // Regression: the mark shipped invisible once. #brand-mark was placed on the <svg>
-  // itself, so the "#brand-mark svg" rule never matched, no fill was applied, and the
-  // path fell back to SVG's default black on a near-black canvas. The wrapper shape is
-  // now part of the contract because the styling rule depends on it.
-  test('the collage mark is a wrapper around the svg, so its fill rule can match', () => {
-    const html = read('p5-collage/index.html');
-    expect(html).not.toMatch(/<svg[^>]*\bid="brand-mark"/);
-    expect(html).toMatch(/<[a-z]+[^>]*\bid="brand-mark"[^>]*>\s*<svg\b/s);
-    const fillRule = html.match(/#brand-mark svg\s*\{([^}]*)\}/s);
-    expect(fillRule).not.toBeNull();
-    expect(fillRule[1]).toMatch(/fill:\s*currentColor/);
+  test('the mark is painted after the paper texture and before the cells', () => {
+    const sketch = read('p5-collage/sketch.js');
+    const texture = sketch.indexOf('image(_bgTexture, 0, 0)');
+    const mark = sketch.indexOf('drawBrandMark(');
+    const cells = sketch.indexOf('drawGrid(dt)');
+    expect(texture).toBeGreaterThan(-1);
+    expect(mark).toBeGreaterThan(texture);
+    expect(cells).toBeGreaterThan(mark);
+  });
+
+  test('the canvas mark takes its colour from the --mark-on-canvas token and stays translucent', () => {
+    const sketch = read('p5-collage/sketch.js');
+    expect(sketch).toMatch(/--mark-on-canvas/);
+    const call = sketch.slice(sketch.indexOf('drawBrandMark(drawingContext'), sketch.indexOf('drawGrid(dt)'));
+    expect(call).toMatch(/opacity:\s*0\.6/);
+  });
+
+  test('the collage geometry ships as inline path data, since Logo/ is not published', () => {
+    const module = read('p5-collage/brand-mark.js');
+    expect(module).toMatch(/M37 0h462v192h-462z/);
+    expect(module).not.toMatch(/\.(png|jpe?g|svg)['"]/);
   });
 
   test('the phone header carries the mark and drops the fragment label', () => {

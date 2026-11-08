@@ -125,6 +125,18 @@ describe('sketch wiring — deck, loader and renderer together', () => {
     expect(sent[0]).toEqual({ type: 'register', role: 'player' });
   });
 
+  test('the initial deal attaches a decoded bitmap to every cell', async () => {
+    const { renderer } = boot({ cellCount: 30 });
+    await Promise.all(Object.values(renderer.cellStates).map(s => s._readyPromise));
+    const states = Object.values(renderer.cellStates);
+    expect(states).toHaveLength(30);
+    for (const s of states) {
+      expect(s.img).not.toBeNull();
+      expect(s.img.naturalWidth).toBe(400);
+    }
+    expect(new Set(states.map(s => s.currentImageFile)).size).toBe(30);
+  });
+
   test('an empty library still initialises every cell without throwing', () => {
     const { renderer } = boot({ fileCount: 0, cellCount: 30 });
     const states = Object.values(renderer.cellStates);
