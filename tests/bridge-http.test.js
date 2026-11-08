@@ -53,6 +53,35 @@ describe('Bridge', () => {
       expect(res.headers['content-type']).toContain('image');
     });
 
+    test('GET /images/content/with%20space.png serves encoded filename', async () => {
+      const res = await get('/images/content/with%20space.png');
+      expect(res.status).toBe(200);
+    });
+
+    test('GET /images/content/with space.png serves literal-space filename', async () => {
+      const res = await get('/images/content/with space.png');
+      expect(res.status).toBe(200);
+    });
+
+    test.each([
+      '/images/content/%2e%2e%2f%2e%2e%2fpackage.json',
+      '/images/content/..%2fpackage.json',
+    ])('GET %s does not serve files outside IMAGE_DIR', async (requestPath) => {
+      const res = await get(requestPath);
+      expect(res.status).toBe(404);
+      expect(res.body).not.toContain('"name"');
+    });
+
+    test('GET /images/content/%E0%A4%A rejects malformed encoding', async () => {
+      const res = await get('/images/content/%E0%A4%A');
+      expect(res.status).toBe(400);
+    });
+
+    test('GET /images/content/unknown%20name.png returns 404', async () => {
+      const res = await get('/images/content/unknown%20name.png');
+      expect(res.status).toBe(404);
+    });
+
     test('GET /images/content/missing.png returns 404', async () => {
       const res = await get('/images/content/missing.png');
       expect(res.status).toBe(404);
