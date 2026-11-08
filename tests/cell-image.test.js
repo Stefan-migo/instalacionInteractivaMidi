@@ -113,9 +113,30 @@ describe('cell image application', () => {
     expect(loaderCalls.pin).toEqual(['fast.jpg']);
   });
 
+  test('commits the bitmap when the cell already carries the file name but none is decoded', async () => {
+    // This is the initial deal: the deck names the file before its bitmap loads.
+    const state = makeState();
+    state.cellStates[0].img = null;
+    const { loader, calls: loaderCalls } = makeLoader();
+    const { applier, calls } = makeApplier(state, loader);
+
+    const pending = applier.apply(0, 'first.jpg');
+    loader.resolveWith({ name: 'first.jpg' });
+    await pending;
+
+    expect(state.cellStates[0].img).toEqual({ name: 'first.jpg' });
+    expect(state.cellStates[0].currentImageFile).toBe('first.jpg');
+    expect(calls.update).toEqual([[0, 'first.jpg']]);
+    expect(calls.adapt).toEqual([state.cellStates[0]]);
+    expect(loaderCalls.unpin).toEqual([]);
+  });
+
   test('re-applying the image a cell already shows changes nothing', async () => {
     const state = makeState();
-    const { loader, calls: loaderCalls } = makeLoader({ 'first.jpg': { name: 'first.jpg' } });
+    // The real loader returns the same cached element it committed, so re-applying
+    // the current image must be a no-op.
+    const shared = state.cellStates[0].img;
+    const { loader, calls: loaderCalls } = makeLoader({ 'first.jpg': shared });
     const { applier, calls } = makeApplier(state, loader);
 
     await applier.apply(0, 'first.jpg');

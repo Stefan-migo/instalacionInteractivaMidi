@@ -18,7 +18,11 @@ function createImageApplier(ctx) {
 
   function commit(slot, file, img) {
     const s = state.cellStates[slot];
-    if (!s || !img || s.currentImageFile === file) return s ? s.img || null : null;
+    if (!s || !img) return s ? s.img || null : null;
+    // Skip only when this exact bitmap is already attached. A cell legitimately
+    // carries the file name before its bitmap decodes (that is how the initial
+    // deal works), so comparing only the name would drop the first commit.
+    if (s.currentImageFile === file && s.img === img) return s.img;
 
     const previousFile = s.currentImageFile;
     const previousImg = s.img;
