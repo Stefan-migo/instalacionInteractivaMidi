@@ -26,6 +26,9 @@ DataSet/
 images/raw/
 curation/
 Logo/
+# Local-only dataset while the final curation is in progress: un-ignore once the
+# curated library is final, then commit the WebP files with `git add -f`.
+images/content/
 
 # Temp / Examples
 temp/
