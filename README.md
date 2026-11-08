@@ -14,7 +14,7 @@ Phone ──WebSocket──► Bridge (Node.js) ──WebSocket──► p5.js c
 
 - **Bridge** — assigns a slot to each phone, validates and relays every message, records and matches gestures.
 - **Phone client** — three screens (splash → sensor permission → dashboard), sensors, gesture wizard, help overlay.
-- **Collage** — 30 cells, six layout presets, six image filters, a WebGL paper background, and drag & drop.
+- **Collage** — 30 cells, six layout presets, six image filters, a global image deck that never shows the same photo twice at once, a WebGL paper background, and drag & drop.
 
 ## Requirements
 
