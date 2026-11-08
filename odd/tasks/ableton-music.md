@@ -30,8 +30,8 @@ S11 — Behavioral floor: the existing suite stays green (29 suites / 354 tests 
 
 | ID | Task | Specs | Route | Commit |
 |----|------|-------|-------|--------|
-| T1 | `bridge/midi-out.js`: injectable MIDI output adapter, guarded require, silent degradation when the port is missing, sends CC and notes | S3, S4, S5, S11 | inline, test-first | - |
-| T2 | `music/ableton/SETUP.md`: loopMIDI port contract, Track/Remote, npm 11 install-script approval, phantom-port reboot, MIDI Monitor pack | S5, S7 | inline | - |
+| T1 | `bridge/midi-out.js`: injectable MIDI output adapter, guarded require, silent degradation when the port is missing, sends CC and notes | S3, S4, S5, S11 | inline, test-first | `327dabf` |
+| T2 | `music/ableton/SETUP.md`: loopMIDI port contract, Track/Remote, npm 11 install-script approval, phantom-port reboot, MIDI Monitor pack | S5, S7 | inline | `9a33da1` |
 | T3 | `agent` role in the bridge: registration, fan-out of aggregated group state | S2, S3 | - | - |
 | T4 | Local agent: reconnect with backoff, no dangling parameters on disconnect | S2, S3 | - | - |
 | T5 | `bridge/music-mapping.js` + `music/mapping.json`: pure mapping (aggregation, curve, EMA, rate limit, deadband) | S3, S9, S10 | - | - |
@@ -49,5 +49,7 @@ L3 — Step 0 evidence, all four assumptions confirmed against Live 12 Suite on 
 L4 — Found during step 0, absent from the original diagnosis: npm 11.20.0 blocks install scripts by default, so `npm i @julusian/midi` leaves the native binding unbuilt and `require` throws until `npm install-scripts approve @julusian/midi` plus `npm rebuild`. Also, Live displayed the port under a ghost name (`loopMIDI Port`, the loopMIDI default) while Node and loopMIDI showed `Collage-MIDI`; Windows does not release deleted MIDI devices until reboot, and Live binds its MIDI map to the device rather than to the name. Reboot and verify both sides read `Collage-MIDI` before mapping the artist's Set.
 
 L5 — "respcto al siguiente paso. dentro de los 3 caminos cual me recomiendas? puedes explicarlo de forma sencilla?" The three routes were a normal dependency, an optional dependency with a guarded require, and an injected module with no declaration. Recommendation and decision: "ok vamos con B" (S5).
+
+L7 — T1 and T2 closed. `bridge/midi-out.js` (11 tests, fake sink) resolves the real `Collage-MIDI` port on the show machine: `available: true, reason: null`. Full suite in the worktree: 30 suites / 365 tests green (354 inherited + 11 new). `@julusian/midi` is declared optional at an exact 3.8.1 with its `allowScripts` approval, because the approval key names a version: a range resolving to a new release would lose it silently and fall back to visual-only. Not done here: T3-T7.
 
 L6 — "ok ya esta todo limpio en el otro worktree. mergeado en main y en produccion. tu puedes continuar en la ruta que me remoendaste. crea el worktree aparte." Work happens in `E:\Proyectos\InstalacionInteractivaMidi-midi` on `feat/ableton-midi`. The main worktree was left untouched with its in-flight brand-identity work; baseline measured there before isolation was 29 suites / 354 tests green.
