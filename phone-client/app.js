@@ -223,14 +223,14 @@
   }
 
   // --- Gesture Gallery State Machine ---
-  // 'inclinar' (forward tilt) is deliberately unmapped: its detector stays wired
-  // so the gesture keeps working once we decide which parameter it should drive.
   var gestureActionMap = {
+    inclinar: 'cell-next',
     latigo: 'shuffle',
     twist: 'filter-next'
   };
 
   var gestureInstructions = {
+    inclinar: 'Incliná el teléfono hacia adelante → saltás a otra celda',
     latigo: 'Sacudí el teléfono → cambia foto',
     twist: 'Girá el teléfono como una perilla → cambia filtro'
   };
