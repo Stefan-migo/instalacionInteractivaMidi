@@ -43,7 +43,7 @@
   var cellImage = $('cell-image');
   var cellPlaceholder = $('thumbnail-placeholder');
   var gestureStatus = $('gesture-status');
-  var fabBtn = $('fab-btn');
+  var sheetToggle = $('sheet-toggle');
   var toolsPanel = $('tools-panel');
 
   // --- 3-Screen Flow Controller ---
@@ -93,32 +93,55 @@
     });
   });
 
-  // --- Bottom Sheet toggle ---
-  var toolsOpen = false;
+  // --- Bottom sheet: starts open, collapses to its tab strip ---
+  var toolsOpen = true;
 
-  function toggleTools() {
-    toolsOpen = !toolsOpen;
-    toolsPanel.classList.toggle('hidden', !toolsOpen);
-    fabBtn.textContent = toolsOpen ? '−' : '+';
-    if (toolsOpen) {
-      document.querySelectorAll('#tools-panel .torn-container').forEach(function (el, i) {
-        if (!el.style.clipPath) {
-          el.style.clipPath = tornClipPath(6, 3, 2000 + i);
-        }
-      });
+  function setTools(open) {
+    toolsOpen = open;
+    if (!toolsPanel) return;
+    toolsPanel.classList.toggle('is-collapsed', !open);
+    if (sheetToggle) {
+      sheetToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      sheetToggle.setAttribute('aria-label', open ? 'Ocultar controles' : 'Mostrar controles');
+      sheetToggle.textContent = open ? '▾' : '▴';
     }
   }
 
-  if (fabBtn) {
-    fabBtn.addEventListener('click', toggleTools);
+  function toggleTools() {
+    setTools(!toolsOpen);
   }
 
-  // Tap outside the tools panel to close it
+  if (sheetToggle) {
+    sheetToggle.addEventListener('click', toggleTools);
+  }
+
+  // Tap outside the sheet to collapse it, once the dashboard is on screen
   document.addEventListener('click', function (e) {
-    if (!toolsOpen) return;
+    if (!toolsOpen || !toolsPanel) return;
+    if (dashboard.classList.contains('hidden')) return;
     if (toolsPanel.contains(e.target)) return;
-    if (fabBtn && fabBtn.contains(e.target)) return;
-    toggleTools();
+    if (sheetToggle && sheetToggle.contains(e.target)) return;
+    setTools(false);
+  });
+
+  // Sheet tabs: one panel at a time, and picking a tab reopens the sheet
+  function selectSheetTab(name) {
+    var selected = null;
+    document.querySelectorAll('.sheet-tab').forEach(function (tab) {
+      var on = tab.getAttribute('data-tab') === name;
+      tab.setAttribute('aria-selected', on ? 'true' : 'false');
+      if (on) selected = tab;
+    });
+    document.querySelectorAll('.sheet-body').forEach(function (panel) {
+      panel.classList.toggle('hidden', panel.getAttribute('data-panel') !== name);
+    });
+    if (selected) setTools(true);
+  }
+
+  document.querySelectorAll('.sheet-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      selectSheetTab(tab.getAttribute('data-tab'));
+    });
   });
 
   function showGestureStatus(text, type) {
@@ -238,8 +261,7 @@
   function openGallery() {
     if (galleryState !== null) closeGallery();
     galleryState = 'gallery';
-    var el = $('gesture-gallery');
-    if (el) el.classList.remove('hidden');
+    selectSheetTab('gestos');
   }
 
   function closeGallery() {
@@ -247,8 +269,6 @@
       endPractice();
     }
     galleryState = null;
-    var el = $('gesture-gallery');
-    if (el) el.classList.add('hidden');
   }
 
   function startPractice(gesture) {
@@ -875,38 +895,15 @@
   // connected: idle timer after help dismissed
   // dragged: triggered when first drag ends (touchend after movement)
 
-  // --- Help Overlay ---
-  var helpOverlay = $('help-overlay');
+  // --- Guide: the sheet's third tab, reachable from the ? control ---
   var helpBtn = $('help-btn');
-  var helpEntendiBtn = $('help-entendi-btn');
-  var helpCard = $('help-card');
 
   function openHelp() {
-    if (helpOverlay) helpOverlay.classList.remove('hidden');
-  }
-
-  function closeHelp() {
-    if (helpOverlay) helpOverlay.classList.add('hidden');
+    selectSheetTab('guia');
   }
 
   if (helpBtn) {
     helpBtn.addEventListener('click', openHelp);
-  }
-
-  if (helpEntendiBtn) {
-    helpEntendiBtn.addEventListener('click', function () {
-      closeHelp();
-      startHintIdleTimer();
-    });
-  }
-
-  // Close help overlay on tap outside the card
-  if (helpOverlay) {
-    helpOverlay.addEventListener('click', function (e) {
-      if (helpCard && !helpCard.contains(e.target)) {
-        closeHelp();
-      }
-    });
   }
 
   // --- Wizard trigger button → Gallery ---
@@ -918,27 +915,10 @@
     }
   });
 
-  // --- Gallery control wiring ---
+  // --- Gestures tab wiring ---
   (function initGallery() {
-    var gallery = $('gesture-gallery');
-    var closeBtn = $('gallery-close-btn');
-    var galleryCard = document.querySelector('.gallery-card');
     var createBtn = $('create-gesture-btn');
     var practiceBackBtn = $('practice-back-btn');
-
-    // Close button
-    if (closeBtn) {
-      closeBtn.addEventListener('click', closeGallery);
-    }
-
-    // Tap outside card
-    if (gallery) {
-      gallery.addEventListener('click', function (e) {
-        if (galleryCard && !galleryCard.contains(e.target)) {
-          closeGallery();
-        }
-      });
-    }
 
     // [Practicar] buttons
     document.querySelectorAll('.practice-btn').forEach(function (btn) {
