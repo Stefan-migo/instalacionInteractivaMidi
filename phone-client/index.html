@@ -121,36 +121,7 @@
           </div>
         </div>
 
-        <div class="sheet-body hidden" data-panel="gestos" role="tabpanel"></div>
-        <div class="sheet-body hidden" data-panel="guia" role="tabpanel"></div>
-      </div>
-
-      <!-- Hint Engine -->
-      <div id="hint-engine" class="hint-engine hidden">
-        <div id="hint-text" class="hint-text"></div>
-      </div>
-
-      <!-- Help Overlay -->
-      <div id="help-overlay" class="help-overlay hidden">
-        <div id="help-card" class="help-card">
-          <ol class="help-list">
-            <li>Arrastrá sobre la imagen para mover tu fragmento en el collage</li>
-            <li>Tocá <strong>+</strong> para ajustar opacidad, rotación y escala</li>
-            <li>Dos toques rápidos para ascender tu fragmento al frente</li>
-            <li>Incliná hacia adelante → saltás a otra celda del collage</li>
-            <li>Sacudí → cambia foto</li>
-            <li>Girá como perilla → cambia filtro</li>
-            <li>Creá un <strong>gesto</strong> personalizado en <strong>Gestos</strong></li>
-          </ol>
-          <button id="help-entendi-btn" class="ink-btn">Entendí</button>
-        </div>
-      </div>
-
-      <!-- Gesture Gallery Overlay -->
-      <div id="gesture-gallery" class="gesture-gallery hidden">
-        <div class="gallery-card">
-          <button id="gallery-close-btn" class="gallery-close-btn" aria-label="Cerrar">×</button>
-          <h2 class="gallery-title">Gestos</h2>
+        <div class="sheet-body hidden" data-panel="gestos" role="tabpanel">
           <div class="gallery-cards">
             <div class="gesture-card" data-gesture="inclinar">
               <span class="gesture-icon">
@@ -158,7 +129,7 @@
               </span>
               <span class="gesture-name">Inclinar</span>
               <span class="gesture-desc">Incliná hacia adelante → saltás de celda</span>
-              <button class="stamp-btn practice-btn" data-gesture="inclinar">Practicar</button>
+              <button class="btn btn--sm practice-btn" data-gesture="inclinar">Practicar</button>
             </div>
             <div class="gesture-card" data-gesture="latigo">
               <span class="gesture-icon">
@@ -166,7 +137,7 @@
               </span>
               <span class="gesture-name">Látigo</span>
               <span class="gesture-desc">Sacudí → cambia foto</span>
-              <button class="stamp-btn practice-btn" data-gesture="latigo">Practicar</button>
+              <button class="btn btn--sm practice-btn" data-gesture="latigo">Practicar</button>
             </div>
             <div class="gesture-card" data-gesture="twist">
               <span class="gesture-icon">
@@ -174,11 +145,28 @@
               </span>
               <span class="gesture-name">Girar</span>
               <span class="gesture-desc">Girá como perilla → cambia filtro</span>
-              <button class="stamp-btn practice-btn" data-gesture="twist">Practicar</button>
+              <button class="btn btn--sm practice-btn" data-gesture="twist">Practicar</button>
             </div>
           </div>
-          <button id="create-gesture-btn" class="ink-btn create-gesture-btn">+ Crear mi gesto</button>
+          <button id="create-gesture-btn" class="btn btn--sm">+ Crear mi gesto</button>
         </div>
+
+        <div class="sheet-body hidden" data-panel="guia" role="tabpanel">
+          <ol class="help-list">
+            <li>Arrastrá sobre la imagen para mover tu fragmento en el collage</li>
+            <li>La hoja de abajo ajusta opacidad, rotación y escala</li>
+            <li>Dos toques rápidos para ascender tu fragmento al frente</li>
+            <li>Incliná hacia adelante → saltás a otra celda del collage</li>
+            <li>Sacudí → cambia foto</li>
+            <li>Girá como perilla → cambia filtro</li>
+            <li>Creá un <strong>gesto</strong> personalizado en <strong>Gestos</strong></li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Hint Engine -->
+      <div id="hint-engine" class="hint-engine hidden">
+        <div id="hint-text" class="hint-text"></div>
       </div>
 
       <!-- Practice Overlay -->
@@ -189,28 +177,28 @@
             <span class="practice-checkmark">✓</span>
             <span class="practice-success-text">¡Bien! Eso fue un gesto.</span>
           </div>
-          <button id="practice-back-btn" class="stamp-btn practice-back-btn">Volver</button>
+          <button id="practice-back-btn" class="btn practice-back-btn">Volver</button>
         </div>
       </div>
 
       <!-- Gesture Wizard Overlay -->
       <div id="wizard-overlay" class="wizard-overlay hidden">
-        <button id="wizard-cancel" class="wizard-cancel-btn" aria-label="Cancelar">×</button>
+        <button id="wizard-cancel" class="btn btn--sm wizard-cancel-btn" aria-label="Cancelar">×</button>
 
         <div id="wizard-step-practice" class="wizard-step">
           <p class="wizard-step-title">Paso 1: Practicá tu gesto</p>
           <p class="wizard-instruction">Tocá el botón y mové el teléfono<br/>para practicar tu gesto personalizado</p>
-          <button id="wizard-practice-btn" class="ink-btn">Practicar</button>
+          <button id="wizard-practice-btn" class="btn btn--fill">Practicar</button>
         </div>
 
         <div id="wizard-step-duration" class="wizard-step hidden">
           <p class="wizard-step-title">Paso 2: Elegí la duración</p>
           <p class="wizard-instruction">Tu gesto dura aproximadamente <span id="wizard-practice-duration">—</span>s</p>
           <div class="wizard-duration-picker">
-            <button class="duration-btn" data-duration="2000">2s</button>
-            <button class="duration-btn" data-duration="3000">3s</button>
-            <button class="duration-btn" data-duration="4000">4s</button>
-            <button class="duration-btn" data-duration="5000">5s</button>
+            <button class="duration-btn btn" data-duration="2000">2s</button>
+            <button class="duration-btn btn" data-duration="3000">3s</button>
+            <button class="duration-btn btn" data-duration="4000">4s</button>
+            <button class="duration-btn btn" data-duration="5000">5s</button>
           </div>
         </div>
 

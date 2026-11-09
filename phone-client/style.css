@@ -96,15 +96,6 @@ body {
 .perm .btn { width: 100%; }
 .error-text { color: var(--quiet); font-size: var(--font-size-sm); line-height: 1.6; }
 
-/* Printed-form buttons still used by the screens not yet rebuilt (T5.2-T5.4) */
-.ink-btn, .stamp-btn, .duration-btn, .help-btn, .photo-action-btn, .gallery-close-btn, .wizard-cancel-btn {
-  appearance: none; background: var(--paper); color: var(--ink); border: var(--rule) solid var(--rule-color);
-  font: 700 var(--font-size-sm)/1.25 var(--font-display); letter-spacing: var(--tracking); text-transform: uppercase;
-  cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast);
-}
-.ink-btn { width: 100%; padding: var(--space-md) var(--space-lg); }
-.ink-btn:active, .duration-btn:active, .gallery-close-btn:active { background: var(--ink); color: var(--paper); }
-
 /* Dashboard: head, HUD and the torn frame */
 #dashboard { position: relative; display: flex; flex-direction: column; width: 100%; height: 100%; background: var(--paper); }
 #dashboard.hidden { display: none !important; }
@@ -131,9 +122,6 @@ body {
 #cell-image { width: 100%; height: 100%; object-fit: contain; display: block; transition: transform var(--dur-base); }
 .photo-placeholder { display: none; color: var(--quiet); font-size: var(--font-size-sm); font-family: var(--font-text); text-align: center; padding: var(--space-md); }
 .frame .cap { position: absolute; bottom: var(--space-2xs); left: 0; right: 0; text-align: center; font-family: var(--font-display); font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; color: var(--quiet); pointer-events: none; }
-#photo-actions { position: absolute; bottom: var(--space-lg); right: var(--space-lg); z-index: 40; }
-.photo-action-btn { width: 52px; height: 52px; font-size: var(--font-size-xl); }
-.photo-action-btn:active { background: var(--ink); color: var(--paper); }
 #touch-overlay { position: absolute; inset: 0; z-index: 5; cursor: crosshair; touch-action: none; }
 
 /* Bottom sheet: fixed to the screen, collapses to its tab strip */
@@ -162,43 +150,14 @@ body {
 .range::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; margin-top: -6.5px; background: var(--ink); border: 0; }
 .range::-moz-range-thumb { width: 14px; height: 14px; background: var(--ink); border: 0; border-radius: 0; }
 
-/* Buttons the overlays still use until they are rebuilt (T5.4) */
-.stamp-btn { min-width: 44px; min-height: 44px; padding: var(--space-sm); }
-.stamp-btn:active { background: var(--ink); color: var(--paper); }
-
-/* Recording and gesture status animations */
-@keyframes rec-pulse { 50% { opacity: .4; } }
-@keyframes fade-out { 0%, 83% { opacity: 1; } 100% { opacity: 0; } }
-
-/* Gesture wizard */
-.wizard-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--paper); color: var(--ink); z-index: var(--z-overlay); padding: var(--space-lg); }
-.wizard-overlay.hidden { display: none !important; }
-.wizard-cancel-btn, .gallery-close-btn { position: absolute; top: var(--space-sm); right: var(--space-sm); width: 36px; height: 36px; font-size: var(--font-size-lg); }
-.wizard-step { display: flex; flex-direction: column; align-items: center; gap: var(--space-lg); text-align: center; width: 100%; max-width: 300px; }
-.wizard-step.hidden { display: none !important; }
-.wizard-step-title { font: 700 var(--font-size-xl) var(--font-display); text-transform: uppercase; letter-spacing: var(--tracking-tight); }
-.wizard-instruction { color: var(--quiet); font-size: var(--font-size-sm); line-height: 1.6; }
-.wizard-duration-picker { display: grid; grid-template-columns: 1fr 1fr; gap: var(--hair); width: 100%; }
-.duration-btn { padding: var(--space-md); font-size: var(--font-size-lg); font-variant-numeric: tabular-nums; }
-.wizard-countdown-number { font: 700 4rem var(--font-display); font-variant-numeric: tabular-nums; animation: countdown-pop 1s ease-out; }
-@keyframes countdown-pop { 0% { transform: scale(1.8); opacity: .3; } 100% { transform: scale(1); } }
-.wizard-recording-indicator { width: 24px; height: 24px; border: var(--rule) solid var(--ink); background: var(--ink); animation: rec-pulse .8s steps(2, end) infinite; }
-
-/* Modal overlays, gallery, and practice */
-.help-overlay, .gesture-gallery, .practice-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--paper); color: var(--ink); padding: var(--space-lg); }
-.help-overlay { z-index: var(--z-overlay); }
-.gesture-gallery { z-index: 90; }
-.practice-overlay { z-index: 95; }
-.help-overlay.hidden, .gesture-gallery.hidden, .practice-overlay.hidden { display: none !important; }
-.help-card, .gallery-card, .practice-card { position: relative; width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: var(--space-lg); padding: var(--space-xl); background: var(--paper); border: var(--rule) solid var(--ink); }
-.help-list { display: flex; flex-direction: column; gap: var(--space-md); padding-left: var(--space-lg); }
-.help-list li { font-size: var(--font-size-sm); line-height: 1.5; }
-#help-entendi-btn { max-width: 160px; align-self: center; }
-.gallery-title { font: 700 var(--font-size-xl) var(--font-display); text-transform: uppercase; text-align: center; }
-.gallery-cards { display: flex; flex-direction: column; gap: var(--space-md); }
-.gesture-card { display: grid; grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; gap: var(--space-xs) var(--space-sm); align-items: center; padding: var(--space-sm); border: var(--hair) solid var(--ink); }
-.gesture-icon { grid-row: 1 / 3; font-size: var(--font-size-xl); line-height: 1; }
-.phone-icon { display: block; width: 16px; height: 28px; border: var(--rule) solid var(--ink); position: relative; }
+/* Gestures tab: a ruled list, one row per gesture */
+.gallery-cards { display: flex; flex-direction: column; gap: var(--hair); background: var(--rule-soft); border: var(--hair) solid var(--rule-soft); }
+.gesture-card { display: grid; grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; gap: 0 var(--space-sm); align-items: center; padding: var(--space-xs) var(--space-sm); background: var(--paper); }
+.gesture-icon { grid-row: 1 / 3; display: flex; align-items: center; }
+.gesture-name { font-family: var(--font-display); font-size: var(--font-size-sm); letter-spacing: var(--tracking); text-transform: uppercase; }
+.gesture-desc { grid-column: 2; color: var(--quiet); font-size: var(--font-size-xs); }
+.practice-btn { grid-row: 1 / 3; grid-column: 3; white-space: nowrap; min-height: 36px; }
+.phone-icon { display: block; width: 16px; height: 28px; border: var(--hair) solid var(--ink); position: relative; }
 .phone-icon::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: var(--ink); }
 .phone-nod { animation: phone-nod 1.8s ease-in-out infinite; transform-origin: center 70%; }
 .phone-whip { animation: phone-whip 2s ease-in-out infinite; }
@@ -206,20 +165,42 @@ body {
 @keyframes phone-nod { 0%, 100% { transform: rotateX(0); } 25% { transform: rotateX(-30deg) translateY(-2px); } 75% { transform: rotateX(30deg) translateY(2px); } }
 @keyframes phone-whip { 0%, 100% { transform: translateX(0); } 10% { transform: translateX(-6px) rotate(-8deg); } 22% { transform: translateX(5px) rotate(6deg); } }
 @keyframes phone-twist { 0%, 100% { transform: perspective(40px) rotateY(0); } 25% { transform: perspective(40px) rotateY(-30deg); } 75% { transform: perspective(40px) rotateY(30deg); } }
-.gesture-name { font: 700 var(--font-size-md) var(--font-display); text-transform: uppercase; }
-.gesture-desc { color: var(--quiet); font-size: var(--font-size-xs); }
-.practice-btn { grid-row: 1 / 3; grid-column: 3; white-space: nowrap; padding: var(--space-xs) var(--space-sm); min-width: 0; min-height: 0; }
-.create-gesture-btn { font-size: var(--font-size-sm); }
-.practice-card { align-items: center; text-align: center; }
-.practice-instruction { font: 700 var(--font-size-lg) var(--font-display); }
+
+/* Guide tab: the numbered help list */
+.help-list { display: flex; flex-direction: column; gap: var(--space-2xs); padding-left: var(--space-lg); }
+.help-list li { font-size: var(--font-size-sm); line-height: 1.5; }
+
+/* Practice overlay: full screen, one instruction at a time */
+.practice-overlay { position: fixed; inset: 0; z-index: 95; display: flex; align-items: center; justify-content: center; background: var(--paper); color: var(--ink); padding: var(--space-lg); }
+.practice-overlay.hidden { display: none !important; }
+.practice-card { width: 100%; max-width: 320px; display: flex; flex-direction: column; align-items: center; gap: var(--space-lg); padding: var(--space-lg); background: var(--paper); border: var(--hair) solid var(--ink); text-align: center; }
+.practice-instruction { font-family: var(--font-display); font-size: var(--font-size-lg); line-height: 1.2; letter-spacing: var(--tracking-tight); text-transform: uppercase; }
 .practice-feedback { display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); }
 .practice-feedback.hidden { display: none !important; }
-.practice-checkmark { font: 700 3rem var(--font-display); line-height: 1; }
-.practice-success-text { font: 700 var(--font-size-sm) var(--font-display); }
-.practice-back-btn { padding: var(--space-sm) var(--space-lg); }
+.practice-checkmark { font-family: var(--font-display); font-size: var(--font-size-xxl); line-height: 1; }
+.practice-success-text { font-family: var(--font-display); font-size: var(--font-size-sm); letter-spacing: var(--tracking); text-transform: uppercase; }
+.practice-back-btn { width: 100%; }
+
+/* Gesture wizard: five steps, same field, numbered titles */
+.wizard-overlay { position: absolute; inset: 0; z-index: var(--z-overlay); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-lg); background: var(--paper); color: var(--ink); padding: var(--space-lg); }
+.wizard-overlay.hidden { display: none !important; }
+.wizard-cancel-btn { position: absolute; top: var(--space-sm); right: var(--space-sm); width: 36px; min-height: 36px; }
+.wizard-step { display: flex; flex-direction: column; align-items: center; gap: var(--space-md); text-align: center; width: 100%; max-width: 300px; }
+.wizard-step.hidden { display: none !important; }
+.wizard-step-title { font-family: var(--font-display); font-size: var(--font-size-xl); line-height: 1; letter-spacing: var(--tracking-tight); text-transform: uppercase; }
+.wizard-instruction { color: var(--quiet); font-size: var(--font-size-sm); line-height: 1.6; }
+.wizard-duration-picker { display: grid; grid-template-columns: 1fr 1fr; gap: var(--hair); width: 100%; background: var(--rule-soft); border: var(--hair) solid var(--rule-soft); }
+.duration-btn { border: 0; font-size: var(--font-size-lg); font-variant-numeric: tabular-nums; }
+.wizard-countdown-number { font-family: var(--font-display); font-size: 4rem; line-height: 1; font-variant-numeric: tabular-nums; animation: countdown-pop 1s ease-out; }
+.wizard-recording-indicator { width: 24px; height: 24px; border: var(--hair) solid var(--ink); background: var(--ink); animation: rec-pulse .8s steps(2, end) infinite; }
+@keyframes countdown-pop { 0% { transform: scale(1.8); opacity: .3; } 100% { transform: scale(1); } }
+
+/* Status animations */
+@keyframes rec-pulse { 50% { opacity: .4; } }
+@keyframes fade-out { 0%, 83% { opacity: 1; } 100% { opacity: 0; } }
 
 /* Hint, disconnected state, and scroll affordance */
-.hint-engine { position: absolute; bottom: 80px; left: 50%; z-index: 60; pointer-events: none; opacity: 0; transform: translateX(-50%) translateY(10px); transition: opacity var(--dur-base), transform var(--dur-base); }
+.hint-engine { position: absolute; bottom: calc(var(--space-2xl) + var(--space-lg)); left: 50%; z-index: 60; pointer-events: none; opacity: 0; transform: translateX(-50%) translateY(10px); transition: opacity var(--dur-base), transform var(--dur-base); }
 .hint-engine.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 .hint-engine.hidden { display: none !important; }
 .hint-text { max-width: 280px; padding: var(--space-sm) var(--space-md); color: var(--paper); background: var(--ink); border: var(--hair) solid var(--ink); text-align: center; font-size: var(--font-size-sm); line-height: 1.5; }
