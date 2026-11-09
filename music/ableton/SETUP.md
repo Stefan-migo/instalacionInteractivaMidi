@@ -223,5 +223,46 @@ velocity. With `span: 90` and a 30 degree threshold, a 60 degree tilt is about
 half force instead of a maximum hit; measured through the port, a 65 degree tilt
 now leaves at velocity 74 and a 70 degree tilt at 79.
 
+## 9. Testing with real phones (Render bridge + local agent)
+
+A real phone needs a secure context: the sensors do not work over a plain LAN IP.
+So the phone client has to be served over HTTPS while the agent that writes MIDI
+stays on the show machine.
+
+```
+phones --wss--> bridge on Render --wss--> laptop (agent) --MIDI--> loopMIDI --> Live
+```
+
+Render settings that matter:
+
+| Setting | Value | Why |
+|---------|-------|-----|
+| Instances | **1** | slots, gestures and group state live in memory; a second instance tells a different truth |
+| Start command | `npm start` | runs `node bridge/index.js` and honours `PORT` |
+| Health check path | `/health` | it reports `pid` and `startedAt`: two different pids answering means two instances |
+| Autoscaling | **off** | same reason as instances |
+| Plan | paid | the free tier sleeps on inactivity, and a sleeping bridge is a dead installation |
+
+Point the agent at the cloud bridge (`wss`, not `ws`: Render terminates TLS):
+
+```powershell
+$env:BRIDGE_URL="wss://<your-app>.onrender.com"; npm run agent
+```
+
+Order of verification before handing phones to people:
+
+1. Open `/health` in a browser: `status: ok`, `agents: 1`, `clients: 0`.
+2. Open the phone client on a real phone over HTTPS and allow motion access.
+3. `clients` goes to 1 on `/health`, and the agent log stays quiet.
+4. Tilt the phone: one note should leave the port.
+5. Pull the network on the laptop: the agent parks every group at the safe
+   value and reconnects with backoff when the link returns.
+
+Two honest caveats. The repository ships no image content, so the deployed
+collage shows empty cells — the sound path does not depend on it. And a phone
+that walks out of range now gets dropped by the heartbeat after one missed
+ping interval (`HEARTBEAT_MS`, 30 s by default) instead of holding its slot
+forever.
+
 Flick has no derivation entry: it is recognised by the DTW matcher on the gesture
 the phone already sends, not derived from the sensor stream.

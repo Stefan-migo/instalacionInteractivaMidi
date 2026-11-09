@@ -9,6 +9,7 @@ const { DTWMatcher } = require('./dtw-matcher');
 const { createGroupAggregator, sensorIntensity, groupForSlot } = require('./group-state');
 const { createGestureTriggers } = require('./gesture-triggers');
 const { createVoiceGate } = require('./voice-gate');
+const { startHeartbeat } = require('./heartbeat');
 
 const ROOT_DIR = path.join(__dirname, '..');
 // Overridable so tests (and deployments with assets elsewhere) do not depend on the
@@ -36,6 +37,10 @@ const MIME_TYPES = {
 const GESTURE_ACTIONS = {
   'flick': 'cycle-next',
 };
+
+// Reported by /health so an operator can tell one instance from two. Two
+// instances is the failure mode this whole design forbids: the state is in memory.
+const STARTED_AT = new Date().toISOString();
 
 const allocator = new SlotAllocator(30, 5000);
 const relay = new MessageRelay();
@@ -127,7 +132,14 @@ const server = http.createServer((req, res) => {
 
   if (pathname === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'ok', uptime: process.uptime() }));
+    res.end(JSON.stringify({
+      status: 'ok',
+      uptime: process.uptime(),
+      pid: process.pid,
+      startedAt: STARTED_AT,
+      clients: wss.clients.size,
+      agents: musicAgents.size,
+    }));
     return;
   }
 
@@ -230,8 +242,21 @@ function serveFile(filePath, res) {
 
 const wss = new WebSocketServer({ server });
 
+// Cloud proxies cut idle sockets and a phone carried out of range leaves a
+// half-open one. Pinging keeps the connection honest and frees dead slots.
+const heartbeat = startHeartbeat({
+  clients: wss.clients,
+  intervalMs: parseInt(process.env.HEARTBEAT_MS, 10) || undefined,
+});
+wss.on('close', () => heartbeat.stop());
+
 wss.on('connection', (ws) => {
   let info = { role: null, slot: -1 };
+
+  ws.isAlive = true;
+  ws.on('pong', () => {
+    ws.isAlive = true;
+  });
 
   ws.on('message', (raw) => {
     let msg;
