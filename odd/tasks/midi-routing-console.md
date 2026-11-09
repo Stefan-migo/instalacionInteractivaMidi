@@ -31,11 +31,11 @@ S10 — Behavioural floor: the existing suite stays green (39 suites / 437 tests
 | ID | Task | Specs | Route | Commit |
 |----|------|-------|-------|--------|
 | T9.1 | Design directions first: artboards for the panel in the project's design system, before code | S1-S4, S9 | design | `4fea482` |
-| T9.2 | The agent pushes the full score (channels, notes, ccController) over `music-config`; the bridge keeps it | S2, S3 | - | - |
-| T9.3 | The bridge records per-group/gesture last-fired and the current shaped CC per group, exposed by `GET /api/music` | S2, S8 | - | - |
-| T9.4 | Operator section `07 · Ruteo MIDI`: the 3x3 sheet, the three fader rows, the status block, built from the chosen direction `03-dos-columnas` (handoff started) | S1-S5, S9 | writer | - |
-| T9.5 | Printable and copyable sheet — folded into T9.4, because the chosen artboard already draws both controls | S6 | writer | - |
-| T9.6 | Own-window mode: the section alone when the page is opened for it — folded into T9.4 | S7 | writer | - |
+| T9.2 | The agent pushes the full score (channels, notes, ccController) over `music-config`; the bridge keeps it | S2, S3 | writer | `8aeff67` |
+| T9.3 | The bridge records per-group/gesture last-fired and the current shaped CC per group, exposed by `GET /api/music` | S2, S8 | writer | `8aeff67` |
+| T9.4 | Operator section `07 · Ruteo MIDI`: the 3x3 sheet, the three fader rows, the status block, built from the chosen direction `03-dos-columnas` (handoff started) | S1-S5, S9 | writer | `09c9e74` |
+| T9.5 | Printable and copyable sheet — folded into T9.4, because the chosen artboard already draws both controls | S6 | writer | `09c9e74` |
+| T9.6 | Own-window mode: the section alone when the page is opened for it — folded into T9.4 | S7 | writer | `09c9e74` |
 
 ## Log
 
