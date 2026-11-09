@@ -23,6 +23,9 @@ The bridge serves both clients and the assets, so a single origin covers HTTP an
 | `bridge/slot-allocator.js` | Slot assignment, empty-slot listing, reassignment (Tránsito) |
 | `bridge/gesture-store.js` | Gesture sample recording and lifecycle |
 | `bridge/dtw-matcher.js` | Sliding-window DTW, speed-invariant gesture matching |
+| `bridge/group-state.js` | Groups the 30 phones into 3 and aggregates each group's sensor intensity |
+| `bridge/midi-out.js` | MIDI output adapter for `Collage-MIDI`, degrading silently when the port is missing |
+| `music/agent.js` | Local agent: registers with the bridge as `agent` and writes group values to MIDI |
 | `p5-collage/sketch.js` | p5 draw loop, WebSocket client, action handling, floating control bar |
 | `p5-collage/device-manager.js` | 30 cells, phone↔slot wiring, sensor mapping |
 | `p5-collage/control-panel.js` | Operator sidebar (layout presets, background, per-cell editor) |
@@ -46,6 +49,7 @@ Client registration (first message on the socket):
 
 ```js
 { type: "register", role: "phone" }   // or role: "player" for the p5 canvas
+                                      // or role: "agent" for the local music agent
 ```
 
 Phone → bridge:
@@ -58,6 +62,8 @@ Phone → bridge:
 ```
 
 Bridge → phone: `{ type: "assigned", slot }`, `{ type: "error", message }`, `{ type: "gesture-status", … }`.
+
+Bridge ⇄ agent: `{ type: "system", event: "agent-ready" }`, `{ type: "music-config", groups }`, `{ type: "music-config-applied", groups }`, and `{ type: "music-state", groups: [{ group, value, phones }] }` at 20 Hz.
 
 Bridge → p5: `{ type: "device", slot, accel, gyro, orientation }`, `{ type: "action", slot, action, value?, dx?, dy? }`, `{ type: "system", event: "assign"|"disconnect"|"count" }`, `{ type: "gesture-event", slot, event, gestureId, action }`, `{ type: "cell-image", slot, imageFile, imageUrl }`.
 
@@ -104,7 +110,7 @@ The deck deals distinct images: with at least as many files as cells, no two fra
 
 ```bash
 npm install
-npm test                    # Jest, 20 suites
+npm test                    # Jest, 33 suites
 npm run test:coverage
 npm run bridge              # http://localhost:8080
 # projector:  http://localhost:8080/p5-collage/

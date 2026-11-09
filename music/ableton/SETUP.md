@@ -136,3 +136,34 @@ For raw message inspection, Live's **MIDI Monitor** device is the right tool. In
 Live 12 the Max for Live packs are downloaded separately: **Browser → Packs → Max
 for Live**. Without it, the quick check is to enter `Ctrl+M`, click a parameter,
 and run a test message: if the parameter moves, the message arrived.
+
+## 7. Running the agent
+
+The agent is the only process that writes MIDI. Start it after the bridge is
+reachable and loopMIDI exists:
+
+```powershell
+npm run agent
+```
+
+| Variable | Default | Meaning |
+|----------|---------|---------|
+| `BRIDGE_URL` | `ws://localhost:8080` | where the bridge listens |
+| `MIDI_PORT` | `Collage-MIDI` | the virtual port from section 1 |
+
+What it does: registers as `agent`, receives three group values at 20 Hz, and
+sends one CC per group on that group's channel (group 1 -> channel 1, and so on).
+It only sends when a value changes, so a still crowd is not a CC flood.
+
+What it does when things break:
+
+- **A group has no live phones** -> that group is parked at **64** (mid) instead
+  of freezing wherever the crowd left it.
+- **The bridge link dies** -> every group is parked at 64 and the agent reconnects
+  with capped backoff (0.5 s, doubling to 8 s). A clean reconnect resets the counter.
+- **The MIDI port is missing** -> the agent still connects and consumes the feed;
+  it logs `no-port` once and writes nothing. The installation stays in
+  visual-only mode.
+
+Verify the chain without Ableton: the agent logs the port it opened, and
+`Ctrl+M` on a mapped parameter in Live moves when a phone moves.
