@@ -1,0 +1,68 @@
+{
+  "version": 2,
+  "description": "The score. Versioned next to the .als: the music is tuned on the show machine, not by deploying anything.",
+  "safeValue": 64,
+  "derivation": {
+    "cooldownMs": 200,
+    "gestures": {
+      "tilt": { "onThreshold": 30, "offThreshold": 20, "span": 90 },
+      "rotation": { "onThreshold": 120, "offThreshold": 60, "span": 240 }
+    }
+  },
+  "groups": [
+      {
+        "group": 1,
+        "channel": 1,
+        "aggregation": "average",
+        "ccController": 21,
+        "curve": {
+          "shape": "linear",
+          "gamma": 1
+        },
+        "ema": 0.5,
+        "deadband": 2,
+        "maxPerSecond": 20,
+        "notes": {
+          "tilt": 36,
+          "flick": 37,
+          "rotation": 38
+        }
+      },
+      {
+        "group": 2,
+        "channel": 2,
+        "aggregation": "average",
+        "ccController": 21,
+        "curve": {
+          "shape": "linear",
+          "gamma": 1
+        },
+        "ema": 0.5,
+        "deadband": 2,
+        "maxPerSecond": 20,
+        "notes": {
+          "tilt": 36,
+          "flick": 37,
+          "rotation": 38
+        }
+      },
+      {
+        "group": 3,
+        "channel": 3,
+        "aggregation": "average",
+        "ccController": 21,
+        "curve": {
+          "shape": "linear",
+          "gamma": 1
+        },
+        "ema": 0.5,
+        "deadband": 2,
+        "maxPerSecond": 20,
+        "notes": {
+          "tilt": 36,
+          "flick": 37,
+          "rotation": 38
+        }
+      }
+    ]
+}

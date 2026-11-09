@@ -6,6 +6,10 @@ const { SlotAllocator } = require('./slot-allocator');
 const { MessageRelay, parseRecordingDuration } = require('./message-relay');
 const { GestureStore } = require('./gesture-store');
 const { DTWMatcher } = require('./dtw-matcher');
+const { createGroupAggregator, sensorIntensity, groupForSlot } = require('./group-state');
+const { createGestureTriggers } = require('./gesture-triggers');
+const { createVoiceGate } = require('./voice-gate');
+const { startHeartbeat } = require('./heartbeat');
 
 const ROOT_DIR = path.join(__dirname, '..');
 // Overridable so tests (and deployments with assets elsewhere) do not depend on the
@@ -33,6 +37,10 @@ const MIME_TYPES = {
 const GESTURE_ACTIONS = {
   'flick': 'cycle-next',
 };
+
+// Reported by /health so an operator can tell one instance from two. Two
+// instances is the failure mode this whole design forbids: the state is in memory.
+const STARTED_AT = new Date().toISOString();
 
 const allocator = new SlotAllocator(30, 5000);
 const relay = new MessageRelay();
@@ -67,6 +75,17 @@ const dtwMatcher = new DTWMatcher(gestureStore, {
 });
 const p5Players = new Set();
 const phoneConnections = new Map();
+// Agents are the audio side: they hold no slot, receive per-group state and
+// answer with the aggregation they want. See odd/tasks/ableton-music.md, S3.
+const musicAgents = new Set();
+const groupAggregator = createGroupAggregator({ groupCount: 3, slotsPerGroup: 10 });
+const gestureTriggers = createGestureTriggers();
+const voiceGate = createVoiceGate();
+// Flick comes from the DTW matcher as an already-discrete event, so it has no
+// derived velocity. 100 reads as a firm hit without pretending to measure it.
+const FLICK_VELOCITY = 100;
+const MUSIC_STATE_INTERVAL_MS = 50;
+let musicStateTimer = null;
 
 function broadcastToPlayers(data) {
   const msg = JSON.stringify(data);
@@ -76,13 +95,51 @@ function broadcastToPlayers(data) {
   }
 }
 
+function broadcastToAgents(data) {
+  if (musicAgents.size === 0) return;
+  const msg = JSON.stringify(data);
+  for (const ws of musicAgents) {
+    if (ws.readyState !== 1) continue;
+    try { ws.send(msg); } catch (e) {}
+  }
+}
+
+function startMusicStateTimer() {
+  if (musicStateTimer) return;
+  musicStateTimer = setInterval(() => {
+    if (musicAgents.size === 0) return;
+    broadcastToAgents({ type: 'music-state', groups: groupAggregator.snapshot() });
+    // The tick is also the dedupe window: ten phones of a group that gesture
+    // together become one voice with the hardest velocity of the batch.
+    const voices = voiceGate.flush();
+    if (voices.length > 0) {
+      broadcastToAgents({ type: 'music-gesture', voices });
+    }
+  }, MUSIC_STATE_INTERVAL_MS);
+  // The state feed must never be the reason the process (or a test run) stays alive.
+  if (typeof musicStateTimer.unref === 'function') musicStateTimer.unref();
+}
+
+function stopMusicStateTimer() {
+  if (!musicStateTimer) return;
+  clearInterval(musicStateTimer);
+  musicStateTimer = null;
+}
+
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   const pathname = url.pathname;
 
   if (pathname === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'ok', uptime: process.uptime() }));
+    res.end(JSON.stringify({
+      status: 'ok',
+      uptime: process.uptime(),
+      pid: process.pid,
+      startedAt: STARTED_AT,
+      clients: wss.clients.size,
+      agents: musicAgents.size,
+    }));
     return;
   }
 
@@ -185,8 +242,21 @@ function serveFile(filePath, res) {
 
 const wss = new WebSocketServer({ server });
 
+// Cloud proxies cut idle sockets and a phone carried out of range leaves a
+// half-open one. Pinging keeps the connection honest and frees dead slots.
+const heartbeat = startHeartbeat({
+  clients: wss.clients,
+  intervalMs: parseInt(process.env.HEARTBEAT_MS, 10) || undefined,
+});
+wss.on('close', () => heartbeat.stop());
+
 wss.on('connection', (ws) => {
   let info = { role: null, slot: -1 };
+
+  ws.isAlive = true;
+  ws.on('pong', () => {
+    ws.isAlive = true;
+  });
 
   ws.on('message', (raw) => {
     let msg;
@@ -202,6 +272,14 @@ wss.on('connection', (ws) => {
         for (const slot of allocator.activeSlots) {
           ws.send(JSON.stringify(relay.formatAssignMessage(slot, '')));
         }
+        return;
+      }
+      if (msg.type === 'register' && msg.role === 'agent') {
+        info.role = 'agent';
+        musicAgents.add(ws);
+        startMusicStateTimer();
+        ws.send(JSON.stringify({ type: 'system', event: 'agent-ready' }));
+        ws.send(JSON.stringify({ type: 'music-config', groups: groupAggregator.config() }));
         return;
       }
       if (msg.type === 'register' && msg.role === 'phone') {
@@ -224,7 +302,7 @@ wss.on('connection', (ws) => {
         broadcastToPlayers(relay.formatAssignMessage(slot, ''));
         return;
       }
-      ws.send(JSON.stringify({ type: 'error', message: 'Send { type: "register", role: "phone"|"player" }' }));
+      ws.send(JSON.stringify({ type: 'error', message: 'Send { type: "register", role: "phone"|"player"|"agent" }' }));
       return;
     }
 
@@ -233,6 +311,18 @@ wss.on('connection', (ws) => {
       if (!validation.valid) return;
       if (msg.type === 'sensor') {
         broadcastToPlayers(relay.formatSensorBatchMessage(info.slot, msg.accel, msg.gyro, msg.orientation));
+        // Same frame, reduced once: the agents never see 30 phones, only 3 groups.
+        groupAggregator.push(info.slot, sensorIntensity(msg));
+
+        // Continuous signals become discrete gestures only when someone wants them.
+        if (musicAgents.size > 0) {
+          const group = groupForSlot(info.slot);
+          if (group !== null) {
+            for (const event of gestureTriggers.feed(info.slot, msg)) {
+              voiceGate.add(group, event.gesture, event.velocity);
+            }
+          }
+        }
 
         // Feed samples to gesture recording (stores sensor data while recording)
         gestureStore.addSample(info.slot, msg);
@@ -243,11 +333,19 @@ wss.on('connection', (ws) => {
           broadcastToPlayers(relay.formatGestureEventMessage(
             info.slot, 'matched', matchResult.gestureId, matchResult.action
           ));
+          const flickGroup = groupForSlot(info.slot);
+          if (musicAgents.size > 0 && flickGroup !== null) {
+            voiceGate.add(flickGroup, 'flick', FLICK_VELOCITY);
+          }
         }
       } else if (msg.type === 'gesture') {
         const action = GESTURE_ACTIONS[msg.gesture];
         if (action) {
           broadcastToPlayers(relay.formatGestureEventMessage(info.slot, 'matched', null, action));
+          const declaredGroup = groupForSlot(info.slot);
+          if (musicAgents.size > 0 && declaredGroup !== null) {
+            voiceGate.add(declaredGroup, 'flick', FLICK_VELOCITY);
+          }
         }
       } else if (msg.type === 'action') {
         if (msg.action === 'record-start') {
@@ -339,6 +437,22 @@ wss.on('connection', (ws) => {
           }
         }
       }
+    } else if (info.role === 'agent') {
+      if (msg.type === 'music-config' && Array.isArray(msg.groups)) {
+        const applied = [];
+        for (const entry of msg.groups) {
+          if (!entry || typeof entry !== 'object') continue;
+          if (groupAggregator.setMode(entry.group, entry.mode)) {
+            applied.push({ group: entry.group, mode: entry.mode });
+          }
+        }
+        // The score also decides how a phone gesture is derived: the agent owns
+        // that decision, the bridge only applies it.
+        if (msg.derivation && typeof msg.derivation === 'object') {
+          gestureTriggers.configure(msg.derivation);
+        }
+        ws.send(JSON.stringify({ type: 'music-config-applied', groups: applied }));
+      }
     }
   });
 
@@ -347,10 +461,17 @@ wss.on('connection', (ws) => {
       gestureStore.discardRecording(info.slot);
       allocator.free(info.slot);
       phoneConnections.delete(ws);
+      // A disconnected phone stops contributing instead of freezing its last value.
+      groupAggregator.drop(info.slot);
+      gestureTriggers.reset(info.slot);
       broadcastToPlayers(relay.formatDisconnectMessage(info.slot));
     }
     if (info.role === 'player') {
       p5Players.delete(ws);
+    }
+    if (info.role === 'agent') {
+      musicAgents.delete(ws);
+      if (musicAgents.size === 0) stopMusicStateTimer();
     }
   });
 });

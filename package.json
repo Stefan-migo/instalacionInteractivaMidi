@@ -7,7 +7,9 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "start": "node bridge/index.js",
     "bridge": "node bridge/index.js",
+    "agent": "node music/agent.js",
     "simulate": "node scripts/simulate-phones.js",
     "generate-layout": "node scripts/generate-layout.js"
   },
@@ -25,6 +27,12 @@
   },
   "dependencies": {
     "ws": "^8.21.0"
+  },
+  "optionalDependencies": {
+    "@julusian/midi": "3.8.1"
+  },
+  "allowScripts": {
+    "@julusian/midi@3.8.1": true
   },
   "devDependencies": {
     "jest": "^30.4.2"
