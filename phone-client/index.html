@@ -60,30 +60,30 @@
 
     <!-- ===== Screen 3: Dashboard ===== -->
     <div id="dashboard" class="hidden">
-      <header>
-        <div class="status-row">
-          <svg class="header-mark" role="img" aria-label="MIDI" viewBox="0 0 728 620"><path d="M37 0h462v192h-462zM535 0h193v192h-193zM0 192h193v428h-193zM268 192h192v428h-192zM536 228h192v1h-192zM535 229h193v391h-193z"/></svg>
-          <span class="slot-badge" id="slot-badge">—</span>
-          <span class="connection-status" id="status-dot">●</span>
-          <span class="connection-text" id="status-text">Desconectado</span>
-        </div>
-        <button id="help-btn" class="help-btn" aria-label="Ayuda">?</button>
-      </header>
+      <div class="dash-head">
+        <svg class="header-mark" role="img" aria-label="MIDI" viewBox="0 0 728 620"><path d="M37 0h462v192h-462zM535 0h193v192h-193zM0 192h193v428h-193zM268 192h192v428h-192zM536 228h192v1h-192zM535 229h193v391h-193z"/></svg>
+        <div class="cell"><span class="big" id="slot-badge">—</span>Fragmento</div>
+        <div class="cell"><span id="status-dot" class="connection-status" aria-hidden="true"></span><span id="status-text">Desconectado</span></div>
+        <div class="cell grow"></div>
+        <button id="help-btn" class="help" aria-label="Ayuda">?</button>
+      </div>
 
-      <!-- Hero photo — full viewport -->
-      <div id="photo-frame" class="torn-container">
+      <div class="hud">
+        <span id="rec-indicator" class="rec-indicator hidden">Grabando</span>
+        <span id="gesture-status" class="gesture-status hidden"></span>
+      </div>
+
+      <!-- Hero photo: the torn clip-path is applied by torn-clip-path.js -->
+      <div id="photo-frame" class="frame torn-container">
         <img id="cell-image" alt="Tu celda" />
         <span id="thumbnail-placeholder" class="photo-placeholder">Sin imagen</span>
         <!-- Touch overlay — invisible, captures drag to move cell on collage -->
         <div id="touch-overlay"></div>
+        <span class="cap">Tu fragmento</span>
         <div id="photo-actions">
           <button class="photo-action-btn" id="fab-btn" aria-label="Herramientas">+</button>
         </div>
       </div>
-
-      <!-- Recording indicator overlay -->
-      <span id="rec-indicator" class="rec-indicator hidden">Grabando</span>
-      <span id="gesture-status" class="gesture-status hidden"></span>
 
       <!-- Bottom sheet: tools panel -->
       <div id="tools-panel" class="tools-panel hidden">

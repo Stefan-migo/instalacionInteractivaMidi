@@ -105,25 +105,32 @@ body {
 .ink-btn { width: 100%; padding: var(--space-md) var(--space-lg); }
 .ink-btn:active, .duration-btn:active, .gallery-close-btn:active { background: var(--ink); color: var(--paper); }
 
-/* Dashboard header and connection */
-#dashboard { position: relative; width: 100%; height: 100%; }
+/* Dashboard: head, HUD and the torn frame */
+#dashboard { position: relative; display: flex; flex-direction: column; width: 100%; height: 100%; background: var(--paper); }
 #dashboard.hidden { display: none !important; }
-header { position: absolute; inset: 0 0 auto; z-index: 50; padding: var(--space-sm) var(--space-md); padding-top: calc(var(--space-sm) + env(safe-area-inset-top)); background: var(--paper); border-bottom: var(--rule) solid var(--ink); display: flex; align-items: center; justify-content: space-between; }
-.status-row { display: flex; align-items: center; gap: var(--space-sm); }
-.help-btn { width: 36px; height: 36px; font-size: var(--font-size-lg); flex-shrink: 0; }
-.help-btn:active { background: var(--ink); color: var(--paper); }
-.slot-badge { min-width: 2.5rem; padding: 2px var(--space-sm); border: var(--hair) solid var(--ink); font: 700 var(--font-size-md) var(--font-display); text-align: center; font-variant-numeric: tabular-nums; }
-.header-mark { width: 24px; height: auto; flex: none; fill: currentColor; }
-.connection-text { font: 700 var(--font-size-xs) var(--font-display); letter-spacing: var(--tracking); text-transform: uppercase; color: var(--quiet); }
-.connection-status { font-size: var(--font-size-lg); margin-left: auto; }
-.connection-status.connected { color: var(--ink); }
-.connection-status.disconnected { color: var(--paper); -webkit-text-stroke: 1px var(--ink); }
+.dash-head { display: flex; align-items: center; flex: none; padding: calc(var(--space-2xs) + env(safe-area-inset-top)) var(--space-sm) var(--space-2xs); border-bottom: var(--hair) solid var(--rule-color); }
+.dash-head .cell { display: flex; align-items: center; gap: var(--space-2xs); padding: 0 var(--space-sm); border-right: var(--hair) solid var(--rule-soft); font-family: var(--font-display); font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; color: var(--quiet); white-space: nowrap; }
+.dash-head .cell.grow { flex: 1; border-right: 0; }
+.dash-head .big { font-size: var(--font-size-lg); font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1; }
+.header-mark { width: 20px; height: auto; flex: none; fill: currentColor; margin-right: var(--space-xs); }
+.help { appearance: none; flex: none; width: 32px; height: 32px; padding: 0; background: var(--paper); color: var(--ink); border: var(--hair) solid var(--ink); font: 500 var(--font-size-md)/1 var(--font-display); cursor: pointer; }
+.help:active { background: var(--ink); color: var(--paper); }
+.connection-status { display: inline-block; flex: none; width: 9px; height: 9px; border: var(--hair) solid var(--ink); background: transparent; }
+.connection-status.connected { background: var(--ink); }
 
-/* Photo frame: clip-path is supplied by JavaScript */
-#photo-frame { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: var(--paper); }
+/* HUD chips: filled means active, empty means idle */
+.hud { display: flex; flex-wrap: wrap; gap: var(--space-2xs); flex: none; padding: var(--space-2xs) var(--space-sm) 0; }
+.chip, .rec-indicator, .gesture-status { display: inline-flex; align-items: center; gap: var(--space-2xs); padding: var(--space-3xs) var(--space-xs); border: var(--hair) solid var(--ink); font-family: var(--font-display); font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; }
+.rec-indicator { background: var(--ink); color: var(--paper); animation: rec-pulse 1s steps(2, end) infinite; }
+.rec-indicator.hidden, .gesture-status.hidden { display: none !important; }
+.gesture-status { animation: fade-out 3s ease forwards; }
+
+/* Photo frame: the torn clip-path comes from torn-clip-path.js, never from CSS */
+.frame { position: relative; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: var(--paper); margin: var(--space-sm); }
 .torn-container { will-change: transform; }
 #cell-image { width: 100%; height: 100%; object-fit: contain; display: block; transition: transform var(--dur-base); }
 .photo-placeholder { display: none; color: var(--quiet); font-size: var(--font-size-sm); font-family: var(--font-text); text-align: center; padding: var(--space-md); }
+.frame .cap { position: absolute; bottom: var(--space-2xs); left: 0; right: 0; text-align: center; font-family: var(--font-display); font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; color: var(--quiet); pointer-events: none; }
 #photo-actions { position: absolute; bottom: var(--space-lg); right: var(--space-lg); z-index: 40; }
 .photo-action-btn { width: 52px; height: 52px; font-size: var(--font-size-xl); }
 .photo-action-btn:active { background: var(--ink); color: var(--paper); }
@@ -147,12 +154,7 @@ header { position: absolute; inset: 0 0 auto; z-index: 50; padding: var(--space-
 .vintage-slider::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; margin-top: -6px; background: var(--ink); border: 0; }
 .vintage-slider::-moz-range-thumb { width: 14px; height: 14px; background: var(--ink); border: 0; border-radius: 0; }
 
-/* Recording and gesture status */
-.rec-indicator, .gesture-status { position: absolute; left: 50%; transform: translateX(-50%); z-index: 20; background: var(--ink); color: var(--paper); font: 700 var(--font-size-sm) var(--font-display); letter-spacing: var(--tracking); text-transform: uppercase; padding: var(--space-xs) var(--space-md); }
-.rec-indicator { top: var(--space-lg); animation: rec-pulse 1s steps(2, end) infinite; }
-.gesture-status { top: calc(var(--space-lg) + 2rem); animation: fade-out 3s ease forwards; }
-.rec-indicator.hidden, .gesture-status.hidden { display: none !important; }
-.gesture-status.recording, .gesture-status.recorded { border: var(--hair) solid var(--paper); }
+/* Recording and gesture status animations */
 @keyframes rec-pulse { 50% { opacity: .4; } }
 @keyframes fade-out { 0%, 83% { opacity: 1; } 100% { opacity: 0; } }
 
