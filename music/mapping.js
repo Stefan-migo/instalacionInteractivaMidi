@@ -27,9 +27,21 @@ function integerOr(value, fallback) {
   return Number.isInteger(value) ? value : fallback;
 }
 
+// Derivation is a property of the phones (physics); notes are a property of the
+// groups (music). Keeping them apart is what lets the bridge derive gestures
+// without knowing anything about channels or the score.
+const DEFAULT_DERIVATION = {
+  cooldownMs: 200,
+  gestures: {
+    tilt: { onThreshold: 30, offThreshold: 20, span: 90 },
+    rotation: { onThreshold: 120, offThreshold: 60, span: 240 },
+  },
+};
+
 const DEFAULT_MAPPING = {
-  version: 1,
+  version: 2,
   safeValue: 64,
+  derivation: DEFAULT_DERIVATION,
   groups: [1, 2, 3].map((group) => ({
     group,
     channel: group,
@@ -39,11 +51,7 @@ const DEFAULT_MAPPING = {
     ema: 0.5,
     deadband: 2,
     maxPerSecond: 20,
-    gestures: {
-      tilt: { note: 36, onThreshold: 30, offThreshold: 20, span: 90 },
-      flick: { note: 37 },
-      rotation: { note: 38, onThreshold: 120, offThreshold: 60, span: 240 },
-    },
+    notes: { tilt: 36, flick: 37, rotation: 38 },
   })),
 };
 
@@ -54,18 +62,46 @@ function normalizeCurve(raw, fallback) {
   return { shape, gamma: gamma > 0 ? gamma : fallback.gamma };
 }
 
-function normalizeGesture(name, raw, fallback) {
+function normalizeNotes(raw, fallback) {
   const source = raw && typeof raw === 'object' ? raw : {};
-  const note = integerOr(source.note, fallback.note);
-  const normalized = {
-    note: note >= 0 && note <= 127 ? note : fallback.note,
-  };
-  if (fallback.onThreshold !== undefined) {
-    normalized.onThreshold = numberOr(source.onThreshold, fallback.onThreshold);
-    normalized.offThreshold = numberOr(source.offThreshold, fallback.offThreshold);
-    normalized.span = numberOr(source.span, fallback.span);
+  const notes = {};
+  for (const name of Object.keys(fallback)) {
+    const note = integerOr(source[name], fallback[name]);
+    notes[name] = note >= 0 && note <= 127 ? note : fallback[name];
   }
-  return normalized;
+  return notes;
+}
+
+// Thresholds describe a phone, not a group, so the bridge receives one block
+// and applies it to every phone. Span is the range that maps to velocity: with
+// span 90, a 90 degree tilt above the threshold is a full-force hit.
+function normalizeDerivation(raw) {
+  const source = raw && typeof raw === 'object' ? raw : {};
+  const gesturesSource = source.gestures && typeof source.gestures === 'object' ? source.gestures : {};
+  const gestures = {};
+
+  for (const name of Object.keys(DEFAULT_DERIVATION.gestures)) {
+    const fallback = DEFAULT_DERIVATION.gestures[name];
+    const gesture = gesturesSource[name] && typeof gesturesSource[name] === 'object' ? gesturesSource[name] : {};
+    const onThreshold = numberOr(gesture.onThreshold, fallback.onThreshold);
+    const offThreshold = numberOr(gesture.offThreshold, fallback.offThreshold);
+    const span = numberOr(gesture.span, fallback.span);
+    const on = onThreshold > 0 ? onThreshold : fallback.onThreshold;
+
+    gestures[name] = {
+      onThreshold: on,
+      // A release point at or above the trigger point would flicker between
+      // armed and fired on a phone resting at the edge.
+      offThreshold: offThreshold > 0 && offThreshold < on ? offThreshold : fallback.offThreshold,
+      span: span > 0 ? span : fallback.span,
+    };
+  }
+
+  const cooldownMs = numberOr(source.cooldownMs, DEFAULT_DERIVATION.cooldownMs);
+  return {
+    cooldownMs: cooldownMs >= 0 ? cooldownMs : DEFAULT_DERIVATION.cooldownMs,
+    gestures,
+  };
 }
 
 function normalizeGroup(raw, index, errors) {
@@ -110,13 +146,9 @@ function normalizeGroup(raw, index, errors) {
     ccController = fallback.ccController;
   }
 
-  const gesturesSource = source.gestures && typeof source.gestures === 'object' ? source.gestures : {};
-  const gestures = {};
-  for (const name of Object.keys(fallback.gestures)) {
-    gestures[name] = normalizeGesture(name, gesturesSource[name], fallback.gestures[name]);
-  }
+  const notes = normalizeNotes(source.notes, fallback.notes);
 
-  return { group: index + 1, channel, aggregation, ccController, curve: normalizeCurve(source.curve, fallback.curve), ema, deadband, maxPerSecond, gestures };
+  return { group: index + 1, channel, aggregation, ccController, curve: normalizeCurve(source.curve, fallback.curve), ema, deadband, maxPerSecond, notes };
 }
 
 // Never throws and never returns something unusable: a broken score must not
@@ -144,7 +176,7 @@ function normalizeMapping(raw) {
   const safeValue = clamp7(numberOr(source.safeValue, DEFAULT_MAPPING.safeValue));
   const version = integerOr(source.version, DEFAULT_MAPPING.version);
 
-  return { mapping: { version, safeValue, groups }, errors };
+  return { mapping: { version, safeValue, derivation: normalizeDerivation(source.derivation), groups }, errors };
 }
 
 function applyCurve(value, curve) {
@@ -240,6 +272,9 @@ module.exports = {
   SHAPES,
   AGGREGATIONS,
   DEFAULT_MAPPING,
+  DEFAULT_DERIVATION,
+  normalizeDerivation,
+  normalizeNotes,
   clamp7,
   normalizeMapping,
   applyCurve,

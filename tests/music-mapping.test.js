@@ -20,10 +20,10 @@ describe('normalizeMapping', () => {
     const { mapping, errors } = normalizeMapping(FILE);
     expect(errors).toEqual([]);
     for (const group of mapping.groups) {
-      expect(group.gestures.tilt.note).toBe(36);
-      expect(group.gestures.flick.note).toBe(37);
-      expect(group.gestures.rotation.note).toBe(38);
+      expect(group.notes).toEqual({ tilt: 36, flick: 37, rotation: 38 });
     }
+    expect(mapping.derivation.gestures.tilt).toEqual({ onThreshold: 30, offThreshold: 20, span: 90 });
+    expect(mapping.derivation.cooldownMs).toBe(200);
   });
 
   test('bad values are reported and replaced, never fatal', () => {
@@ -36,6 +36,18 @@ describe('normalizeMapping', () => {
     expect(mapping.groups[0].aggregation).toBe('average');
     expect(mapping.groups[0].ema).toBe(DEFAULT_MAPPING.groups[0].ema);
     expect(mapping.groups[0].deadband).toBeGreaterThanOrEqual(0);
+  });
+
+  test('derivation is normalized on its own, and a broken release point is corrected', () => {
+    const { mapping, errors } = normalizeMapping({
+      derivation: { cooldownMs: -5, gestures: { tilt: { onThreshold: 40, offThreshold: 90, span: 0 } } },
+    });
+
+    expect(errors).toEqual([]);
+    expect(mapping.derivation.cooldownMs).toBe(200);
+    expect(mapping.derivation.gestures.tilt.onThreshold).toBe(40);
+    expect(mapping.derivation.gestures.tilt.offThreshold).toBeLessThan(40);
+    expect(mapping.derivation.gestures.tilt.span).toBe(90);
   });
 
   test('nonsense input still returns something usable', () => {

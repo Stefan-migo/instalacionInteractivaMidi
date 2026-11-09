@@ -114,4 +114,48 @@ describe('bridge agent WebSocket', () => {
     phone.close();
     agent.close();
   });
+
+  test('the score can move a gesture threshold and the bridge obeys it', async () => {
+    const agent = await connect();
+    agent.send(JSON.stringify({ type: 'register', role: 'agent' }));
+    await next(agent, m => m.event === 'agent-ready');
+    await next(agent, m => m.type === 'music-config');
+
+    agent.send(JSON.stringify({
+      type: 'music-config',
+      groups: [],
+      derivation: { cooldownMs: 200, gestures: { tilt: { onThreshold: 200, offThreshold: 150, span: 90 } } },
+    }));
+    await next(agent, m => m.type === 'music-config-applied');
+
+    const phone = await connect();
+    phone.send(JSON.stringify({ type: 'register', role: 'phone' }));
+    await next(phone, m => m.type === 'assigned');
+
+    phone.send(JSON.stringify({
+      type: 'sensor',
+      accel: { x: 0, y: 0, z: 9.8 },
+      gyro: { a: 0, b: 0, g: 0 },
+      orientation: { a: 0, b: 60, g: 0 },
+    }));
+
+    // 60 degrees sits under the new 200 degree threshold: no voice at all.
+    await expect(next(agent, m => m.type === 'music-gesture')).rejects.toThrow();
+
+    // Put the shipped score back so the rest of the suite is unaffected.
+    agent.send(JSON.stringify({
+      type: 'music-config',
+      groups: [],
+      derivation: {
+        gestures: {
+          tilt: { onThreshold: 30, offThreshold: 20, span: 90 },
+          rotation: { onThreshold: 120, offThreshold: 60, span: 240 },
+        },
+      },
+    }));
+    await next(agent, m => m.type === 'music-config-applied');
+
+    phone.close();
+    agent.close();
+  });
 });

@@ -125,6 +125,39 @@ describe('gesture triggers', () => {
     expect(triggers.feed(1, orientation(60))).toEqual([]);
   });
 
+  test('span sets how far past the threshold a full-force hit is', () => {
+    let now = 1000;
+    const triggers = createGestureTriggers({
+      now: () => now,
+      gestures: {
+        tilt: { source: 'orientation', axis: 'b', onThreshold: 30, offThreshold: 20, span: 90, minVelocity: 40, maxVelocity: 127 },
+      },
+    });
+
+    const soft = triggers.feed(0, orientation(31))[0].velocity;
+    now += 1000;
+    const medium = triggers.feed(1, orientation(90))[0].velocity;
+    now += 1000;
+    const hard = triggers.feed(2, orientation(120))[0].velocity;
+
+    expect(soft).toBeLessThan(medium);
+    expect(medium).toBeLessThan(127);
+    expect(hard).toBe(127);
+  });
+
+  test('configure adopts the score and forgets the old latches', () => {
+    const { triggers } = createHarness();
+    expect(triggers.feed(0, orientation(60))).toHaveLength(1);
+
+    triggers.configure({ gestures: { tilt: { onThreshold: 200, offThreshold: 150, span: 90 } } });
+
+    expect(triggers.gestures).toEqual(['tilt']);
+    expect(triggers.feed(0, orientation(60))).toEqual([]);
+
+    triggers.configure({ gestures: { tilt: { onThreshold: 30, offThreshold: 20, span: 90 } } });
+    expect(triggers.feed(0, orientation(60))).toHaveLength(1);
+  });
+
   test('malformed frames are ignored, never fatal', () => {
     const { triggers } = createHarness();
     expect(() => triggers.feed(0, null)).not.toThrow();

@@ -51,6 +51,13 @@ function normalizeGesture(name, config, fallback) {
     // The release point must sit below the trigger point, otherwise a value
     // resting on the threshold flickers between armed and fired.
     offThreshold: Number.isFinite(merged.offThreshold) ? merged.offThreshold : 20,
+    // Span is how far past the threshold a gesture must go to reach full
+    // velocity. Falling back to the threshold itself keeps old configs working,
+    // but a real span is what stops everything above twice the threshold from
+    // saturating at 127.
+    span: Number.isFinite(merged.span) && merged.span > 0
+      ? merged.span
+      : Number.isFinite(merged.onThreshold) ? merged.onThreshold : 30,
     minVelocity,
     maxVelocity: Math.max(minVelocity, maxVelocity),
   };
@@ -59,23 +66,41 @@ function normalizeGesture(name, config, fallback) {
 // Velocity carries how hard the gesture was made: a gentle crossing lands near
 // minVelocity, a doubling of the threshold saturates at maxVelocity.
 function velocityFor(gesture, magnitude) {
-  const span = Math.max(1, gesture.onThreshold);
+  const span = Math.max(1, gesture.span || gesture.onThreshold);
   const intensity = Math.min(1, Math.max(0, (magnitude - gesture.onThreshold) / span));
   return Math.round(gesture.minVelocity + intensity * (gesture.maxVelocity - gesture.minVelocity));
 }
 
 function createGestureTriggers(options = {}) {
   const now = typeof options.now === 'function' ? options.now : () => Date.now();
-  const cooldownMs = Number.isFinite(options.cooldownMs) ? options.cooldownMs : DEFAULT_COOLDOWN_MS;
+  let cooldownMs = Number.isFinite(options.cooldownMs) ? options.cooldownMs : DEFAULT_COOLDOWN_MS;
 
-  const configured = options.gestures && typeof options.gestures === 'object' ? options.gestures : DEFAULT_GESTURES;
-  const gestures = Object.keys(configured).map((name) =>
-    normalizeGesture(name, configured[name], DEFAULT_GESTURES[name])
-  );
+  function buildGestures(source) {
+    const configured = source && typeof source === 'object' ? source : DEFAULT_GESTURES;
+    return Object.keys(configured).map((name) =>
+      normalizeGesture(name, configured[name], DEFAULT_GESTURES[name])
+    );
+  }
+
+  let gestures = buildGestures(options.gestures);
 
   // slot -> gesture name -> { armed, lastFiredAt }. Armed starts true and goes
   // false when the gesture fires; it only comes back below offThreshold.
   const states = new Map();
+
+  // Adopting the score means new thresholds mid-show: the phone states are
+  // dropped, because a latch armed under the old numbers means nothing under
+  // the new ones.
+  function configure(next = {}) {
+    if (next.gestures && typeof next.gestures === 'object') {
+      gestures = buildGestures(next.gestures);
+    }
+    if (Number.isFinite(next.cooldownMs) && next.cooldownMs >= 0) {
+      cooldownMs = next.cooldownMs;
+    }
+    states.clear();
+    return { cooldownMs, gestures: gestures.map((gesture) => gesture.name) };
+  }
 
   function stateFor(slot) {
     let byGesture = states.get(slot);
@@ -138,7 +163,15 @@ function createGestureTriggers(options = {}) {
     return [...states.keys()];
   }
 
-  return { feed, reset, activeSlots, gestures: gestures.map((gesture) => gesture.name) };
+  return {
+    feed,
+    reset,
+    configure,
+    activeSlots,
+    get gestures() {
+      return gestures.map((gesture) => gesture.name);
+    },
+  };
 }
 
 module.exports = { createGestureTriggers, DEFAULT_GESTURES, DEFAULT_COOLDOWN_MS, velocityFor };

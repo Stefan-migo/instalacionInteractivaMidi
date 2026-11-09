@@ -136,16 +136,19 @@ describe('music agent', () => {
 
     sockets.last().emit({ type: 'music-config', groups: [{ group: 1, mode: 'average' }] });
 
-    expect(sockets.last().sent).toEqual([
-      {
-        type: 'music-config',
-        groups: [
-          { group: 1, mode: 'average' },
-          { group: 2, mode: 'average' },
-          { group: 3, mode: 'average' },
-        ],
-      },
+    expect(sockets.last().sent).toHaveLength(1);
+    expect(sockets.last().sent[0].type).toBe('music-config');
+    expect(sockets.last().sent[0].groups).toEqual([
+      { group: 1, mode: 'average' },
+      { group: 2, mode: 'average' },
+      { group: 3, mode: 'average' },
     ]);
+    // The score's derivation travels with the config: the bridge derives, the agent decides.
+    expect(sockets.last().sent[0].derivation.gestures.tilt).toEqual({
+      onThreshold: 30,
+      offThreshold: 20,
+      span: 90,
+    });
   });
 
   test('sends one CC per group on its own channel, rounding to 7 bits', () => {

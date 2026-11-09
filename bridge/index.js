@@ -421,6 +421,11 @@ wss.on('connection', (ws) => {
             applied.push({ group: entry.group, mode: entry.mode });
           }
         }
+        // The score also decides how a phone gesture is derived: the agent owns
+        // that decision, the bridge only applies it.
+        if (msg.derivation && typeof msg.derivation === 'object') {
+          gestureTriggers.configure(msg.derivation);
+        }
         ws.send(JSON.stringify({ type: 'music-config-applied', groups: applied }));
       }
     }

@@ -59,9 +59,9 @@ function createMusicAgent(options = {}) {
   const notesByGroup = new Map();
   for (const groupConfig of mapping.groups) {
     const notes = {};
-    for (const name of Object.keys(groupConfig.gestures)) {
-      const gesture = groupConfig.gestures[name];
-      if (Number.isInteger(gesture.note)) notes[name] = gesture.note;
+    for (const name of Object.keys(groupConfig.notes || {})) {
+      const note = groupConfig.notes[name];
+      if (Number.isInteger(note)) notes[name] = note;
     }
     notesByGroup.set(groupConfig.group, notes);
   }
@@ -186,6 +186,9 @@ function createMusicAgent(options = {}) {
       sendToBridge({
         type: 'music-config',
         groups: modes.map((mode, index) => ({ group: index + 1, mode })),
+        // Thresholds are physics, so they travel with the score but apply to
+        // every phone: the bridge derives, the agent decides.
+        derivation: mapping.derivation,
       });
       return;
     }
