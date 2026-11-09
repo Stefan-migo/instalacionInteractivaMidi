@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <title>MIDI · Collage interactivo</title>
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#f4f4f4">
   <link rel="icon" href="/phone-client/icons/favicon.ico" sizes="any">
   <link rel="icon" href="/phone-client/icons/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/phone-client/icons/apple-touch-icon.png">
@@ -15,124 +15,113 @@
 <body>
   <div id="app">
     <!-- ===== Screen 1: Splash ===== -->
-    <div id="splash-screen" class="screen">
-      <div class="splash-content">
-        <svg id="splash-mark" role="img" aria-label="MIDI" viewBox="0 0 770 789"><path d="M144 0h340v1h-340zM512 0h141v1h-141zM143 1h342v141h-342zM512 1h142v141h-142zM116 142h368v1h-368zM512 142h141v1h-141zM116 143h142v316h-142zM314 143h142v316h-142zM512 169h141v1h-141zM512 170h142v289h-142zM0 525h38v38h-38zM150 525h38v38h-38zM244 525h113v38h-113zM413 525h151v19h-151zM657 525h113v38h-113zM413 544h170v19h-170zM0 563h57v19h-57zM131 563h57v19h-57zM281 563h39v188h-39zM413 563h38v188h-38zM544 563h57v19h-57zM695 563h38v188h-38zM0 582h75v18h-75zM113 582h75v18h-75zM563 582h38v150h-38zM0 600h188v20h-188zM0 620h38v169h-38zM56 620h76v18h-76zM150 620h38v169h-38zM57 638h74v1h-74zM75 639h38v37h-38zM545 732h56v1h-56zM544 733h57v18h-57zM244 751h113v38h-113zM413 751h188v1h-188zM657 751h113v38h-113zM413 752h170v18h-170zM413 770h151v19h-151z"/></svg>
-        <h1 class="splash-tagline">Collage Interactivo</h1>
-        <button id="splash-participar-btn" class="ink-btn">Participar</button>
+    <div id="splash-screen" class="screen splash">
+      <div class="top">
+        <svg id="splash-mark" role="img" aria-label="MIDI" viewBox="0 0 728 620"><path d="M37 0h462v192h-462zM535 0h193v192h-193zM0 192h193v428h-193zM268 192h192v428h-192zM536 228h192v1h-192zM535 229h193v391h-193z"/></svg>
+        <p class="est">MIDI<br>Colectivo<br>artístico</p>
+      </div>
+
+      <h1 class="display">Collage<br>interactivo</h1>
+      <p class="lead">Treinta fragmentos en un lienzo compartido. Cada persona mueve el suyo con el teléfono.</p>
+
+      <div class="fields">
+        <div class="data"><span class="k">Fragmentos</span><span class="v">30</span></div>
+        <div class="data"><span class="k">Lienzo</span><span class="v">1920 × 1080</span></div>
+        <div class="data"><span class="k">Sesión</span><span class="v">abierta</span></div>
+        <div class="cta"><button id="splash-participar-btn" class="btn btn--fill">Participar</button></div>
       </div>
     </div>
 
     <!-- ===== Screen 2: Permission ===== -->
-    <div id="permission-screen" class="screen hidden">
-      <div class="permission-content">
-        <h2>Participá del collage</h2>
-        <p>Necesitamos acceso a los sensores de tu teléfono para que puedas interactuar con la obra.</p>
-        <button id="permission-btn" class="ink-btn">Activar sensores</button>
-        <div id="permission-error" class="permission-error hidden">
-          <p class="error-text">Sin los sensores no podrás mover tu fragmento. Si querés participar, recargá la página e intentá de nuevo.</p>
-          <button id="reload-btn" class="ink-btn">Recargar</button>
-        </div>
+    <div id="permission-screen" class="screen perm hidden">
+      <p class="num">02 / 03 — Sensores</p>
+      <h2 class="display">Acceso al<br>movimiento</h2>
+
+      <div class="field">
+        <div class="head"><span class="num">Campo 01</span><span class="num">Requerido</span></div>
+        <p>El movimiento del teléfono mueve tu fragmento, así que necesitamos los sensores.</p>
       </div>
+
+      <div class="field">
+        <div class="head"><span class="num">Campo 02</span><span class="num">Opcional</span></div>
+        <p>Los gestos usan ese mismo movimiento. Podés practicarlos antes de grabar y manejar todo desde la hoja de controles.</p>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div id="permission-error" class="err hidden">
+        <strong>Error</strong>
+        <p class="error-text">Sin los sensores no podrás mover tu fragmento. Si querés participar, recargá la página e intentá de nuevo.</p>
+        <button id="reload-btn" class="btn btn--quiet">Recargar</button>
+      </div>
+
+      <button id="permission-btn" class="btn btn--fill">Activar sensores</button>
     </div>
 
     <!-- ===== Screen 3: Dashboard ===== -->
     <div id="dashboard" class="hidden">
-      <header>
-        <div class="status-row">
-          <svg class="header-mark" role="img" aria-label="MIDI" viewBox="0 0 728 620"><path d="M37 0h462v192h-462zM535 0h193v192h-193zM0 192h193v428h-193zM268 192h192v428h-192zM536 228h192v1h-192zM535 229h193v391h-193z"/></svg>
-          <span class="slot-badge" id="slot-badge">—</span>
-          <span class="connection-status" id="status-dot">●</span>
-          <span class="connection-text" id="status-text">Desconectado</span>
-        </div>
-        <button id="help-btn" class="help-btn" aria-label="Ayuda">?</button>
-      </header>
+      <div class="dash-head">
+        <svg class="header-mark" role="img" aria-label="MIDI" viewBox="0 0 728 620"><path d="M37 0h462v192h-462zM535 0h193v192h-193zM0 192h193v428h-193zM268 192h192v428h-192zM536 228h192v1h-192zM535 229h193v391h-193z"/></svg>
+        <div class="cell"><span class="big" id="slot-badge">—</span>Fragmento</div>
+        <div class="cell"><span id="status-dot" class="connection-status" aria-hidden="true"></span><span id="status-text">Desconectado</span></div>
+        <div class="cell grow"></div>
+        <button id="help-btn" class="help" aria-label="Ayuda">?</button>
+      </div>
 
-      <!-- Hero photo — full viewport -->
-      <div id="photo-frame" class="torn-container">
+      <div class="hud">
+        <span id="rec-indicator" class="chip rec-indicator hidden"><span class="state-sq state-sq--on"></span>Grabando</span>
+        <span id="gesture-status" class="gesture-status hidden"></span>
+      </div>
+
+      <!-- Hero photo: the torn clip-path is applied by torn-clip-path.js -->
+      <div id="photo-frame" class="frame torn-container">
         <img id="cell-image" alt="Tu celda" />
         <span id="thumbnail-placeholder" class="photo-placeholder">Sin imagen</span>
         <!-- Touch overlay — invisible, captures drag to move cell on collage -->
         <div id="touch-overlay"></div>
-        <div id="photo-actions">
-          <button class="photo-action-btn" id="fab-btn" aria-label="Herramientas">+</button>
-        </div>
+        <span class="cap">Tu fragmento</span>
       </div>
 
-      <!-- Recording indicator overlay -->
-      <span id="rec-indicator" class="rec-indicator hidden">Grabando</span>
-      <span id="gesture-status" class="gesture-status hidden"></span>
-
-      <!-- Bottom sheet: tools panel -->
-      <div id="tools-panel" class="tools-panel hidden">
-        <div class="tools-handle"></div>
-
-        <!-- Actions row -->
-        <div class="actions-grid">
-          <button class="action-btn stamp-btn" data-action="wizard" id="wizard-trigger">Gestos</button>
-          <button class="action-btn stamp-btn" data-action="shuffle">Cambiar foto</button>
+      <!-- Bottom sheet: fixed to the screen, collapses to its tab strip -->
+      <div id="tools-panel" class="sheet">
+        <div class="sheet-tabs" role="tablist">
+          <button type="button" class="sheet-tab" data-tab="forma" role="tab" aria-selected="true">Forma</button>
+          <button type="button" class="sheet-tab" data-tab="gestos" role="tab" aria-selected="false">Gestos</button>
+          <button type="button" class="sheet-tab" data-tab="guia" role="tab" aria-selected="false">Guía</button>
+          <button type="button" id="sheet-toggle" class="sheet-toggle" aria-expanded="true" aria-label="Ocultar controles">▾</button>
         </div>
 
-        <!-- Ascender + Filtro share one row, like Tránsito -->
-        <div class="button-pair">
-          <button id="bring-front-btn" class="stamp-btn inline-btn">Ascender</button>
-          <button id="filter-btn" class="stamp-btn inline-btn">Filtro</button>
-        </div>
+        <div class="sheet-body" data-panel="forma" role="tabpanel">
+          <div class="row-actions">
+            <div class="button-pair">
+              <button id="cell-prev-btn" class="btn btn--sm">‹ Anterior</button>
+              <button id="cell-next-btn" class="btn btn--sm">Siguiente ›</button>
+            </div>
+            <button id="wizard-trigger" class="btn btn--sm" data-action="wizard">Gestos</button>
+            <button class="btn btn--sm" data-action="shuffle">Látigo</button>
+            <div class="button-pair">
+              <button id="bring-front-btn" class="btn btn--sm">Al frente</button>
+              <button id="filter-btn" class="btn btn--sm">Filtro</button>
+            </div>
+          </div>
 
-        <!-- Opacity slider -->
-        <div class="control-group">
-          <label class="slider-label">Opacidad <span id="opacity-value" class="slider-value">100%</span></label>
-          <input type="range" id="opacity-slider" class="vintage-slider" min="0" max="100" value="100">
-        </div>
-
-        <!-- Rotation slider -->
-        <div class="control-group">
-          <label class="slider-label">Rotación <span id="rotation-value" class="slider-value">0°</span></label>
-          <input type="range" id="rotation-slider" class="vintage-slider" min="-180" max="180" value="0">
-        </div>
-
-        <!-- Scale slider -->
-        <div class="control-group">
-          <label class="slider-label">Escala <span id="scale-value" class="slider-value">100%</span></label>
-          <input type="range" id="scale-slider" class="vintage-slider" min="40" max="180" value="100">
-        </div>
-
-        <!-- Tránsito -->
-        <div class="control-group">
-          <label class="slider-label">Tránsito</label>
-          <div class="button-pair">
-            <button id="cell-prev-btn" class="stamp-btn inline-btn">← Anterior</button>
-            <button id="cell-next-btn" class="stamp-btn inline-btn">Siguiente →</button>
+          <div class="rows">
+            <div class="row-ctl">
+              <div class="row-top"><label for="opacity-slider">Opacidad</label><span id="opacity-value" class="v">100%</span></div>
+              <input type="range" id="opacity-slider" class="range" min="0" max="100" value="100">
+            </div>
+            <div class="row-ctl">
+              <div class="row-top"><label for="rotation-slider">Rotación</label><span id="rotation-value" class="v">0°</span></div>
+              <input type="range" id="rotation-slider" class="range" min="-180" max="180" value="0">
+            </div>
+            <div class="row-ctl">
+              <div class="row-top"><label for="scale-slider">Escala</label><span id="scale-value" class="v">100%</span></div>
+              <input type="range" id="scale-slider" class="range" min="40" max="180" value="100">
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Hint Engine -->
-      <div id="hint-engine" class="hint-engine hidden">
-        <div id="hint-text" class="hint-text"></div>
-      </div>
-
-      <!-- Help Overlay -->
-      <div id="help-overlay" class="help-overlay hidden">
-        <div id="help-card" class="help-card">
-          <ol class="help-list">
-            <li>Arrastrá sobre la imagen para mover tu fragmento en el collage</li>
-            <li>Tocá <strong>+</strong> para ajustar opacidad, rotación y escala</li>
-            <li>Dos toques rápidos para ascender tu fragmento al frente</li>
-            <li>Incliná hacia adelante → saltás a otra celda del collage</li>
-            <li>Sacudí → cambia foto</li>
-            <li>Girá como perilla → cambia filtro</li>
-            <li>Creá un <strong>gesto</strong> personalizado en <strong>Gestos</strong></li>
-          </ol>
-          <button id="help-entendi-btn" class="ink-btn">Entendí</button>
-        </div>
-      </div>
-
-      <!-- Gesture Gallery Overlay -->
-      <div id="gesture-gallery" class="gesture-gallery hidden">
-        <div class="gallery-card">
-          <button id="gallery-close-btn" class="gallery-close-btn" aria-label="Cerrar">×</button>
-          <h2 class="gallery-title">Gestos</h2>
+        <div class="sheet-body hidden" data-panel="gestos" role="tabpanel">
           <div class="gallery-cards">
             <div class="gesture-card" data-gesture="inclinar">
               <span class="gesture-icon">
@@ -140,7 +129,7 @@
               </span>
               <span class="gesture-name">Inclinar</span>
               <span class="gesture-desc">Incliná hacia adelante → saltás de celda</span>
-              <button class="stamp-btn practice-btn" data-gesture="inclinar">Practicar</button>
+              <button class="btn btn--sm practice-btn" data-gesture="inclinar">Practicar</button>
             </div>
             <div class="gesture-card" data-gesture="latigo">
               <span class="gesture-icon">
@@ -148,7 +137,7 @@
               </span>
               <span class="gesture-name">Látigo</span>
               <span class="gesture-desc">Sacudí → cambia foto</span>
-              <button class="stamp-btn practice-btn" data-gesture="latigo">Practicar</button>
+              <button class="btn btn--sm practice-btn" data-gesture="latigo">Practicar</button>
             </div>
             <div class="gesture-card" data-gesture="twist">
               <span class="gesture-icon">
@@ -156,11 +145,28 @@
               </span>
               <span class="gesture-name">Girar</span>
               <span class="gesture-desc">Girá como perilla → cambia filtro</span>
-              <button class="stamp-btn practice-btn" data-gesture="twist">Practicar</button>
+              <button class="btn btn--sm practice-btn" data-gesture="twist">Practicar</button>
             </div>
           </div>
-          <button id="create-gesture-btn" class="ink-btn create-gesture-btn">+ Crear mi gesto</button>
+          <button id="create-gesture-btn" class="btn btn--sm">+ Crear mi gesto</button>
         </div>
+
+        <div class="sheet-body hidden" data-panel="guia" role="tabpanel">
+          <ol class="help-list">
+            <li>Arrastrá sobre la imagen para mover tu fragmento en el collage</li>
+            <li>La hoja de abajo ajusta opacidad, rotación y escala</li>
+            <li>Dos toques rápidos para ascender tu fragmento al frente</li>
+            <li>Incliná hacia adelante → saltás a otra celda del collage</li>
+            <li>Sacudí → cambia foto</li>
+            <li>Girá como perilla → cambia filtro</li>
+            <li>Creá un <strong>gesto</strong> personalizado en <strong>Gestos</strong></li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Hint Engine -->
+      <div id="hint-engine" class="hint-engine hidden">
+        <div id="hint-text" class="hint-text"></div>
       </div>
 
       <!-- Practice Overlay -->
@@ -171,28 +177,28 @@
             <span class="practice-checkmark">✓</span>
             <span class="practice-success-text">¡Bien! Eso fue un gesto.</span>
           </div>
-          <button id="practice-back-btn" class="stamp-btn practice-back-btn">Volver</button>
+          <button id="practice-back-btn" class="btn practice-back-btn">Volver</button>
         </div>
       </div>
 
       <!-- Gesture Wizard Overlay -->
       <div id="wizard-overlay" class="wizard-overlay hidden">
-        <button id="wizard-cancel" class="wizard-cancel-btn" aria-label="Cancelar">×</button>
+        <button id="wizard-cancel" class="btn btn--sm wizard-cancel-btn" aria-label="Cancelar">×</button>
 
         <div id="wizard-step-practice" class="wizard-step">
           <p class="wizard-step-title">Paso 1: Practicá tu gesto</p>
           <p class="wizard-instruction">Tocá el botón y mové el teléfono<br/>para practicar tu gesto personalizado</p>
-          <button id="wizard-practice-btn" class="ink-btn">Practicar</button>
+          <button id="wizard-practice-btn" class="btn btn--fill">Practicar</button>
         </div>
 
         <div id="wizard-step-duration" class="wizard-step hidden">
           <p class="wizard-step-title">Paso 2: Elegí la duración</p>
           <p class="wizard-instruction">Tu gesto dura aproximadamente <span id="wizard-practice-duration">—</span>s</p>
           <div class="wizard-duration-picker">
-            <button class="duration-btn" data-duration="2000">2s</button>
-            <button class="duration-btn" data-duration="3000">3s</button>
-            <button class="duration-btn" data-duration="4000">4s</button>
-            <button class="duration-btn" data-duration="5000">5s</button>
+            <button class="duration-btn btn" data-duration="2000">2s</button>
+            <button class="duration-btn btn" data-duration="3000">3s</button>
+            <button class="duration-btn btn" data-duration="4000">4s</button>
+            <button class="duration-btn btn" data-duration="5000">5s</button>
           </div>
         </div>
 

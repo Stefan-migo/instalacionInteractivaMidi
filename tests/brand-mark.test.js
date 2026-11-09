@@ -5,9 +5,11 @@ const root = path.join(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 
 describe('brand mark placements', () => {
-  test('canvas mark token stays white in light theme for the near-black shader', () => {
+  test('canvas mark keeps one light value in both themes for the near-black shader', () => {
     const theme = read('shared/theme.css');
-    expect(theme).toMatch(/:root\s*\{[^}]*--mark-on-canvas:\s*#ffffff\s*;/s);
+    // The identity's light tone (#f4f4f4), not pure white: a third colour would
+    // be invented. The canvas shader is near-black in every UI theme.
+    expect(theme).toMatch(/:root\s*\{[^}]*--mark-on-canvas:\s*#f4f4f4\s*;/s);
     const light = theme.match(/:root\[data-theme="light"\]\s*\{([^}]*)\}/s);
     expect(light).not.toBeNull();
     expect(light[1]).not.toMatch(/--mark-on-canvas\s*:/);
