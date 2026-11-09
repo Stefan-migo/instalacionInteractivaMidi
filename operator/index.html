@@ -31,10 +31,11 @@
       <div class="routing-split">
         <div class="routing-sheet">
           <p class="routing-lead">Los gestos mandan notas. El movimiento continuo manda CC.</p>
-          <div id="routing-matrix" class="routing-matrix" aria-label="Hoja de ruteo MIDI"><article class="routing-cell" data-group="1" data-gesture="tilt" data-channel="1" data-note="36"></article><article class="routing-cell" data-group="1" data-gesture="flick" data-channel="1" data-note="37"></article><article class="routing-cell" data-group="1" data-gesture="rotation" data-channel="1" data-note="38"></article><article class="routing-cell" data-group="2" data-gesture="tilt" data-channel="2" data-note="36"></article><article class="routing-cell" data-group="2" data-gesture="flick" data-channel="2" data-note="37"></article><article class="routing-cell" data-group="2" data-gesture="rotation" data-channel="2" data-note="38"></article><article class="routing-cell" data-group="3" data-gesture="tilt" data-channel="3" data-note="36"></article><article class="routing-cell" data-group="3" data-gesture="flick" data-channel="3" data-note="37"></article><article class="routing-cell" data-group="3" data-gesture="rotation" data-channel="3" data-note="38"></article></div>
+          <div id="routing-matrix" class="routing-matrix" aria-label="Hoja de ruteo MIDI"></div>
         </div>
         <aside class="routing-live">
           <h3>B · Faders en vivo</h3><div id="routing-faders"></div>
+          <section class="routing-walk" aria-labelledby="routing-walk-title"><h3 id="routing-walk-title">D · Recorrido de mapeo</h3><p id="routing-step-counter" aria-live="polite"></p><div id="routing-step"></div><div class="routing-walk-controls"><button id="routing-previous" type="button">Anterior</button><button id="routing-emit" type="button">Enviar</button><button id="routing-next" type="button">Siguiente</button></div><p id="routing-emit-status" role="status" aria-live="polite"></p></section>
           <h3>C · Diagnóstico</h3><div id="routing-diagnosis" aria-live="polite">Consultando el estado MIDI…</div>
         </aside>
       </div>

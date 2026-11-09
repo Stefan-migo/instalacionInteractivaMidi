@@ -93,16 +93,42 @@
     'sin-agente': 'El agente no está corriendo: no hay notas y los faders no se mueven.',
     'sin-puerto': 'El puerto Collage-MIDI no está abierto: las notas no llegan a Ableton.',
     'sin-actividad': 'Todo conectado, pero sin actividad: nadie movió el teléfono en los últimos segundos.',
+    'topologia': 'La cantidad de grupos de la partitura no coincide con la que espera el puente.'
   };
   var ROUTING_PORTS = { open: 'abierto', closed: 'cerrado', absent: 'ausente' };
+  var ROUTING_EMIT_ERRORS = {
+    'sin-agente': 'No hay agente conectado: no hay nada que disparar. Levantá el agente en la máquina de Ableton.',
+    'sin-puerto': 'El puerto Collage-MIDI no está abierto, así que la nota no llega a Ableton.',
+    'invalido': 'El panel pidió una voz que el puerto no puede enviar.',
+  };
   function initRouting(doc) {
     var section = doc.getElementById('routing');
     if (!section) return null;
     var matrix = doc.getElementById('routing-matrix');
     var faders = doc.getElementById('routing-faders');
     var diagnosis = doc.getElementById('routing-diagnosis');
-    var cells = Array.prototype.slice.call(matrix.querySelectorAll('.routing-cell'));
-    var groups = [1, 2, 3].map(function (group) { return { group: group, channel: group, ccController: 21, aggregation: 'average', notes: { tilt: 36, flick: 37, rotation: 38 } }; });
+    var cells = [];
+    // The printed table, used when the bridge does not answer: ten groups of
+    // three phones, one channel each, the same three gestures on every one.
+    var groups = [
+      { group: 1, channel: 1, ccController: 21, aggregation: 'average', notes: { tilt: 36, flick: 37, rotation: 38 } },
+      { group: 2, channel: 2, ccController: 21, aggregation: 'average', notes: { tilt: 36, flick: 37, rotation: 38 } },
+      { group: 3, channel: 3, ccController: 21, aggregation: 'average', notes: { tilt: 36, flick: 37, rotation: 38 } },
+      { group: 4, channel: 4, ccController: 21, aggregation: 'average', notes: { tilt: 36, flick: 37, rotation: 38 } },
+      { group: 5, channel: 5, ccController: 21, aggregation: 'average', notes: { tilt: 36, flick: 37, rotation: 38 } },
+      { group: 6, channel: 6, ccController: 21, aggregation: 'average', notes: { tilt: 36, flick: 37, rotation: 38 } },
+      { group: 7, channel: 7, ccController: 21, aggregation: 'average', notes: { tilt: 36, flick: 37, rotation: 38 } },
+      { group: 8, channel: 8, ccController: 21, aggregation: 'average', notes: { tilt: 36, flick: 37, rotation: 38 } },
+      { group: 9, channel: 9, ccController: 21, aggregation: 'average', notes: { tilt: 36, flick: 37, rotation: 38 } },
+      { group: 10, channel: 10, ccController: 21, aggregation: 'average', notes: { tilt: 36, flick: 37, rotation: 38 } },
+    ];
+    var stepIndex = 0;
+    var emitting = false;
+    var lastWalkHtml = '';
+    var counter = doc.getElementById('routing-step-counter');
+    var stepBox = doc.getElementById('routing-step');
+    var emitBtn = doc.getElementById('routing-emit');
+    var emitStatus = doc.getElementById('routing-emit-status');
     var data = null;
     var timer = null;
     var visible = false;
@@ -115,9 +141,14 @@
       var last = liveGroup && liveGroup.lastNote;
       return !!(last && last.gesture === gesture && now - Date.parse(last.at) <= 1200 && now >= Date.parse(last.at));
     }
-    function render() {
+    function currentSourceGroups() {
       var scoreGroups = data && data.score && data.score.groups;
-      var sourceGroups = scoreGroups && scoreGroups.length ? scoreGroups : groups;
+      return scoreGroups && scoreGroups.length ? scoreGroups : groups;
+    }
+    function render() {
+      var sourceGroups = currentSourceGroups();
+      matrix.innerHTML = sourceGroups.flatMap(function (group) { return ROUTING_VOICES.map(function (voice) { return '<article class="routing-cell" data-group="' + group.group + '" data-gesture="' + voice.gesture + '"></article>'; }); }).join('');
+      cells = Array.prototype.slice.call(matrix.querySelectorAll('.routing-cell'));
       var now = Date.now();
       cells.forEach(function (cell) {
         var groupId = Number(cell.dataset.group);
@@ -132,7 +163,7 @@
         cell.dataset.channel = channel; cell.dataset.note = note;
         cell.innerHTML = '<h3>Grupo ' + groupId + ' · ' + label + '</h3><p><span class="routing-dot' + (active ? ' is-on' : '') + '" aria-label="' + (active ? 'Recién disparó' : 'En espera') + '"></span>' + (active ? 'Recién disparó' : 'En espera') + '</p><p>Recibe ' + label + '</p><p>Envía Canal ' + channel + ' · NOTA ' + note + ' · fuerza ' + velocity + '</p><p>Mapear Nota ' + note + ' en canal ' + channel + ' → la voz del grupo ' + groupId + '</p>';
       });
-      faders.innerHTML = [1, 2, 3].map(function (id) {
+      faders.innerHTML = sourceGroups.map(function (group) { return group.group; }).map(function (id) {
         var spec = sourceGroups.find(function (item) { return item.group === id; }) || groups[id - 1];
         var live = data && data.groups && data.groups.find(function (item) { return item.group === id; });
         var value = live && Number.isFinite(live.value) ? Math.max(0, Math.min(100, live.value)) : 0;
@@ -152,7 +183,86 @@
         var symptom = ROUTING_SYMPTOMS[s.symptom] || 'Todo en orden: la última nota llegó a Ableton.';
         diagnosis.innerHTML = '<p>' + facts.join(' · ') + '</p><p class="routing-quiet">' + symptom + '</p>';
       }
+      renderWalk(sourceGroups);
     }
+
+    // The mapping walk: thirty note voices and ten continuous ones, in a fixed
+    // order, one per step, so Live can learn them without hunting cells.
+    function walkFor(sourceGroups) {
+      var notes = sourceGroups.flatMap(function (group) {
+        return ROUTING_VOICES.map(function (voice) {
+          return { output: 'note', group: group.group, channel: group.channel, note: group.notes ? group.notes[voice.gesture] : voice.note, label: voice.label };
+        });
+      });
+      var lanes = sourceGroups.map(function (group) {
+        return { output: 'cc', group: group.group, channel: group.channel, controller: group.ccController || 21, label: 'Movimiento continuo' };
+      });
+      return notes.concat(lanes);
+    }
+    function renderWalk(sourceGroups) {
+      if (!counter || !stepBox) return;
+      var voices = walkFor(sourceGroups);
+      if (stepIndex > voices.length - 1) stepIndex = voices.length - 1;
+      if (stepIndex < 0) stepIndex = 0;
+      var voice = voices[stepIndex];
+      if (!voice) return;
+      var target = voice.output === 'note'
+        ? 'canal ' + voice.channel + ' · NOTA ' + voice.note
+        : 'canal ' + voice.channel + ' · CC ' + voice.controller;
+      var lane = voice.output === 'note' ? 'Gestos · ' + voice.label : 'Movimiento continuo';
+      var html = '<p><strong>Grupo ' + voice.group + ' · ' + lane + '</strong></p>'
+        + '<p>Envía: ' + target + '</p>'
+        + '<ol><li>En Live: Ctrl + M.</li><li>Click en el parámetro a mapear.</li><li>Volvé acá y tocá Enviar.</li></ol>'
+        + (voice.output === 'cc'
+          ? '<p class="routing-quiet">El barrido mueve el fader de 0 a 127 para que Live aprenda el rango completo.</p>'
+          : '');
+      counter.textContent = 'Mapa paso ' + (stepIndex + 1) + ' de ' + voices.length;
+      if (html !== lastWalkHtml) { stepBox.innerHTML = html; lastWalkHtml = html; }
+    }
+    function currentVoice() {
+      return walkFor(currentSourceGroups())[stepIndex] || null;
+    }
+    function emitCurrent() {
+      var voice = currentVoice();
+      if (!voice || emitting) return;
+      emitting = true;
+      if (emitBtn) emitBtn.disabled = true;
+      if (emitStatus) emitStatus.textContent = 'Enviando…';
+      var body = voice.output === 'note'
+        ? { output: 'note', channel: voice.channel, note: voice.note, velocity: 100 }
+        : { output: 'cc', channel: voice.channel, controller: voice.controller };
+      fetch('/api/music/emit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+        .then(function (response) {
+          return response.json().then(function (payload) { return { ok: response.ok, payload: payload }; });
+        })
+        .then(function (result) {
+          if (!emitStatus) return;
+          if (result.ok) {
+            emitStatus.textContent = voice.output === 'note'
+              ? 'Nota enviada: Live ya la puede aprender.'
+              : 'Barrido enviado: Live ya puede aprender el fader.';
+            return;
+          }
+          var reason = result.payload && result.payload.reason;
+          emitStatus.textContent = ROUTING_EMIT_ERRORS[reason] || 'No se pudo enviar: el puente no aceptó el pedido.';
+        })
+        .catch(function () {
+          if (emitStatus) emitStatus.textContent = 'No se pudo enviar: el puente no responde.';
+        })
+        .then(function () {
+          emitting = false;
+          if (emitBtn) emitBtn.disabled = false;
+        });
+    }
+    if (emitBtn) emitBtn.addEventListener('click', emitCurrent);
+    var prevBtn = doc.getElementById('routing-previous');
+    var nextBtn = doc.getElementById('routing-next');
+    if (prevBtn) prevBtn.addEventListener('click', function () { stepIndex = Math.max(0, stepIndex - 1); render(); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { stepIndex = Math.min(walkFor(currentSourceGroups()).length - 1, stepIndex + 1); render(); });
     function poll() {
       if (!visible) return;
       fetch('/api/music').then(function (response) { if (!response.ok) throw new Error('HTTP ' + response.status); return response.json(); }).then(function (result) { data = result; render(); }).catch(function () { data = null; render(); });

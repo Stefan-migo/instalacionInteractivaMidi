@@ -12,10 +12,10 @@ describe('Operator MIDI routing section', () => {
     expect(html).toMatch(/section=routing/);
   });
 
-  test('declares all nine voices with fixed channel and note pairs, never numbered pads', () => {
-    for (let group = 1; group <= 3; group += 1) {
+  test('declares ten groups with fixed channel and note pairs, never numbered pads', () => {
+    for (let group = 1; group <= 10; group += 1) {
       for (const [gesture, note] of [['tilt', 36], ['flick', 37], ['rotation', 38]]) {
-        expect(html).toMatch(new RegExp(`data-group="${group}"[^>]*data-gesture="${gesture}"[^>]*data-channel="${group}"[^>]*data-note="${note}"`));
+        expect(js).toMatch(new RegExp(`group: ${group}, channel: ${group}[^}]*notes: \\{ tilt: 36, flick: 37, rotation: 38 \\}`));
       }
     }
     expect(html).not.toMatch(/pad\s*\d+/i);
@@ -24,6 +24,16 @@ describe('Operator MIDI routing section', () => {
   test('explains note versus CC and read-only boundary', () => {
     expect(html).toContain('Los gestos mandan notas. El movimiento continuo manda CC.');
     expect(html).toMatch(/explica qué mapear[\s\S]*no modifica el mapa MIDI de Ableton/i);
+  });
+
+  test('provides guided mapping controls and POST emission contract', () => {
+    expect(html).toMatch(/routing-step-counter/);
+    for (const label of ['Anterior', 'Enviar', 'Siguiente']) expect(html).toContain(label);
+    expect(js).toMatch(/fetch\(['"]\/api\/music\/emit['"]/);
+    expect(js).toContain("output: 'note'");
+    expect(js).toContain("output: 'cc'");
+    expect(js).toContain('controller:');
+    expect(js).toContain('topologia');
   });
 
   test('routing styles use no radius or shadow declarations', () => {

@@ -33,7 +33,14 @@ output { float: right; font-variant-numeric: tabular-nums; }
 .routing-split { display: grid; grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr); gap: 1.5rem; }
 .routing-lead { font-size: 1.5rem; }
 .routing-matrix { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--rule-color); border-left: 1px solid var(--rule-color); }
-.routing-cell { min-height: 9rem; padding: .65rem; border-right: 1px solid var(--rule-soft); border-bottom: 1px solid var(--rule-soft); }
+.routing-cell { min-height: 0; padding: .35rem; border-right: 1px solid var(--rule-soft); border-bottom: 1px solid var(--rule-soft); }
+.routing-matrix { max-height: 70vh; overflow: auto; }
+.routing-cell h3 { margin: .2rem 0; }
+.routing-cell p { margin: .2rem 0; }
+.routing-walk { margin: 1rem 0; padding: .75rem 0; border-top: 1px solid var(--rule-color); border-bottom: 1px solid var(--rule-soft); }
+.routing-walk-controls { display: flex; flex-wrap: wrap; gap: .4rem; }
+#routing-emit-status { min-height: 1.5em; color: var(--quiet); }
+#routing-emit:disabled { cursor: not-allowed; opacity: .55; }
 .routing-cell h3, .routing-live h3 { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; }
 .routing-cell p, .routing-fader p { color: var(--quiet); line-height: 1.6; }
 .routing-dot { display: inline-block; width: .625rem; height: .625rem; margin-right: .4rem; border: 1px solid var(--ink); vertical-align: middle; }
