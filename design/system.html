@@ -1,19 +1,207 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MIDI Ficha · Design system</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sistema · MIDI</title>
 <style>
-:root{--ink:#000000;--paper:#ffffff;--quiet:rgba(0,0,0,.58);--rule-soft:rgba(0,0,0,.22);--hair:1px;--rule:2px;--font-display:ui-monospace,'SF Mono','Cascadia Mono',Consolas,'Courier New',monospace;--font-text:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--font-size-xs:.6875rem;--font-size-sm:.75rem;--font-size-md:.875rem;--font-size-lg:1.0625rem;--font-size-xl:1.5rem;--font-size-xxl:1.875rem;--space-3xs:.125rem;--space-2xs:.25rem;--space-xs:.375rem;--space-sm:.5rem;--space-md:.75rem;--space-lg:1rem;--space-xl:1.5rem;--space-2xl:2rem;--radius:0;--dur-fast:120ms;--dur-base:200ms}
-*{box-sizing:border-box;border-radius:0!important}body{margin:0;background:#e8e8e8;color:#161616;font:14px/1.5 var(--font-text)}main{width:1440px;margin:0 auto;padding:38px 44px;background:#f5f5f5;min-height:100vh}.top{display:flex;align-items:end;justify-content:space-between;border-bottom:2px solid #222;padding-bottom:18px;margin-bottom:26px}.top h1{font:700 34px/1 var(--font-display);text-transform:uppercase;margin:0}.top p,.eyebrow{font:700 11px var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:#555}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}.card{background:#fff;border:1px solid #bbb;padding:18px}.wide{grid-column:span 8}.narrow{grid-column:span 4}.half{grid-column:span 6}.full{grid-column:span 12}h2{margin:0 0 14px;font:700 14px var(--font-display);letter-spacing:.14em;text-transform:uppercase}.swatches{display:flex;gap:12px}.swatch{width:150px;height:86px;border:1px solid #000;padding:8px;font:11px var(--font-display);display:flex;align-items:end}.ink{background:var(--ink);color:var(--paper)}.paper{background:var(--paper);color:var(--ink)}.quiet{background:var(--quiet);color:white}.soft{background:var(--rule-soft);color:#000}.type{font-family:var(--font-display);text-transform:uppercase;font-weight:700}.type div{border-bottom:1px solid var(--rule-soft);padding:5px 0}.sizes{display:flex;align-items:end;gap:16px}.sizes span{font-family:var(--font-display);font-weight:700}.bars{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:end;height:110px}.bar{background:var(--ink);height:var(--h);display:flex;align-items:end;color:var(--paper);padding:5px;font:10px var(--font-display)}.geometry{display:grid;grid-template-columns:1fr 1fr;gap:12px}.sample{height:92px;border:2px solid var(--ink);display:grid;place-items:center;font:700 13px var(--font-display);text-transform:uppercase}.specimens{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.spec{border:var(--hair) solid var(--ink);padding:14px;min-height:100px}.block{background:var(--ink);color:var(--paper);padding:12px;font:700 12px var(--font-display);letter-spacing:.14em;text-transform:uppercase}.chip{display:inline-block;border:1px solid var(--ink);padding:5px 8px;font:700 10px var(--font-display);text-transform:uppercase}.chip.fill{background:var(--ink);color:var(--paper)}.slider{height:2px;background:var(--ink);margin:18px 2px;position:relative}.slider:after{content:'';position:absolute;left:62%;top:-6px;width:14px;height:14px;background:var(--ink)}.data{display:flex;justify-content:space-between;border-bottom:1px solid var(--rule-soft);padding:8px 0;font:11px var(--font-display);text-transform:uppercase}.data b{color:var(--quiet)}.overlay{background:var(--paper);border:2px solid var(--ink);padding:14px;width:210px;font-size:12px}.operator{border:2px solid var(--ink)}.operator header{padding:12px;border-bottom:2px solid var(--ink);font:700 12px var(--font-display);letter-spacing:.14em;text-transform:uppercase}.operator section{padding:12px;border-bottom:1px solid var(--rule-soft)}.operator strong{font:700 11px var(--font-display);letter-spacing:.14em;text-transform:uppercase}.catalog{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--rule-soft);padding:9px;font:11px var(--font-display);text-transform:uppercase}.sq{width:12px;height:12px;border:2px solid var(--ink);display:inline-block}.sq.on{background:var(--ink)}.matrix{width:100%;border-collapse:collapse;font:12px var(--font-display);text-transform:uppercase}.matrix th,.matrix td{text-align:left;border-bottom:1px solid var(--rule-soft);padding:12px}.demo-invert{background:var(--ink);color:var(--paper);padding:5px 9px;display:inline-block}.ruleheavy{border-bottom:2px solid var(--ink)}
-</style></head>
-<body><main>
-<header class="top"><h1>MIDI / Ficha</h1><p>System reference · monochrome · orthogonal · elevation: none</p></header>
-<div class="grid">
-<section class="card wide"><h2>01 / Colour</h2><div class="swatches"><div class="swatch ink">--ink · #000000</div><div class="swatch paper">--paper · #ffffff</div><div class="swatch quiet">--quiet · rgba(0,0,0,.58)</div><div class="swatch soft">--rule-soft · rgba(0,0,0,.22)</div></div></section>
-<section class="card narrow"><h2>02 / Type scale</h2><div class="sizes"><span style="font-size:var(--font-size-xs)">XS</span><span style="font-size:var(--font-size-sm)">SM</span><span style="font-size:var(--font-size-md)">MD</span><span style="font-size:var(--font-size-lg)">LG</span><span style="font-size:var(--font-size-xl)">XL</span></div><div class="type" style="font-size:var(--font-size-md);margin-top:14px">Ficha / ui-monospace</div></section>
-<section class="card half"><h2>03 / Spacing scale</h2><div class="bars"><div class="bar" style="--h:8px">3XS</div><div class="bar" style="--h:16px">2XS</div><div class="bar" style="--h:24px">XS</div><div class="bar" style="--h:32px">SM</div><div class="bar" style="--h:48px">MD</div><div class="bar" style="--h:64px">LG</div><div class="bar" style="--h:80px">XL</div><div class="bar" style="--h:96px">2XL</div></div></section>
-<section class="card half"><h2>04 / Geometry</h2><div class="geometry"><div class="sample">Radius: 0</div><div class="sample" style="border-style:dashed">Shadow: none<br>Elevation: none</div></div></section>
-<section class="card full"><h2>05 / Component specimens</h2><div class="specimens"><div class="spec"><div class="block">Primary block</div></div><div class="spec"><div class="block" style="background:var(--paper);color:var(--ink);border:2px solid var(--ink)">Outlined block</div></div><div class="spec"><span class="chip fill">● Connected</span><br><br><span class="chip">○ Standby</span></div><div class="spec"><div class="data"><b>Opacity</b><strong>75%</strong></div><div class="slider"></div></div><div class="spec"><div class="overlay"><b>OVERLAY CARD</b><p>Panel liso con contraste suficiente.</p><span class="demo-invert">Continue</span></div></div><div class="spec"><div class="operator"><header>Operator panel</header><section><strong>01 — Layout</strong><div class="data"><b>Preset</b><strong>Grid</strong></div></section></div></div><div class="spec"><h2 style="font-size:11px">Table row</h2><div class="data"><b>Rotation</b><strong>−12°</strong></div></div><div class="spec"><h2 style="font-size:11px">Catalog row</h2><div class="catalog"><span class="sq on"></span><span>01</span><strong>Fragment</strong></div></div></div></section>
-<section class="card full"><h2>06 / State matrix — no colour</h2><table class="matrix"><thead><tr><th>State</th><th>Mark</th><th>Block / rule</th><th>Meaning</th></tr></thead><tbody><tr><td>Connected</td><td><span class="sq on"></span> Filled</td><td><span class="demo-invert">CONNECTED</span></td><td class="ruleheavy">Active connection</td></tr><tr><td>Disconnected</td><td><span class="sq"></span> Outlined</td><td>Outlined label</td><td>Inactive connection</td></tr><tr><td>Recording</td><td><span class="sq on"></span> Filled</td><td><span class="demo-invert">REC ●</span></td><td class="ruleheavy">Recording in progress</td></tr><tr><td>Active</td><td><span class="sq on"></span> Filled</td><td>Inverted block</td><td>Selected / enabled</td></tr><tr><td>Inactive</td><td><span class="sq"></span> Outlined</td><td>Open / outlined</td><td>Not selected</td></tr></tbody></table></section>
-</div></main></body></html>
+  :root {
+    --mark-on-canvas: #f4f4f4;
+    color-scheme: dark;
+    --ink: #f4f4f4;
+    --paper: #111111;
+    --quiet: rgba(244,244,244,.60);
+    --rule-color: #f4f4f4;
+    --rule-soft: rgba(244,244,244,.22);
+    --hair: 1px;
+    --rule: 2px;
+    --font-display: 'DM Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace;
+    --font-mono: 'Roboto Mono', 'DM Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+    --font-text: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-size-xs: 0.6875rem;
+    --font-size-sm: 0.75rem;
+    --font-size-md: 0.875rem;
+    --font-size-lg: 1.0625rem;
+    --font-size-xl: 1.5rem;
+    --font-size-xxl: 1.875rem;
+    --tracking: 0.14em;
+    --tracking-tight: -0.015em;
+    --space-3xs: 0.125rem;
+    --space-2xs: 0.25rem;
+    --space-xs: 0.375rem;
+    --space-sm: 0.5rem;
+    --space-md: 0.75rem;
+    --space-lg: 1rem;
+    --space-xl: 1.5rem;
+    --space-2xl: 2rem;
+    --radius: 0;
+    --dur-fast: 120ms;
+    --dur-base: 200ms;
+    --z-base: 1;
+    --z-overlay: 100;
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --ink: #111111;
+    --paper: #f4f4f4;
+    --quiet: rgba(17,17,17,.58);
+    --rule-color: #111111;
+    --rule-soft: rgba(17,17,17,.22);
+  }
+  * { box-sizing: border-box; border-radius: 0 !important; box-shadow: none !important; }
+  html { background: var(--paper); color: var(--ink); }
+  body { margin: 0; font-family: var(--font-mono); font-size: var(--font-size-sm); }
+  header { display: flex; align-items: baseline; gap: var(--space-lg); flex-wrap: wrap; padding: var(--space-lg) var(--space-xl); border-bottom: var(--rule) solid var(--rule-color); }
+  h1 { margin: 0; font-size: var(--font-size-lg); letter-spacing: var(--tracking); text-transform: uppercase; }
+  h1 span, .quiet { color: var(--quiet); }
+  .spacer { margin-left: auto; }
+  main { max-width: 1100px; margin: 0 auto; padding: var(--space-md) var(--space-xl) var(--space-2xl); }
+  section { padding: var(--space-lg) 0; border-bottom: var(--hair) solid var(--rule-soft); }
+  h2 { display: flex; justify-content: space-between; margin: 0 0 var(--space-md); padding-bottom: var(--space-xs); border-bottom: var(--hair) solid var(--rule-color); font-size: var(--font-size-sm); letter-spacing: .12em; text-transform: uppercase; }
+  h2 b { font-weight: 400; color: var(--quiet); text-transform: none; letter-spacing: 0; }
+  p { margin: 0 0 var(--space-md); font-size: var(--font-size-sm); line-height: 1.6; max-width: 74ch; }
+  code { font-family: ui-monospace, 'SF Mono', Consolas, monospace; }
+  .note { border-left: var(--rule) solid var(--rule-color); padding: var(--space-sm) var(--space-md); color: var(--quiet); max-width: 80ch; }
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); }
+  .swatch { border: var(--hair) solid var(--rule-color); }
+  .chip { height: 4.5rem; border-bottom: var(--hair) solid var(--rule-color); display: flex; align-items: center; justify-content: center; font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; }
+  .meta { padding: var(--space-sm) var(--space-md); }
+  .meta strong { display: block; font-size: var(--font-size-sm); }
+  .meta span { color: var(--quiet); font-size: var(--font-size-xs); }
+  .scale > * { padding: var(--space-2xs) 0; border-bottom: var(--hair) solid var(--rule-soft); }
+  .type-xxl { font-size: var(--font-size-xxl); letter-spacing: var(--tracking-tight); font-weight: 700; text-transform: uppercase; line-height: 1; }
+  .type-xl { font-size: var(--font-size-xl); letter-spacing: var(--tracking-tight); }
+  .type-lg { font-size: var(--font-size-lg); }
+  .type-md { font-size: var(--font-size-md); }
+  .type-sm { font-size: var(--font-size-sm); }
+  .type-xs { font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; }
+  .system-text { font-family: var(--font-text); font-size: var(--font-size-md); }
+  .spaces { display: flex; gap: var(--space-md); flex-wrap: wrap; align-items: flex-end; }
+  .space { text-align: center; font-size: var(--font-size-xs); color: var(--quiet); }
+  .space i { display: block; background: var(--ink); }
+  .controls { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-md); }
+  button, select { min-height: 2.4rem; padding: var(--space-sm) var(--space-md); border: var(--hair) solid var(--rule-color); background: var(--paper); color: var(--ink); font: inherit; font-size: var(--font-size-sm); cursor: pointer; }
+  button:hover, button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  button:focus-visible, select:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: var(--rule) solid var(--ink); outline-offset: 3px; }
+  button:disabled { cursor: not-allowed; opacity: .55; }
+  .row { display: grid; grid-template-columns: 8rem 1fr; align-items: center; gap: var(--space-sm); padding: var(--space-sm) 0; border-bottom: var(--hair) solid var(--rule-soft); }
+  .row label { font-size: var(--font-size-sm); }
+  input[type="range"] { width: 100%; accent-color: var(--ink); }
+  output { float: right; font-variant-numeric: tabular-nums; }
+  .catalog-row { display: grid; grid-template-columns: 3rem 1fr auto; gap: var(--space-md); align-items: center; padding: var(--space-sm) 0; border-bottom: var(--hair) solid var(--rule-soft); }
+  .thumb { width: 2.5rem; height: 2.5rem; border: var(--hair) solid var(--rule-color); display: grid; place-items: center; font-size: var(--font-size-xs); color: var(--quiet); }
+  .states { display: flex; gap: var(--space-xl); flex-wrap: wrap; align-items: center; }
+  .state { display: flex; align-items: center; gap: var(--space-sm); font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; }
+  .dot { width: .75rem; height: .75rem; border: var(--hair) solid var(--rule-color); }
+  .dot.on { background: var(--ink); }
+  .pill { border: var(--hair) solid var(--rule-color); padding: var(--space-2xs) var(--space-sm); }
+  .pill.inv { background: var(--ink); color: var(--paper); }
+  table { border-collapse: collapse; width: 100%; font-size: var(--font-size-xs); }
+  th, td { text-align: left; padding: var(--space-xs) var(--space-sm); border-bottom: var(--hair) solid var(--rule-soft); }
+  th { letter-spacing: var(--tracking); text-transform: uppercase; color: var(--quiet); font-weight: 400; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>MIDI <span>· Sistema</span></h1>
+  <p class="quiet" style="margin:0">Tokens reales, leídos de <code>shared/theme.css</code>, <code>phone-client/style.css</code> y <code>operator/operator.css</code></p>
+  <button type="button" class="spacer" id="theme">Tema claro</button>
+</header>
+
+<main>
+  <section>
+    <h2>01 · Color <b>dos colores y dos neutros derivados</b></h2>
+    <p>El tema por defecto es oscuro. Claro es una inversión explícita por <code>[data-theme="light"]</code>, no la base. Probá el botón del encabezado: todos los tokens se invierten y los controles nativos siguen el tema por <code>color-scheme</code>.</p>
+    <div class="swatches">
+      <div class="swatch"><div class="chip" style="background:var(--ink)"></div><div class="meta"><strong>--ink</strong><span>texto y reglas plenas</span></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--paper)"></div><div class="meta"><strong>--paper</strong><span>fondo</span></div></div>
+      <div class="swatch"><div class="chip" style="color:var(--quiet);background:var(--paper)">quiet</div><div class="meta"><strong>--quiet</strong><span>texto secundario</span></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--rule-color)"></div><div class="meta"><strong>--rule-color</strong><span>regla plena, 2px</span></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--rule-soft)"></div><div class="meta"><strong>--rule-soft</strong><span>regla suave, 1px</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#111111;color:#f4f4f4;border-bottom:0">marca</div><div class="meta"><strong>--mark-on-canvas</strong><span>#f4f4f4 en ambos temas: el canvas es negro</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>02 · Tipografía <b>Roboto Mono y DM Mono</b></h2>
+    <div class="scale">
+      <div class="type-xxl">Instalación interactiva</div>
+      <div class="type-xl">Grupo 1 · teléfonos 1 a 10</div>
+      <div class="type-lg">Ruteo MIDI</div>
+      <div class="type-md">Canal 1 · nota 36 · fuerza 40–127</div>
+      <div class="type-sm">La superficie del Operator usa Roboto Mono en toda su extensión. Las familias reales están auto-hospedadas en <code>shared/fonts/</code> y las sirve el bridge; este tablero no puede cargarlas por la regla de no usar URLs, así que se ven con el fallback del sistema.</div>
+      <div class="type-xs">etiqueta de sección · tracking .14em</div>
+      <div class="system-text">La pila de texto del teléfono, cuando hace falta leer un párrafo largo.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>03 · Espacio y geometría <b>radio 0, sin sombras</b></h2>
+    <div class="spaces">
+      <div class="space"><i style="width:.75rem;height:.75rem"></i>2xs</div>
+      <div class="space"><i style="width:1rem;height:1rem"></i>sm</div>
+      <div class="space"><i style="width:1.5rem;height:1.5rem"></i>md</div>
+      <div class="space"><i style="width:2rem;height:2rem"></i>lg</div>
+      <div class="space"><i style="width:2.5rem;height:2.5rem"></i>xl</div>
+      <div class="space"><i style="width:3rem;height:3rem"></i>2xl</div>
+    </div>
+    <p class="note" style="margin-top:var(--space-lg)"><code>operator/operator.css</code> fuerza <code>border-radius: 0</code> y <code>box-shadow: none</code> con <code>!important</code>. La elevación no existe en esta identidad: la jerarquía se construye con peso de regla y relleno.</p>
+  </section>
+
+  <section>
+    <h2>04 · Controles <b>Operator</b></h2>
+    <div class="controls">
+      <button type="button">Distribución</button>
+      <button type="button" aria-pressed="true">Activo</button>
+      <button type="button" disabled>Deshabilitado</button>
+      <select><option>Filtro: ninguno</option><option>Filtro: sepia</option></select>
+    </div>
+    <div class="row"><label for="s">Escala</label><input id="s" type="range" min="0" max="100" value="64"><output>64</output></div>
+    <div class="catalog-row"><div class="thumb">01</div><div>Célula 01 · <span class="quiet">imagen cargada</span></div><div class="quiet">alta</div></div>
+    <div class="catalog-row"><div class="thumb">—</div><div>Célula 02 · <span class="quiet">vacía</span></div><div class="quiet">baja</div></div>
+  </section>
+
+  <section>
+    <h2>05 · Estado sin color <b>relleno contra contorno</b></h2>
+    <div class="states">
+      <span class="state"><i class="dot on"></i>conectado</span>
+      <span class="state"><i class="dot"></i>desconectado</span>
+      <span class="pill">en espera</span>
+      <span class="pill inv">disparando</span>
+    </div>
+    <p class="note" style="margin-top:var(--space-lg)">Un indicador activo es un cuadrado relleno de tinta; uno inactivo, un cuadrado contorneado. Un control presionado se invierte. Nunca se agrega color para decir estado.</p>
+  </section>
+
+  <section>
+    <h2>06 · Escala de movimiento <b>120 y 200 ms</b></h2>
+    <table>
+      <thead><tr><th>Token</th><th>Valor</th><th>Uso</th></tr></thead>
+      <tbody>
+        <tr><td><code>--dur-fast</code></td><td>120ms</td><td>realimentación inmediata de un control</td></tr>
+        <tr><td><code>--dur-base</code></td><td>200ms</td><td>transición de un panel o una hoja</td></tr>
+        <tr><td>reduced-motion</td><td>—</td><td>se apaga todo: transiciones, animaciones y scroll suave</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var button = document.getElementById('theme');
+    function render() {
+      var light = root.dataset.theme === 'light';
+      button.textContent = light ? 'Tema oscuro' : 'Tema claro';
+      button.setAttribute('aria-pressed', light ? 'true' : 'false');
+    }
+    button.addEventListener('click', function () {
+      if (root.dataset.theme === 'light') { delete root.dataset.theme; }
+      else { root.dataset.theme = 'light'; }
+      render();
+    });
+    render();
+  })();
+</script>
+</body>
+</html>

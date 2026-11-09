@@ -1,21 +1,60 @@
+/* Identity fonts, self-hosted under shared/fonts/ and served by the bridge.
+   The show machine must not depend on the network for its own typography.
+   Source of the families and colours: "Identidad MIDI.pdf" (midiWeb/Docs) —
+   Roboto Mono and DM Mono, Regular and Medium, on #f4f4f4 and #111111. */
+@font-face {
+  font-family: 'DM Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/shared/fonts/dm-mono-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'DM Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/shared/fonts/dm-mono-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/shared/fonts/roboto-mono-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/shared/fonts/roboto-mono-500.woff2') format('woff2');
+}
+
 :root {
-  /* Canvas shader stays near-black in every UI theme; keep the watermark visible. */
-  --mark-on-canvas: #ffffff;
+  /* Canvas shader stays near-black in every UI theme; keep the watermark visible.
+     The identity's light tone, not pure white: #ffffff would be a third colour. */
+  --mark-on-canvas: #f4f4f4;
   color-scheme: dark;
-  --ink: #ffffff;
-  --paper: #000000;
-  --quiet: rgba(255,255,255,.60);
-  --rule-color: #ffffff;
-  --rule-soft: rgba(255,255,255,.22);
+  --ink: #f4f4f4;
+  --paper: #111111;
+  --quiet: rgba(244,244,244,.60);
+  --rule-color: #f4f4f4;
+  --rule-soft: rgba(244,244,244,.22);
+  /* Data, numbers and tables: the Operator surface is monospace end to end. */
+  --font-mono: 'Roboto Mono', 'DM Mono', ui-monospace, 'SF Mono', Consolas, monospace;
 }
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --ink: #000000;
-  --paper: #ffffff;
-  --quiet: rgba(0,0,0,.58);
-  --rule-color: #000000;
-  --rule-soft: rgba(0,0,0,.22);
+  --ink: #111111;
+  --paper: #f4f4f4;
+  --quiet: rgba(17,17,17,.58);
+  --rule-color: #111111;
+  --rule-soft: rgba(17,17,17,.22);
 }
 
 html {
