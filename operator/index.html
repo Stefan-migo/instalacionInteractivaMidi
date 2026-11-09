@@ -25,6 +25,22 @@
       <div class="range"><label for="opacity">Opacidad</label><output id="opacity-value"></output><input id="opacity" type="range" min="0" max="1" step="0.05"></div>
     </section>
     <section><h2>06 · Acciones</h2><button id="scatter-all">Esparcir todo</button><div class="actions"><button data-action="left">Girar −15°</button><button data-action="right">Girar +15°</button><button data-action="front">Traer al frente</button><button data-action="hide">Ocultar</button></div></section>
+    <section id="routing" aria-labelledby="routing-title">
+      <h2 id="routing-title">07 · Ruteo MIDI</h2>
+      <div class="routing-actions"><button id="routing-print" type="button">Imprimir</button><button id="routing-copy" type="button">Copiar hoja</button><a href="?section=routing" target="_blank" rel="noopener">Ventana aparte</a><span id="routing-copy-status" role="status" aria-live="polite"></span></div>
+      <div class="routing-split">
+        <div class="routing-sheet">
+          <p class="routing-lead">Los gestos mandan notas. El movimiento continuo manda CC.</p>
+          <div id="routing-matrix" class="routing-matrix" aria-label="Hoja de ruteo MIDI"><article class="routing-cell" data-group="1" data-gesture="tilt" data-channel="1" data-note="36"></article><article class="routing-cell" data-group="1" data-gesture="flick" data-channel="1" data-note="37"></article><article class="routing-cell" data-group="1" data-gesture="rotation" data-channel="1" data-note="38"></article><article class="routing-cell" data-group="2" data-gesture="tilt" data-channel="2" data-note="36"></article><article class="routing-cell" data-group="2" data-gesture="flick" data-channel="2" data-note="37"></article><article class="routing-cell" data-group="2" data-gesture="rotation" data-channel="2" data-note="38"></article><article class="routing-cell" data-group="3" data-gesture="tilt" data-channel="3" data-note="36"></article><article class="routing-cell" data-group="3" data-gesture="flick" data-channel="3" data-note="37"></article><article class="routing-cell" data-group="3" data-gesture="rotation" data-channel="3" data-note="38"></article></div>
+        </div>
+        <aside class="routing-live">
+          <h3>B · Faders en vivo</h3><div id="routing-faders"></div>
+          <h3>C · Diagnóstico</h3><div id="routing-diagnosis" aria-live="polite">Consultando el estado MIDI…</div>
+        </aside>
+      </div>
+      <p class="routing-limit">Solo lectura. Esta hoja explica qué mapear y no modifica el mapa MIDI de Ableton.</p>
+      <textarea id="routing-copy-text" class="routing-copy-text" aria-label="Texto de la hoja MIDI" readonly></textarea>
+    </section>
   </main>
 </body>
 </html>
