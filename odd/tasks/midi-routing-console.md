@@ -24,7 +24,11 @@ S8 — Placement, decided by the user: "es verdad el panel de configuracion lo n
 
 S9 — Visual grammar: the Operator page (`/operator/`) is Spanish, with numbered sections (01 Distribución ... 06 Acciones), a theme toggle and a connection line. This panel is section `07 · Ruteo MIDI` in that grammar, in that language.
 
-S10 — Behavioural floor: the existing suite stays green (39 suites / 437 tests at `dd8ad9e`), and the panel adds no load to the music path: it reads state, it never writes to the MIDI side.
+S10 — Behavioural floor: the existing suite stays green, and the panel adds no load to the music path: it reads state, and the only thing it may ever send is one voice at a time, on an explicit click, under S13.
+
+S12 — Topology, widened by the user: "creo quizas los grupos deberian ser de menos dispositivos. asi tenemos mas grupos al menos unos 10 grupos. asi tenemos de una 30 opciones de notas enviadas." Decided with the user: ten groups of three phones, one channel per group. Channels 1 to 10, each carrying notes 36 (Inclinar) / 37 (Látigo) / 38 (Girar) and `CC 21`, so the pair channel+number stays unique and forty parameters reach Ableton: thirty note voices and ten continuous ones. The partition is configuration, never a constant: the bridge takes the group count and derives the phones per group from the thirty slots, the score declares the same number of groups, and a mismatch is reported in the panel instead of silently dropping phones.
+
+S13 — Mapping mode, granted by the user: "eso es lo que necesito un panel ui. para poder enviar las notas que se van a configurar", because Live learns a mapping only when the message actually arrives in its Ctrl+M mode. The panel may EMIT one voice on demand: a note with its note-off, or a CC sweep so Live captures the whole range. The pane walks the forty voices one step at a time and tells the operator what to do in Live. It still never edits `music/mapping.json` and never writes Ableton's MIDI map; emission is single-shot, only on an explicit click, and only while an agent is connected with its port open, otherwise it says why it cannot fire.
 
 ## Tasks
 
@@ -36,6 +40,8 @@ S10 — Behavioural floor: the existing suite stays green (39 suites / 437 tests
 | T9.4 | Operator section `07 · Ruteo MIDI`: the 3x3 sheet, the three fader rows, the status block, built from the chosen direction `03-dos-columnas` (handoff started) | S1-S5, S9 | writer | `09c9e74` |
 | T9.5 | Printable and copyable sheet — folded into T9.4, because the chosen artboard already draws both controls | S6 | writer | `09c9e74` |
 | T9.6 | Own-window mode: the section alone when the page is opened for it — folded into T9.4 | S7 | writer | `09c9e74` |
+| T9.7 | Topology from configuration: ten groups of three, channel per group, score and setup sheet rewritten, mismatch reported | S12 | writer | - |
+| T9.8 | Mapping walk: the panel emits one voice per step and tells the operator what to click in Live | S13 | writer | - |
 
 ## Log
 
@@ -48,3 +54,7 @@ L3 — Discovery while scoping: `p5-collage/control-panel.js` no longer exists i
 L4 — Directions written in `design/midi-routing/` (commit `4fea482`), three structures and one palette: `01-matriz` makes the 3x3 grid the page, `02-planilla` is a routing schedule per group, `03-dos-columnas` splits the sheet from the live state. The user chose **03 · Dos columnas**: "deja la matriz a la izquierda y los faders y el diagnóstico a la derecha para mantener la hoja y el estado a la vista".
 
 L5 — The artboards first carried invented MIDI data, written by the worker from the panel brief instead of from the score: every cell said `NOTA 36` whichever the gesture, every cell mapped `Pad 1 del Drum Rack`, and the three groups were shown with three different aggregation modes. Corrected against `music/mapping.json` and `SETUP.md` §5 before showing them: `tilt` 36, `flick` 37, `rotation` 38, one channel per group, `CC 21` on each, `average` in all three, and the mapping target stated as "Nota N en canal C → la voz del grupo C", because Live stores a channel+number pair and the setup sheet numbers no pads. Recorded so the implementation does not inherit the first draft.
+
+L7 — The two answers. Topology: ten groups of three phones, one channel per group (channels 1..10, notes 36/37/38, `CC 21`), forty parameters in total, one Live track per group matching the `Apariciones` tracks the user already conducts. Mapping: the guided walk, one voice per step, because mapping forty parameters by hand without a guide is tedious. The user's own numbers, verbatim: "en total serian 12 midi notas/cc", "al menos unos 10 grupos", "asi tenemos de una 30 opciones de notas enviadas".
+
+L6 — User, verbatim: "ok veo entonces que tenemos los movimientos de los grupos por gestos. y tambien los faders por grupos. en total serian 12 midi notas/cc que se van a estar enviando a ableton. podriamos hacer mas grupos? son 12 parametros los que eventualmente podrian activar elementos en ableton? el dise;o de la composicion sonora, tiene mucho elementos mucho mas que 12. [...] entonces creo quizas los grupos deberian ser de menos dispositivos. asi tenemos mas grupos al menos unos 10 grupos. asi tenemos de una 30 opciones de notas enviadas." And then: "ademas el operator es solo lectura, como hago para configurar precisamente esto es lo que me falta ahora. si quisiera configurar ableton tengo que ponerme en el modo mapeo midi Ctrl + M y de alguna forma enviar la nota (en un controlador midi yo apretaria un pad, o una tecla.) eso es lo que necesito un panel ui. para poder enviar las notas que se van a configurar. se entiende?" Two requirement changes, both widening what S5 allowed: more voices than twelve, and the panel must be able to EMIT one voice on demand so Live can learn it. Neither touches the score: the panel still never edits `mapping.json` nor Ableton's MIDI map.
