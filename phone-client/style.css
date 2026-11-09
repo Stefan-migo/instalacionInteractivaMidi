@@ -34,6 +34,13 @@
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
 
+/* ============================================================
+   Ficha — the interface as a printed technical form.
+   White field, black ink, 1 px rules, tabular alignment.
+   State is told by filled/empty, never by colour: the identity
+   has exactly two colours and no accent. Tokens: design/system.md.
+   ============================================================ */
+
 /* Page and screens */
 body {
   background: var(--paper);
@@ -49,16 +56,47 @@ body {
 }
 #app { position: relative; width: 100%; height: 100vh; height: 100dvh; margin: 0 auto; z-index: var(--z-base); display: flex; flex-direction: column; overflow: hidden; }
 .hidden { display: none !important; }
-.screen { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; background: var(--paper); padding: var(--space-xl); }
+.screen { display: flex; flex-direction: column; justify-content: center; gap: var(--space-md); flex: 1; background: var(--paper); padding: var(--space-xl) var(--space-lg); }
 .screen.hidden { display: none !important; }
-#splash-screen, #permission-screen { text-align: center; }
-.splash-content, .permission-content { display: flex; flex-direction: column; align-items: center; gap: var(--space-xl); max-width: 320px; margin: 0 auto; }
-#splash-mark { width: min(58%, 190px); height: auto; margin-bottom: var(--space-sm); fill: currentColor; }
-.splash-tagline, #permission-screen h2 { font-family: var(--font-display); font-size: var(--font-size-xxl); font-weight: 700; letter-spacing: var(--tracking-tight); text-transform: uppercase; line-height: 1; }
-#permission-screen h2 { font-size: var(--font-size-xl); }
-#permission-screen p { color: var(--quiet); line-height: 1.6; }
 
-/* Printed-form buttons and errors */
+/* Primitives: the vocabulary every screen is built from */
+.display { font-family: var(--font-display); font-weight: 500; font-size: var(--font-size-xxl); line-height: .95; letter-spacing: var(--tracking-tight); text-transform: uppercase; }
+.num { font-family: var(--font-display); font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; color: var(--quiet); }
+.lead { max-width: 34ch; color: var(--quiet); font-size: var(--font-size-sm); line-height: 1.6; }
+.rule { border: 0; border-top: var(--hair) solid var(--rule-soft); }
+.data { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); padding: var(--space-xs) 0; border-bottom: var(--hair) solid var(--rule-soft); font-family: var(--font-display); font-size: var(--font-size-sm); }
+.data .k { color: var(--quiet); }
+.data .v { font-variant-numeric: tabular-nums; }
+.btn { appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2xs); min-height: 44px; padding: var(--space-sm) var(--space-md); background: var(--paper); color: var(--ink); border: var(--hair) solid var(--rule-color); font-family: var(--font-display); font-size: var(--font-size-sm); font-weight: 500; line-height: 1.25; letter-spacing: var(--tracking); text-transform: uppercase; cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast); }
+.btn:active { background: var(--ink); color: var(--paper); }
+.btn--fill { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.btn--fill:active { background: var(--paper); color: var(--ink); }
+.btn--quiet { border-color: var(--rule-soft); color: var(--quiet); }
+.btn--sm { min-height: 36px; padding: var(--space-2xs) var(--space-sm); font-size: var(--font-size-xs); }
+.state-sq { display: inline-block; flex: none; width: 8px; height: 8px; border: var(--hair) solid var(--ink); }
+.state-sq--on { background: var(--ink); }
+
+/* Splash: cover sheet of the form */
+.splash { justify-content: flex-start; gap: var(--space-lg); padding: calc(var(--space-2xl) + env(safe-area-inset-top)) var(--space-lg) calc(var(--space-xl) + env(safe-area-inset-bottom)); }
+.splash .top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-md); }
+#splash-mark { width: 88px; height: auto; fill: currentColor; }
+.splash .est { text-align: right; font-family: var(--font-display); font-size: var(--font-size-xs); line-height: 1.4; letter-spacing: var(--tracking); text-transform: uppercase; color: var(--quiet); }
+.splash .fields { display: flex; flex-direction: column; gap: var(--space-sm); margin-top: auto; }
+.splash .cta { margin-top: var(--space-sm); }
+
+/* Permission: two numbered fields and the error block */
+.perm { justify-content: flex-start; gap: var(--space-md); padding-top: calc(var(--space-xl) + env(safe-area-inset-top)); }
+.perm .field { display: flex; flex-direction: column; gap: var(--space-2xs); padding-bottom: var(--space-sm); border-bottom: var(--hair) solid var(--rule-soft); }
+.perm .field .head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); }
+.perm .field p { color: var(--quiet); font-size: var(--font-size-sm); line-height: 1.6; }
+.perm .spacer { flex: 1; min-height: var(--space-md); }
+.perm .err { display: flex; flex-direction: column; gap: var(--space-2xs); padding: var(--space-sm); border: var(--hair) solid var(--ink); }
+.perm .err.hidden { display: none !important; }
+.perm .err strong { font-family: var(--font-display); font-size: var(--font-size-xs); font-weight: 500; letter-spacing: var(--tracking); text-transform: uppercase; }
+.perm .btn { width: 100%; }
+.error-text { color: var(--quiet); font-size: var(--font-size-sm); line-height: 1.6; }
+
+/* Printed-form buttons still used by the screens not yet rebuilt (T5.2-T5.4) */
 .ink-btn, .stamp-btn, .duration-btn, .help-btn, .photo-action-btn, .gallery-close-btn, .wizard-cancel-btn {
   appearance: none; background: var(--paper); color: var(--ink); border: var(--rule) solid var(--rule-color);
   font: 700 var(--font-size-sm)/1.25 var(--font-display); letter-spacing: var(--tracking); text-transform: uppercase;
@@ -66,11 +104,6 @@ body {
 }
 .ink-btn { width: 100%; padding: var(--space-md) var(--space-lg); }
 .ink-btn:active, .duration-btn:active, .gallery-close-btn:active { background: var(--ink); color: var(--paper); }
-#splash-participar-btn { max-width: 240px; background: var(--ink); color: var(--paper); }
-.permission-error { display: flex; flex-direction: column; align-items: center; gap: var(--space-md); margin-top: var(--space-md); padding: var(--space-md); border: var(--rule) solid var(--ink); }
-.permission-error.hidden { display: none !important; }
-.error-text { color: var(--quiet); font-size: var(--font-size-sm); line-height: 1.6; }
-#reload-btn { max-width: 200px; }
 
 /* Dashboard header and connection */
 #dashboard { position: relative; width: 100%; height: 100%; }

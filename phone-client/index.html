@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <title>MIDI · Collage interactivo</title>
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#f4f4f4">
   <link rel="icon" href="/phone-client/icons/favicon.ico" sizes="any">
   <link rel="icon" href="/phone-client/icons/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/phone-client/icons/apple-touch-icon.png">
@@ -15,25 +15,47 @@
 <body>
   <div id="app">
     <!-- ===== Screen 1: Splash ===== -->
-    <div id="splash-screen" class="screen">
-      <div class="splash-content">
-        <svg id="splash-mark" role="img" aria-label="MIDI" viewBox="0 0 770 789"><path d="M144 0h340v1h-340zM512 0h141v1h-141zM143 1h342v141h-342zM512 1h142v141h-142zM116 142h368v1h-368zM512 142h141v1h-141zM116 143h142v316h-142zM314 143h142v316h-142zM512 169h141v1h-141zM512 170h142v289h-142zM0 525h38v38h-38zM150 525h38v38h-38zM244 525h113v38h-113zM413 525h151v19h-151zM657 525h113v38h-113zM413 544h170v19h-170zM0 563h57v19h-57zM131 563h57v19h-57zM281 563h39v188h-39zM413 563h38v188h-38zM544 563h57v19h-57zM695 563h38v188h-38zM0 582h75v18h-75zM113 582h75v18h-75zM563 582h38v150h-38zM0 600h188v20h-188zM0 620h38v169h-38zM56 620h76v18h-76zM150 620h38v169h-38zM57 638h74v1h-74zM75 639h38v37h-38zM545 732h56v1h-56zM544 733h57v18h-57zM244 751h113v38h-113zM413 751h188v1h-188zM657 751h113v38h-113zM413 752h170v18h-170zM413 770h151v19h-151z"/></svg>
-        <h1 class="splash-tagline">Collage Interactivo</h1>
-        <button id="splash-participar-btn" class="ink-btn">Participar</button>
+    <div id="splash-screen" class="screen splash">
+      <div class="top">
+        <svg id="splash-mark" role="img" aria-label="MIDI" viewBox="0 0 728 620"><path d="M37 0h462v192h-462zM535 0h193v192h-193zM0 192h193v428h-193zM268 192h192v428h-192zM536 228h192v1h-192zM535 229h193v391h-193z"/></svg>
+        <p class="est">MIDI<br>Colectivo<br>artístico</p>
+      </div>
+
+      <h1 class="display">Collage<br>interactivo</h1>
+      <p class="lead">Treinta fragmentos en un lienzo compartido. Cada persona mueve el suyo con el teléfono.</p>
+
+      <div class="fields">
+        <div class="data"><span class="k">Fragmentos</span><span class="v">30</span></div>
+        <div class="data"><span class="k">Lienzo</span><span class="v">1920 × 1080</span></div>
+        <div class="data"><span class="k">Sesión</span><span class="v">abierta</span></div>
+        <div class="cta"><button id="splash-participar-btn" class="btn btn--fill">Participar</button></div>
       </div>
     </div>
 
     <!-- ===== Screen 2: Permission ===== -->
-    <div id="permission-screen" class="screen hidden">
-      <div class="permission-content">
-        <h2>Participá del collage</h2>
-        <p>Necesitamos acceso a los sensores de tu teléfono para que puedas interactuar con la obra.</p>
-        <button id="permission-btn" class="ink-btn">Activar sensores</button>
-        <div id="permission-error" class="permission-error hidden">
-          <p class="error-text">Sin los sensores no podrás mover tu fragmento. Si querés participar, recargá la página e intentá de nuevo.</p>
-          <button id="reload-btn" class="ink-btn">Recargar</button>
-        </div>
+    <div id="permission-screen" class="screen perm hidden">
+      <p class="num">02 / 03 — Sensores</p>
+      <h2 class="display">Acceso al<br>movimiento</h2>
+
+      <div class="field">
+        <div class="head"><span class="num">Campo 01</span><span class="num">Requerido</span></div>
+        <p>El movimiento del teléfono mueve tu fragmento, así que necesitamos los sensores.</p>
       </div>
+
+      <div class="field">
+        <div class="head"><span class="num">Campo 02</span><span class="num">Opcional</span></div>
+        <p>Los gestos usan ese mismo movimiento. Podés practicarlos antes de grabar y manejar todo desde la hoja de controles.</p>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div id="permission-error" class="err hidden">
+        <strong>Error</strong>
+        <p class="error-text">Sin los sensores no podrás mover tu fragmento. Si querés participar, recargá la página e intentá de nuevo.</p>
+        <button id="reload-btn" class="btn btn--quiet">Recargar</button>
+      </div>
+
+      <button id="permission-btn" class="btn btn--fill">Activar sensores</button>
     </div>
 
     <!-- ===== Screen 3: Dashboard ===== -->
