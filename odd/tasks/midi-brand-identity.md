@@ -32,7 +32,7 @@ S10 — The projector canvas field is black with monochrome noise, not the warm 
 | T2 | Design system sync: capture the current tokens into `design/system.md` + `design/system.html` as the replacement baseline | S4, S6 | inline | U1 `docs: capture the current design tokens as the reskin baseline` |
 | T3 | Three design directions in `design/midi-brand/`, each a self-contained artboard set, plus `design.json` and the canvas | S4, S5, S6 | inline | U2 `docs: add three MIDI brand design directions` |
 | T4 | User picks the direction to implement | S3, S5 | inline (decision) | — |
-| T5 | Apply the chosen direction to `phone-client/` (screens, wizard, help overlay) | S3, S8 | writer | U3 |
+| T5 | Apply the chosen direction to `phone-client/` (screens, wizard, help overlay) — **reopened: not implemented in `main`**, see L17 | S3, S8 | writer | U3 (unverified) |
 | T6 | Apply the chosen direction to the operator panel in `p5-collage/` | S3, S8 | writer | U4 |
 | T7 | Shells + web brand assets (favicon, Apple Touch, maskable, `site.webmanifest`) | S3, S7 | writer | U5 |
 | T8 | Verify: suite green, endpoints alive, artboards match the implementation | S8, S9 | verify | (folded into U5) |
@@ -71,3 +71,9 @@ L14 — Transient RED window, recorded so it is not mistaken for a worker defect
 L15 — User, verbatim: "ok perfecto se ve bien. me falta el fondo del p5-collage actualmente sigue con el background antiguo". Correct observation and a gap in this feature's original scope: S3 reskinned chrome only, and the projected field is drawn by the WebGL shader in `p5-collage/background-texture.js` (`gfx.fill(235, 217, 179)` at :20 and :33, warm shader base), not by CSS. Removing the paper `body` colour did not touch it. Basis for S10 and T9.
 
 L16 — Field decision: the user chose "Negro con ruido monocromo" over pure black and over white paper. Rationale of record: a full 1920×1080 white field is a wall of light in a dark room and lowers photo contrast; pure black loses the paper grain that is a signature of the project; black with monochrome noise keeps the tactility and lets the fragments be the only lit thing on screen. The warm-toned border styles are acknowledged as a possible follow-up rather than silently restyled here.
+
+L17 — Handoff re-opened with evidence. `gentle_design implement` targeted `midi-brand/02-ficha.html` and the canvas reported it as already implemented, but the phone client on `main` does not carry the Ficha grammar. `phone-client/index.html` still ships `status-row`, `tools-panel`, `actions-grid`, `stamp-btn`, `vintage-slider` and `control-group`, and nothing implements the artboard's numbered fields ("02 / 03 — Sensores", "Campo 01", "Requerido"), its tabular data rows (Fragmentos / Lienzo / Sesión), `sheet-tabs`, `row-actions`, or the filled-versus-empty `state-sq` vocabulary. A grep for those markers across `index.html`, `style.css` and `app.js` returns only four unrelated `tabular` hits. So T5 is not done and the canvas label was wrong.
+
+Size and risk, recorded before anyone starts: T5 is a structural rewrite of the phone client's markup plus its stylesheet, not a token change. `phone-client/app.js` queries many of those IDs and classes (the coupling contracts in `design/system.md` §9), the suite has 440 tests across 40 suites, and this is the surface every visitor holds in their hand. It must not ride inside the identity PR #17, which is deliberately token-only and already green.
+
+Status: the handoff stays `in_progress`; it is not claimed as implemented. This log entry is left uncommitted because the handoff commits nothing, and the target branch has not been chosen yet.
