@@ -36,7 +36,7 @@ S11 — Behavioral floor: the existing suite stays green (29 suites / 354 tests 
 | T4 | Local agent: reconnect with backoff, no dangling parameters on disconnect | S2, S3, S4 | inline | `23543dd` |
 | T5 | `music/mapping.js` + `music/mapping.json`: agent-side shaping (curve, EMA, deadband, rate limit); aggregation lives in the bridge, in `group-state.js` | S3, S9, S10 | inline, test-first | `bf9d3f4` |
 | T5b | Push the gesture thresholds and spans from the score over `music-config`, so the bridge derives with the file's numbers and the velocity span stops saturating | S3, S10 | inline, test-first | `6e2fc86` |
-| T6 | Load rehearsal with 30 virtual phones; measure real CC/s | S1, S11 | - | - |
+| T6 | Load rehearsal with 30 virtual phones; measure real CC/s (measured, see L15) and the human half with Live | S1, S11 | inline | measured |
 | T7 | Cloud hardening: WebSocket heartbeat, single instance, Render limits | S2, S6, S7 | - | - |
 | T8 | Gesture triggers in the bridge: turn tilt/rotation thresholds and the existing DTW flick into discrete per-group note events (threshold, hysteresis, cooldown, intensity to velocity) | S1, S3, S4 | inline | `76112b1` |
 
@@ -69,3 +69,17 @@ L12 — T8 closed in `76112b1`, docs in `a63a686`. The nine voices now exist end
 L13 — T5 closed in `bf9d3f4`: `music/mapping.json` (the score — one block per group with its channel, aggregation, ccController, curve, ema, deadband, maxPerSecond and the nine note numbers) plus `music/mapping.js` (normalizeMapping, applyCurve, createEma, createGroupShaper). The agent now shapes every group value through curve -> EMA -> deadband -> rate limit before it reaches the wire, and takes its channels and note numbers from the file instead of implying them from the group number. A broken score never throws: each invalid value is replaced by its default and reported in one log line. 17 tests; suite 36 suites / 420 tests green. Deliberate gap, written into SETUP.md so nobody is fooled: onThreshold/offThreshold/span are in the file but the bridge still derives gestures with its built-in defaults; T5b pushes them over music-config. That task also closes the T8 finding, because the velocity span becomes 90 degrees for tilt instead of being derived from the threshold, which is what saturated every tilt past 60 degrees.
 
 L14 — T5b closed in `6e2fc86`: the score grew a top-level `derivation` block (thresholds, spans and cooldown belong to a phone, not to a group) and each group keeps only `notes`; the agent pushes derivation over `music-config`, the bridge calls `configure()` and drops the old latches, and `velocityFor` uses `span`. Verified through the real port: a 65 degree tilt now leaves at velocity 74 and a 70 degree tilt at 79, where both used to leave at 127 — which proves the whole chain, because the number can only come from the file. 3 new tests; suite 36 suites / 424 tests green. Still open: T6, T7, T9.
+
+L15 — T6 measured with 30 virtual phones through the real bridge, agent and port (`C:\Users\El Mismisimo\midi-smoke\t6-load.js`). 890 sensor frames per second go in — the same 30 Hz x 30 phones the phone client produces — and this is what comes out:
+
+| | Sala quieta | 30 teléfonos inclinándose a la vez (10 ráfagas / 5 s) |
+|---|---|---|
+| Frames de sensor que entran | 890/s | 890/s |
+| CC que salen | **0,6/s** | **42/s** |
+| Notas que salen (note-on) | **0** | **60** |
+| Notas sin el voice gate | 0 | 600 |
+| Techo teórico de CC | 60/s | 60/s |
+
+Three things worth keeping. First, a calm room is essentially silent on the wire: the deadband turns 300 possible CC messages into 3, so a room that is not moving is not flooding MIDI. Second, ten phones per group tilting together produce exactly one voice per gesture per group: 600 raw note-ons collapse to 60, and the velocity is the strongest of the batch (84 for tilt, 78 for rotation, both from the span in the score). Third, the note rate during a storm is 12/s across the whole installation, which is nothing for MIDI.
+
+Not measured, and not measurable from a script: whether a person can attribute a sound to their own gesture. That half needs a human holding a phone, and a real phone needs a secure context — so it waits for the HTTPS deployment or a tunnel, not for more testing.
