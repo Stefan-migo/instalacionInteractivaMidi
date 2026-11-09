@@ -35,10 +35,10 @@ S10 — The projector canvas field is black with monochrome noise, not the warm 
 | T3 | Three design directions in `design/midi-brand/`, each a self-contained artboard set, plus `design.json` and the canvas | S4, S5, S6 | inline | U2 `docs: add three MIDI brand design directions` |
 | T4 | User picks the direction to implement | S3, S5 | inline (decision) | — |
 | T5 | Apply the chosen direction to `phone-client/` (screens, wizard, help overlay) — **reopened: not implemented in `main`**, see L17. Superseded by T5.1-T5.5 | S3, S8, S11 | — | U3 (reverted; see L17) |
-| T5.1 | Ficha primitives in `phone-client/style.css` (`.display`, `.num`, `.data`, `.btn`, `.state-sq`, `.sheet-tabs`, `.row-actions`, `.rows`, `.range`) and the light surface; splash + permission rebuilt as a printed form | S3, S8, S11 | inline | U7 |
-| T5.2 | Dashboard head and HUD: `dash-head` cells (fragment number, filled connection square, help), status chips, torn photo frame with caption | S8, S11 | inline | U8 |
-| T5.3 | Fixed collapsible sheet: tab strip always visible, `row-actions` (‹ › Rec Látigo Al frente Filtro), control rows with rail + square thumb, Tránsito rows | S8, S11 | inline | U9 |
-| T5.4 | Overlays in the grammar: help card, gesture gallery, practice, hint; wizard steps | S8, S11 | inline | U10 |
+| T5.1 | Ficha primitives in `phone-client/style.css` (`.display`, `.num`, `.data`, `.btn`, `.state-sq`, `.sheet-tabs`, `.row-actions`, `.rows`, `.range`) and the light surface; splash + permission rebuilt as a printed form | S3, S8, S11 | inline | U7 `f8a25fc` |
+| T5.2 | Dashboard head and HUD: `dash-head` cells (fragment number, filled connection square, help), status chips, torn photo frame with caption | S8, S11 | inline | U8 `9e91e7c` |
+| T5.3 | Fixed collapsible sheet: tab strip always visible, `row-actions` (‹ › Rec Látigo Al frente Filtro), control rows with rail + square thumb, Tránsito rows | S8, S11 | inline | U9 `9c5720a` |
+| T5.4 | Contents of the help card and the gesture gallery move into the Guía and Gestos tabs (both overlays removed), practice and the wizard rebuilt on the same primitives, hint restyled | S8, S11 | inline | U10 `61caf57` |
 | T5.5 | Dead-CSS sweep, `design/system.md` sync, verification (suite green, endpoints alive, artboard compared screen by screen) | S8, S11 | inline | U11 |
 | T6 | Apply the chosen direction to the operator panel in `p5-collage/` | S3, S8 | writer | U4 |
 | T7 | Shells + web brand assets (favicon, Apple Touch, maskable, `site.webmanifest`) | S3, S7 | writer | U5 |
