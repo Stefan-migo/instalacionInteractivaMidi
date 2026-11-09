@@ -199,7 +199,11 @@ show machine, so a change here is a file edit and a restart, never a deploy.
 | `ema` | smoothing in (0, 1]: `1` is no smoothing at all |
 | `deadband` | ignore changes smaller than this many 7-bit steps |
 | `maxPerSecond` | traffic cap for that group |
-| `gestures.*.note` | the note each gesture fires (36 tilt, 37 flick, 38 rotation) |
+| `notes.*` | the note each gesture fires in that group (36 tilt, 37 flick, 38 rotation) |
+
+Top-level `derivation` block: `cooldownMs` plus, per gesture, `onThreshold`,
+`offThreshold` and `span`. These describe a phone, not a group, which is why
+they live outside the groups.
 
 The agent applies the pipeline in this order: **curve → EMA → deadband → rate
 limit**. That order is not arbitrary — it is the order you reason about the sound:
@@ -208,8 +212,16 @@ what shape, how smooth, what is too small to hear, how many messages per second.
 A broken score never stops the show: every invalid value is replaced by its
 default and reported as one line in the agent log.
 
-**Not wired yet.** `onThreshold`, `offThreshold` and `span` are recorded here for
-the operator and for the console, but the bridge still derives gestures with its
-built-in defaults (tilt 30/20, rotation 120/60, 200 ms cooldown). Editing a
-threshold in this file changes nothing until the agent pushes them over
-`music-config`.
+**Derivation travels with the score.** On connect the agent pushes the
+`derivation` block to the bridge over `music-config`, so editing a threshold here
+and restarting the agent is enough — no code change, no deploy. Adopting new
+numbers also clears the phones' armed state, because a latch armed under the old
+thresholds means nothing under the new ones.
+
+`span` is how far past the threshold a gesture must travel to reach full
+velocity. With `span: 90` and a 30 degree threshold, a 60 degree tilt is about
+half force instead of a maximum hit; measured through the port, a 65 degree tilt
+now leaves at velocity 74 and a 70 degree tilt at 79.
+
+Flick has no derivation entry: it is recognised by the DTW matcher on the gesture
+the phone already sends, not derived from the sensor stream.
