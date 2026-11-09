@@ -314,4 +314,30 @@ describe('music agent', () => {
 
     expect(midiOut.notes[0]).toEqual(['on', 2, 62, 55]);
   });
+
+  test('the score drives the curve, not just the channel map', () => {
+    const mapping = {
+      groups: [{ group: 1, channel: 1, curve: { shape: 'exponential', gamma: 2 }, ema: 1, deadband: 0 }],
+    };
+    const { agent, sockets, midiOut } = buildAgent({ mapping });
+    agent.start();
+    sockets.last().open();
+
+    sockets.last().emit({ type: 'music-state', groups: [{ group: 1, value: 64, phones: 4 }] });
+
+    expect(midiOut.sent).toEqual([[1, 21, 32]]);
+  });
+
+  test('a group can be moved to another channel from the score', () => {
+    const mapping = {
+      groups: [{ group: 1, channel: 1 }, { group: 2, channel: 5, ema: 1, deadband: 0 }],
+    };
+    const { agent, sockets, midiOut } = buildAgent({ mapping });
+    agent.start();
+    sockets.last().open();
+
+    sockets.last().emit({ type: 'music-state', groups: [{ group: 2, value: 100, phones: 4 }] });
+
+    expect(midiOut.sent).toEqual([[5, 21, 100]]);
+  });
 });

@@ -10,6 +10,8 @@
 // Everything is injectable (socket, MIDI output, scheduler, clock) so the whole
 // behaviour is testable without a network, a port or a timer.
 
+const { normalizeMapping, createGroupShaper, DEFAULT_MAPPING } = require('./mapping');
+
 const DEFAULT_GROUP_MODES = ['average', 'average', 'average'];
 const DEFAULT_BRIDGE_URL = 'ws://localhost:8080';
 const DEFAULT_CC_CONTROLLER = 21;
@@ -47,21 +49,36 @@ function createMusicAgent(options = {}) {
   const bridgeUrl = options.bridgeUrl || DEFAULT_BRIDGE_URL;
   const ccController = Number.isInteger(options.ccController) ? options.ccController : DEFAULT_CC_CONTROLLER;
   const safeValue = Number.isInteger(options.safeValue) ? options.safeValue : DEFAULT_SAFE_VALUE;
-  const notes = {
-    ...DEFAULT_GESTURE_NOTES,
-    ...(options.notes && typeof options.notes === 'object' ? options.notes : {}),
-  };
+
+  // The score. The file wins, defaults fill the gaps, and complaints are logged
+  // instead of thrown: a broken score must not stop the show.
+  const mappingResult = normalizeMapping(options.mapping === undefined ? DEFAULT_MAPPING : options.mapping);
+  const mapping = { ...mappingResult.mapping, safeValue };
+  for (const complaint of mappingResult.errors) log('[agent] mapping: ' + complaint);
+
+  const notesByGroup = new Map();
+  for (const groupConfig of mapping.groups) {
+    const notes = {};
+    for (const name of Object.keys(groupConfig.gestures)) {
+      const gesture = groupConfig.gestures[name];
+      if (Number.isInteger(gesture.note)) notes[name] = gesture.note;
+    }
+    notesByGroup.set(groupConfig.group, notes);
+  }
+  const globalNotes = options.notes && typeof options.notes === 'object' ? options.notes : null;
+
   const noteDurationMs = Number.isFinite(options.noteDurationMs) ? options.noteDurationMs : DEFAULT_NOTE_DURATION_MS;
   const modes = Array.isArray(options.modes) && options.modes.length > 0
     ? options.modes.slice()
-    : DEFAULT_GROUP_MODES.slice();
+    : mapping.groups.map((groupConfig) => groupConfig.aggregation);
   const backoff = {
     baseMs: options.backoff && Number.isFinite(options.backoff.baseMs) ? options.backoff.baseMs : 500,
     maxMs: options.backoff && Number.isFinite(options.backoff.maxMs) ? options.backoff.maxMs : 8000,
   };
 
-  const groupCount = modes.length;
-  const lastSent = new Map();
+  const groupCount = mapping.groups.length;
+  const now = typeof options.now === 'function' ? options.now : () => Date.now();
+  const shapers = new Map();
   let socket = null;
   let reconnectTimer = null;
   let attempt = 0;
@@ -69,15 +86,44 @@ function createMusicAgent(options = {}) {
   let stopped = false;
   const pendingNoteOffs = new Set();
 
-  function sendValue(group, value) {
-    if (!Number.isInteger(group) || group < 1 || group > groupCount) return false;
-    const value7 = to7Bit(value);
-    if (value7 === null) return false;
-    if (lastSent.get(group) === value7) return false;
-    lastSent.set(group, value7);
-    if (midiOut && typeof midiOut.sendCC === 'function') {
-      midiOut.sendCC(group, ccController, value7);
+  function configFor(group) {
+    return mapping.groups[group - 1] || null;
+  }
+
+  function channelFor(group) {
+    const config = configFor(group);
+    return config && Number.isInteger(config.channel) ? config.channel : group;
+  }
+
+  function controllerFor(group) {
+    const config = configFor(group);
+    return config && Number.isInteger(config.ccController) ? config.ccController : ccController;
+  }
+
+  function notesFor(group) {
+    return { ...(notesByGroup.get(group) || {}), ...(globalNotes || {}) };
+  }
+
+  function shaperFor(group) {
+    let shaper = shapers.get(group);
+    if (!shaper) {
+      const config = configFor(group) || {};
+      shaper = createGroupShaper({
+        curve: config.curve,
+        ema: config.ema,
+        deadband: config.deadband,
+        maxPerSecond: config.maxPerSecond,
+        safeValue,
+        now,
+      });
+      shapers.set(group, shaper);
     }
+    return shaper;
+  }
+
+  function emitCC(group, value) {
+    if (!midiOut || typeof midiOut.sendCC !== 'function') return false;
+    midiOut.sendCC(channelFor(group), controllerFor(group), value);
     return true;
   }
 
@@ -85,10 +131,9 @@ function createMusicAgent(options = {}) {
   // point is to leave a known position, not to save three messages.
   function parkAllGroups() {
     for (let group = 1; group <= groupCount; group += 1) {
-      lastSent.set(group, safeValue);
-      if (midiOut && typeof midiOut.sendCC === 'function') {
-        midiOut.sendCC(group, ccController, safeValue);
-      }
+      const shaper = shapers.get(group);
+      if (shaper) shaper.reset();
+      emitCC(group, safeValue);
     }
   }
 
@@ -107,15 +152,18 @@ function createMusicAgent(options = {}) {
     if (!Array.isArray(message.groups)) return;
     for (const entry of message.groups) {
       if (!entry || typeof entry !== 'object') continue;
-      const value = to7Bit(entry.value);
-      sendValue(entry.group, value === null ? safeValue : value);
+      const group = entry.group;
+      if (!Number.isInteger(group) || group < 1 || group > groupCount) continue;
+      // curve -> EMA -> deadband -> rate limit, then to the wire.
+      const value = shaperFor(group).push(to7Bit(entry.value));
+      if (value !== null) emitCC(group, value);
     }
   }
 
   // A gesture is a note on the group's channel, held just long enough to be
   // heard and then released, so an instrument never keeps a stuck note.
   function playNote(group, gesture, velocity) {
-    const note = notes[gesture];
+    const note = notesFor(group)[gesture];
     if (!Number.isInteger(note)) return false;
     if (!Number.isInteger(group) || group < 1) return false;
     if (!midiOut || typeof midiOut.sendNoteOn !== 'function') return false;
@@ -264,8 +312,18 @@ if (require.main === module) {
   const portName = process.env.MIDI_PORT || DEFAULT_PORT_NAME;
   const bridgeUrl = process.env.BRIDGE_URL || DEFAULT_BRIDGE_URL;
 
+  const fs = require('fs');
+  const path = require('path');
+
+  let rawMapping;
+  try {
+    rawMapping = JSON.parse(fs.readFileSync(path.join(__dirname, 'mapping.json'), 'utf-8'));
+  } catch (error) {
+    console.warn('[agent] mapping.json unreadable (' + error.message + '): using built-in defaults.');
+  }
+
   const midiOut = createMidiOut({ portName, log: (line) => console.log(line) });
-  const agent = createMusicAgent({ midiOut, bridgeUrl, log: (line) => console.log(line) });
+  const agent = createMusicAgent({ midiOut, bridgeUrl, mapping: rawMapping, log: (line) => console.log(line) });
 
   if (!agent.isMidiAvailable()) {
     console.warn(`[agent] MIDI output "${portName}" unavailable: the installation keeps running in visual-only mode.`);
