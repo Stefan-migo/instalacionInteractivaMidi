@@ -6,7 +6,9 @@ const { SlotAllocator } = require('./slot-allocator');
 const { MessageRelay, parseRecordingDuration } = require('./message-relay');
 const { GestureStore } = require('./gesture-store');
 const { DTWMatcher } = require('./dtw-matcher');
-const { createGroupAggregator, sensorIntensity } = require('./group-state');
+const { createGroupAggregator, sensorIntensity, groupForSlot } = require('./group-state');
+const { createGestureTriggers } = require('./gesture-triggers');
+const { createVoiceGate } = require('./voice-gate');
 
 const ROOT_DIR = path.join(__dirname, '..');
 // Overridable so tests (and deployments with assets elsewhere) do not depend on the
@@ -72,6 +74,11 @@ const phoneConnections = new Map();
 // answer with the aggregation they want. See odd/tasks/ableton-music.md, S3.
 const musicAgents = new Set();
 const groupAggregator = createGroupAggregator({ groupCount: 3, slotsPerGroup: 10 });
+const gestureTriggers = createGestureTriggers();
+const voiceGate = createVoiceGate();
+// Flick comes from the DTW matcher as an already-discrete event, so it has no
+// derived velocity. 100 reads as a firm hit without pretending to measure it.
+const FLICK_VELOCITY = 100;
 const MUSIC_STATE_INTERVAL_MS = 50;
 let musicStateTimer = null;
 
@@ -97,6 +104,12 @@ function startMusicStateTimer() {
   musicStateTimer = setInterval(() => {
     if (musicAgents.size === 0) return;
     broadcastToAgents({ type: 'music-state', groups: groupAggregator.snapshot() });
+    // The tick is also the dedupe window: ten phones of a group that gesture
+    // together become one voice with the hardest velocity of the batch.
+    const voices = voiceGate.flush();
+    if (voices.length > 0) {
+      broadcastToAgents({ type: 'music-gesture', voices });
+    }
   }, MUSIC_STATE_INTERVAL_MS);
   // The state feed must never be the reason the process (or a test run) stays alive.
   if (typeof musicStateTimer.unref === 'function') musicStateTimer.unref();
@@ -276,6 +289,16 @@ wss.on('connection', (ws) => {
         // Same frame, reduced once: the agents never see 30 phones, only 3 groups.
         groupAggregator.push(info.slot, sensorIntensity(msg));
 
+        // Continuous signals become discrete gestures only when someone wants them.
+        if (musicAgents.size > 0) {
+          const group = groupForSlot(info.slot);
+          if (group !== null) {
+            for (const event of gestureTriggers.feed(info.slot, msg)) {
+              voiceGate.add(group, event.gesture, event.velocity);
+            }
+          }
+        }
+
         // Feed samples to gesture recording (stores sensor data while recording)
         gestureStore.addSample(info.slot, msg);
 
@@ -285,11 +308,19 @@ wss.on('connection', (ws) => {
           broadcastToPlayers(relay.formatGestureEventMessage(
             info.slot, 'matched', matchResult.gestureId, matchResult.action
           ));
+          const flickGroup = groupForSlot(info.slot);
+          if (musicAgents.size > 0 && flickGroup !== null) {
+            voiceGate.add(flickGroup, 'flick', FLICK_VELOCITY);
+          }
         }
       } else if (msg.type === 'gesture') {
         const action = GESTURE_ACTIONS[msg.gesture];
         if (action) {
           broadcastToPlayers(relay.formatGestureEventMessage(info.slot, 'matched', null, action));
+          const declaredGroup = groupForSlot(info.slot);
+          if (musicAgents.size > 0 && declaredGroup !== null) {
+            voiceGate.add(declaredGroup, 'flick', FLICK_VELOCITY);
+          }
         }
       } else if (msg.type === 'action') {
         if (msg.action === 'record-start') {
@@ -402,6 +433,7 @@ wss.on('connection', (ws) => {
       phoneConnections.delete(ws);
       // A disconnected phone stops contributing instead of freezing its last value.
       groupAggregator.drop(info.slot);
+      gestureTriggers.reset(info.slot);
       broadcastToPlayers(relay.formatDisconnectMessage(info.slot));
     }
     if (info.role === 'player') {

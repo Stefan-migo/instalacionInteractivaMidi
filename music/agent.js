@@ -16,6 +16,9 @@ const DEFAULT_CC_CONTROLLER = 21;
 // Musically neutral: a lost link parks the parameters in the middle, which is
 // neither silence nor the last position the crowd happened to hold.
 const DEFAULT_SAFE_VALUE = 64;
+// One note per gesture per group: the nine voices of the score (S3).
+const DEFAULT_GESTURE_NOTES = { tilt: 36, flick: 37, rotation: 38 };
+const DEFAULT_NOTE_DURATION_MS = 120;
 
 function backoffDelay(attempt, options = {}) {
   const baseMs = Number.isFinite(options.baseMs) ? options.baseMs : 500;
@@ -44,6 +47,11 @@ function createMusicAgent(options = {}) {
   const bridgeUrl = options.bridgeUrl || DEFAULT_BRIDGE_URL;
   const ccController = Number.isInteger(options.ccController) ? options.ccController : DEFAULT_CC_CONTROLLER;
   const safeValue = Number.isInteger(options.safeValue) ? options.safeValue : DEFAULT_SAFE_VALUE;
+  const notes = {
+    ...DEFAULT_GESTURE_NOTES,
+    ...(options.notes && typeof options.notes === 'object' ? options.notes : {}),
+  };
+  const noteDurationMs = Number.isFinite(options.noteDurationMs) ? options.noteDurationMs : DEFAULT_NOTE_DURATION_MS;
   const modes = Array.isArray(options.modes) && options.modes.length > 0
     ? options.modes.slice()
     : DEFAULT_GROUP_MODES.slice();
@@ -59,6 +67,7 @@ function createMusicAgent(options = {}) {
   let attempt = 0;
   let reconnectCount = 0;
   let stopped = false;
+  const pendingNoteOffs = new Set();
 
   function sendValue(group, value) {
     if (!Number.isInteger(group) || group < 1 || group > groupCount) return false;
@@ -103,6 +112,24 @@ function createMusicAgent(options = {}) {
     }
   }
 
+  // A gesture is a note on the group's channel, held just long enough to be
+  // heard and then released, so an instrument never keeps a stuck note.
+  function playNote(group, gesture, velocity) {
+    const note = notes[gesture];
+    if (!Number.isInteger(note)) return false;
+    if (!Number.isInteger(group) || group < 1) return false;
+    if (!midiOut || typeof midiOut.sendNoteOn !== 'function') return false;
+
+    midiOut.sendNoteOn(group, note, velocity);
+    const entry = { handle: null, group, note };
+    entry.handle = scheduler.setTimeout(() => {
+      pendingNoteOffs.delete(entry);
+      if (midiOut && typeof midiOut.sendNoteOff === 'function') midiOut.sendNoteOff(group, note);
+    }, noteDurationMs);
+    pendingNoteOffs.add(entry);
+    return true;
+  }
+
   function handleMessage(message) {
     if (!message || typeof message !== 'object') return;
     if (message.type === 'music-config') {
@@ -116,6 +143,14 @@ function createMusicAgent(options = {}) {
     }
     if (message.type === 'music-state') {
       handleMusicState(message);
+      return;
+    }
+    if (message.type === 'music-gesture' && Array.isArray(message.voices)) {
+      for (const voice of message.voices) {
+        if (!voice || typeof voice !== 'object') continue;
+        const velocity = to7Bit(voice.velocity);
+        playNote(voice.group, voice.gesture, velocity === null ? 100 : velocity);
+      }
     }
   }
 
@@ -191,6 +226,12 @@ function createMusicAgent(options = {}) {
       scheduler.clearTimeout(reconnectTimer);
       reconnectTimer = null;
     }
+    // Release anything still ringing: stopping must not leave a stuck note.
+    for (const entry of pendingNoteOffs) {
+      scheduler.clearTimeout(entry.handle);
+      if (midiOut && typeof midiOut.sendNoteOff === 'function') midiOut.sendNoteOff(entry.group, entry.note);
+    }
+    pendingNoteOffs.clear();
     const closing = socket;
     socket = null;
     if (closing) {

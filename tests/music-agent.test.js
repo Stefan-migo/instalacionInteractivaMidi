@@ -71,8 +71,15 @@ function createFakeMidiOut() {
       sent.push([channel, controller, value]);
       return true;
     },
-    sendNoteOn: () => true,
-    sendNoteOff: () => true,
+    notes: [],
+    sendNoteOn(channel, note, velocity) {
+      this.notes.push(['on', channel, note, velocity]);
+      return true;
+    },
+    sendNoteOff(channel, note) {
+      this.notes.push(['off', channel, note]);
+      return true;
+    },
     close() {},
   };
 }
@@ -242,5 +249,69 @@ describe('music agent', () => {
     agent.stop();
 
     expect(pending.cleared).toBe(true);
+  });
+
+  test('a gesture voice becomes a note on that group channel, then is released', () => {
+    const { agent, sockets, midiOut, scheduler } = buildAgent();
+    agent.start();
+    sockets.last().open();
+
+    sockets.last().emit({
+      type: 'music-gesture',
+      voices: [
+        { group: 1, gesture: 'tilt', velocity: 90 },
+        { group: 3, gesture: 'flick', velocity: 100 },
+      ],
+    });
+
+    expect(midiOut.notes).toEqual([
+      ['on', 1, 36, 90],
+      ['on', 3, 37, 100],
+    ]);
+
+    scheduler.runAll();
+
+    expect(midiOut.notes).toEqual([
+      ['on', 1, 36, 90],
+      ['on', 3, 37, 100],
+      ['off', 1, 36],
+      ['off', 3, 37],
+    ]);
+  });
+
+  test('an unknown gesture is skipped instead of guessed', () => {
+    const { agent, sockets, midiOut } = buildAgent();
+    agent.start();
+    sockets.last().open();
+
+    expect(() => sockets.last().emit({
+      type: 'music-gesture',
+      voices: [{ group: 1, gesture: 'shrug', velocity: 80 }, { group: 0, gesture: 'tilt', velocity: 80 }],
+    })).not.toThrow();
+    expect(midiOut.notes).toEqual([]);
+  });
+
+  test('stop() releases a note that is still ringing', () => {
+    const { agent, sockets, midiOut } = buildAgent();
+    agent.start();
+    sockets.last().open();
+    sockets.last().emit({ type: 'music-gesture', voices: [{ group: 2, gesture: 'rotation', velocity: 70 }] });
+
+    agent.stop();
+
+    expect(midiOut.notes).toEqual([
+      ['on', 2, 38, 70],
+      ['off', 2, 38],
+    ]);
+  });
+
+  test('the nine voices can be remapped without touching the code', () => {
+    const { agent, sockets, midiOut } = buildAgent({ notes: { tilt: 60, flick: 61, rotation: 62 } });
+    agent.start();
+    sockets.last().open();
+
+    sockets.last().emit({ type: 'music-gesture', voices: [{ group: 2, gesture: 'rotation', velocity: 55 }] });
+
+    expect(midiOut.notes[0]).toEqual(['on', 2, 62, 55]);
   });
 });

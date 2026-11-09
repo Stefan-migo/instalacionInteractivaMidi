@@ -84,4 +84,34 @@ describe('bridge agent WebSocket', () => {
     expect(dropped.groups).toHaveLength(3);
     agent.close();
   });
+
+  test('a tilt past the threshold becomes one voice for its group', async () => {
+    const agent = await connect();
+    agent.send(JSON.stringify({ type: 'register', role: 'agent' }));
+    await next(agent, m => m.event === 'agent-ready');
+    await next(agent, m => m.type === 'music-config');
+
+    const phone = await connect();
+    phone.send(JSON.stringify({ type: 'register', role: 'phone' }));
+    const assigned = await next(phone, m => m.type === 'assigned');
+    const expectedGroup = Math.floor(assigned.slot / 10) + 1;
+
+    // Two phones' worth of tilts inside one tick must collapse into one voice.
+    for (let i = 0; i < 4; i += 1) {
+      phone.send(JSON.stringify({
+        type: 'sensor',
+        accel: { x: 0, y: 0, z: 9.8 },
+        gyro: { a: 0, b: 0, g: 0 },
+        orientation: { a: 0, b: 60, g: 0 },
+      }));
+    }
+
+    const gesture = await next(agent, m => m.type === 'music-gesture');
+    expect(gesture.voices).toHaveLength(1);
+    expect(gesture.voices[0]).toMatchObject({ group: expectedGroup, gesture: 'tilt' });
+    expect(gesture.voices[0].velocity).toBeGreaterThanOrEqual(40);
+
+    phone.close();
+    agent.close();
+  });
 });
