@@ -109,14 +109,30 @@ binary is published, so neither `node-gyp` nor Visual Studio is needed.
 One port carries every lane; Ableton's MIDI map stores *channel + number*, so the
 lanes never collide.
 
-| Channel | Lane | Message |
-|---------|------|---------|
-| 1..6 | phone groups (5 phones each) | CC, continuous parameters |
-| 10 | fire | notes, clips and scenes |
-| 16 | operator | reserved for the human running the show |
+Three groups of ten phones, one channel per group:
+
+| Channel | Group | CC (continuous) | Notes (gestures) |
+|---------|-------|-----------------|------------------|
+| 1 | slots 0-9 | CC 21 | 36 tilt, 37 flick, 38 rotation |
+| 2 | slots 10-19 | CC 21 | 36 tilt, 37 flick, 38 rotation |
+| 3 | slots 20-29 | CC 21 | 36 tilt, 37 flick, 38 rotation |
+| 16 | operator | reserved | reserved |
+
+Nine voices in total: 3 groups x 3 gestures. Every phone in a group triggers the
+same three sounds — that is what makes a crowd learnable in five minutes.
 
 Channels are written here as Ableton displays them (1..16). `bridge/midi-out.js`
-accepts 1..16 and encodes them to the wire format itself.
+accepts 1..16 and encodes them to the wire format itself. Note numbers are
+remappable through the agent's `notes` option today, and will come from
+`music/mapping.json` once the mapping file lands.
+
+A gesture is derived in the bridge from the sensor stream: tilt is the device's
+beta angle past 30 degrees, rotation is the gyro gamma past 120 deg/s, and flick
+is the existing DTW match. Each one re-arms only after falling back below its
+release point, and a 200 ms cooldown stops a held phone from machine-gunning.
+Phones of the same group gesturing together collapse into one note per 50 ms
+tick, carrying the hardest velocity of the batch — a group accent, not ten
+stacked notes.
 
 ## 6. Diagnosing "nothing happens"
 
@@ -153,7 +169,8 @@ npm run agent
 
 What it does: registers as `agent`, receives three group values at 20 Hz, and
 sends one CC per group on that group's channel (group 1 -> channel 1, and so on).
-It only sends when a value changes, so a still crowd is not a CC flood.
+It only sends when a value changes, so a still crowd is not a CC flood. It also
+turns each gesture voice into a note on that same channel.
 
 What it does when things break:
 
