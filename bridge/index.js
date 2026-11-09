@@ -10,6 +10,7 @@ const { createGroupAggregator, sensorIntensity, groupForSlot } = require('./grou
 const { createGestureTriggers } = require('./gesture-triggers');
 const { createVoiceGate } = require('./voice-gate');
 const { startHeartbeat } = require('./heartbeat');
+const { createMusicState } = require('./music-state');
 
 const ROOT_DIR = path.join(__dirname, '..');
 // Overridable so tests (and deployments with assets elsewhere) do not depend on the
@@ -81,6 +82,7 @@ const musicAgents = new Set();
 const groupAggregator = createGroupAggregator({ groupCount: 3, slotsPerGroup: 10 });
 const gestureTriggers = createGestureTriggers();
 const voiceGate = createVoiceGate();
+const musicState = createMusicState();
 // Flick comes from the DTW matcher as an already-discrete event, so it has no
 // derived velocity. 100 reads as a firm hit without pretending to measure it.
 const FLICK_VELOCITY = 100;
@@ -140,6 +142,12 @@ const server = http.createServer((req, res) => {
       clients: wss.clients.size,
       agents: musicAgents.size,
     }));
+    return;
+  }
+
+  if (pathname === '/api/music') {
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify(musicState.snapshot({ agent: musicAgents.size > 0, phones: phoneConnections.size })));
     return;
   }
 
@@ -438,9 +446,14 @@ wss.on('connection', (ws) => {
         }
       }
     } else if (info.role === 'agent') {
-      if (msg.type === 'music-config' && Array.isArray(msg.groups)) {
+      if (msg.type === 'music-output') {
+        musicState.recordOutput(msg);
+      }
+      if (msg.type === 'music-config') {
+        if (msg.portStatus === 'open' || msg.portStatus === 'closed') musicState.recordOutput({ output: 'port', status: msg.portStatus });
+        musicState.acceptConfig(msg);
         const applied = [];
-        for (const entry of msg.groups) {
+        for (const entry of (Array.isArray(msg.groups) ? msg.groups : [])) {
           if (!entry || typeof entry !== 'object') continue;
           if (groupAggregator.setMode(entry.group, entry.mode)) {
             applied.push({ group: entry.group, mode: entry.mode });

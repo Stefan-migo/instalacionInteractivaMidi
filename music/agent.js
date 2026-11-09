@@ -22,6 +22,18 @@ const DEFAULT_SAFE_VALUE = 64;
 const DEFAULT_GESTURE_NOTES = { tilt: 36, flick: 37, rotation: 38 };
 const DEFAULT_NOTE_DURATION_MS = 120;
 
+function buildMusicConfig(rawMapping) {
+  const { mapping } = normalizeMapping(rawMapping);
+  return {
+    version: mapping.version,
+    safeValue: mapping.safeValue,
+    derivation: mapping.derivation,
+    groups: mapping.groups.map(({ group, channel, ccController, aggregation, curve, ema, deadband, maxPerSecond, notes }) => ({
+      group, channel, ccController, aggregation, curve, ema, deadband, maxPerSecond, notes,
+    })),
+  };
+}
+
 function backoffDelay(attempt, options = {}) {
   const baseMs = Number.isFinite(options.baseMs) ? options.baseMs : 500;
   const maxMs = Number.isFinite(options.maxMs) ? options.maxMs : 8000;
@@ -156,7 +168,10 @@ function createMusicAgent(options = {}) {
       if (!Number.isInteger(group) || group < 1 || group > groupCount) continue;
       // curve -> EMA -> deadband -> rate limit, then to the wire.
       const value = shaperFor(group).push(to7Bit(entry.value));
-      if (value !== null) emitCC(group, value);
+      if (value !== null) {
+        emitCC(group, value);
+        sendToBridge({ type: 'music-output', output: 'cc', group, channel: channelFor(group), controller: controllerFor(group), value });
+      }
     }
   }
 
@@ -166,9 +181,10 @@ function createMusicAgent(options = {}) {
     const note = notesFor(group)[gesture];
     if (!Number.isInteger(note)) return false;
     if (!Number.isInteger(group) || group < 1) return false;
+    sendToBridge({ type: 'music-output', output: 'note', group, gesture, note, channel: channelFor(group), velocity, at: new Date(now()).toISOString() });
     if (!midiOut || typeof midiOut.sendNoteOn !== 'function') return false;
 
-    midiOut.sendNoteOn(group, note, velocity);
+    midiOut.sendNoteOn(channelFor(group), note, velocity);
     const entry = { handle: null, group, note };
     entry.handle = scheduler.setTimeout(() => {
       pendingNoteOffs.delete(entry);
@@ -183,12 +199,13 @@ function createMusicAgent(options = {}) {
     if (message.type === 'music-config') {
       // The bridge reports what it is applying; the agent answers with what it
       // wants, which is the point of keeping the musical score local.
+      const config = buildMusicConfig(mapping);
       sendToBridge({
         type: 'music-config',
+        portStatus: midiOut && typeof midiOut.isAvailable === 'function' && midiOut.isAvailable() ? 'open' : 'closed',
         groups: modes.map((mode, index) => ({ group: index + 1, mode })),
-        // Thresholds are physics, so they travel with the score but apply to
-        // every phone: the bridge derives, the agent decides.
         derivation: mapping.derivation,
+        score: config,
       });
       return;
     }
@@ -343,4 +360,4 @@ if (require.main === module) {
   process.on('SIGTERM', shutdown);
 }
 
-module.exports = { createMusicAgent, backoffDelay };
+module.exports = { createMusicAgent, backoffDelay, buildMusicConfig };

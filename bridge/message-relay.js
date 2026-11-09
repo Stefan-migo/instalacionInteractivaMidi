@@ -22,6 +22,21 @@ const VALID_GESTURES = [
 ];
 
 const SENSOR_KEYS = ['accel', 'gyro', 'orientation'];
+
+function validateMusicScore(message) {
+  if (!message || !Number.isInteger(message.version) || !Number.isInteger(message.safeValue) || message.safeValue < 0 || message.safeValue > 127 || !message.derivation || typeof message.derivation !== 'object' || !Array.isArray(message.groups) || message.groups.length !== 3) return false;
+  const seen = new Set();
+  return message.groups.every(group => {
+    if (!group || typeof group !== 'object' || !Number.isInteger(group.group) || group.group < 1 || group.group > 3 || seen.has(group.group)) return false;
+    seen.add(group.group);
+    return Number.isInteger(group.channel) && group.channel >= 1 && group.channel <= 16 &&
+      Number.isInteger(group.ccController) && group.ccController >= 0 && group.ccController <= 127 &&
+      ['average', 'max', 'last'].includes(group.aggregation) && group.curve && typeof group.curve === 'object' &&
+      typeof group.ema === 'number' && group.ema > 0 && group.ema <= 1 && Number.isInteger(group.deadband) && group.deadband >= 0 &&
+      typeof group.maxPerSecond === 'number' && group.maxPerSecond > 0 && group.notes && ['tilt', 'flick', 'rotation'].every(name => Number.isInteger(group.notes[name]) && group.notes[name] >= 0 && group.notes[name] <= 127);
+  });
+}
+
 const AXIS_KEYS = { accel: ['x', 'y', 'z'], gyro: ['a', 'b', 'g'], orientation: ['a', 'b', 'g'] };
 
 class MessageRelay {
@@ -122,4 +137,4 @@ function parseRecordingDuration(msg) {
   return Math.min(Math.max(raw, 1000), 5000);
 }
 
-module.exports = { MessageRelay, VALID_ACTIONS, VALID_GESTURES, FILTER_NAMES, VALID_VALUE_ACTIONS, parseRecordingDuration };
+module.exports = { MessageRelay, VALID_ACTIONS, VALID_GESTURES, FILTER_NAMES, VALID_VALUE_ACTIONS, parseRecordingDuration, validateMusicScore };
