@@ -30,12 +30,12 @@ S10 — Behavioural floor: the existing suite stays green (39 suites / 437 tests
 
 | ID | Task | Specs | Route | Commit |
 |----|------|-------|-------|--------|
-| T9.1 | Design directions first: artboards for the panel in the project's design system, before code | S1-S4, S9 | design | - |
+| T9.1 | Design directions first: artboards for the panel in the project's design system, before code | S1-S4, S9 | design | `4fea482` |
 | T9.2 | The agent pushes the full score (channels, notes, ccController) over `music-config`; the bridge keeps it | S2, S3 | - | - |
 | T9.3 | The bridge records per-group/gesture last-fired and the current shaped CC per group, exposed by `GET /api/music` | S2, S8 | - | - |
-| T9.4 | Operator section `07 · Ruteo MIDI`: the 3x3 sheet, the three fader rows, the status block | S1-S5, S9 | - | - |
-| T9.5 | Printable and copyable sheet | S6 | - | - |
-| T9.6 | Own-window mode: the section alone when the page is opened for it | S7 | - | - |
+| T9.4 | Operator section `07 · Ruteo MIDI`: the 3x3 sheet, the three fader rows, the status block, built from the chosen direction `03-dos-columnas` (handoff started) | S1-S5, S9 | writer | - |
+| T9.5 | Printable and copyable sheet — folded into T9.4, because the chosen artboard already draws both controls | S6 | writer | - |
+| T9.6 | Own-window mode: the section alone when the page is opened for it — folded into T9.4 | S7 | writer | - |
 
 ## Log
 
@@ -44,3 +44,7 @@ L1 — "ok vamos con T9", then the correction that reframed the feature: "ok wai
 L2 — The three decisions, verbatim: "1. si read only primero. 2. si que se pueda imprimir o copiar 3. ventana aparte" (S5, S6, S7).
 
 L3 — Discovery while scoping: `p5-collage/control-panel.js` no longer exists in `main`; the operator surface moved to `operator/` (index.html, operator.css, operator.js) served at `/operator/`, titled "MIDI · Operador", in Spanish, with numbered sections. The panel is a new section there, not a new application. The worktree from the music feature is reused for this branch instead of being removed.
+
+L4 — Directions written in `design/midi-routing/` (commit `4fea482`), three structures and one palette: `01-matriz` makes the 3x3 grid the page, `02-planilla` is a routing schedule per group, `03-dos-columnas` splits the sheet from the live state. The user chose **03 · Dos columnas**: "deja la matriz a la izquierda y los faders y el diagnóstico a la derecha para mantener la hoja y el estado a la vista".
+
+L5 — The artboards first carried invented MIDI data, written by the worker from the panel brief instead of from the score: every cell said `NOTA 36` whichever the gesture, every cell mapped `Pad 1 del Drum Rack`, and the three groups were shown with three different aggregation modes. Corrected against `music/mapping.json` and `SETUP.md` §5 before showing them: `tilt` 36, `flick` 37, `rotation` 38, one channel per group, `CC 21` on each, `average` in all three, and the mapping target stated as "Nota N en canal C → la voz del grupo C", because Live stores a channel+number pair and the setup sheet numbers no pads. Recorded so the implementation does not inherit the first draft.

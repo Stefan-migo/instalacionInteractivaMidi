@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "chosen": "03-dos-columnas.html",
+  "handoffs": {
+    "03-dos-columnas.html": {
+      "status": "implemented",
+      "queued": true,
+      "sentAt": "2026-11-09T22:06:24.513Z",
+      "startedAt": "2026-11-09T22:07:58.167Z",
+      "implementedAt": "2026-11-09T22:21:12.002Z",
+      "feature": "odd/tasks/midi-routing-console.md",
+      "note": "Implemented as 07 · Ruteo MIDI in operator/ (index.html, operator.css, operator.js): two columns, the fixed 3x3 sheet plus the notes-versus-CC sentence on the left, the three live fader rows and the diagnosis on the right. Data comes from GET /api/music on the same bridge, polled at 1 Hz only while the section is on screen; when the bridge does not answer the sheet stays visible and the panel says so. Symptom codes are translated to the operator's sentence. Print, copy and own-window (?section=routing) included. Read-only: no pad numbering, no write to mapping.json, no Ableton.",
+      "previewUrl": "http://localhost:8210/operator/"
+    }
+  }
+}
