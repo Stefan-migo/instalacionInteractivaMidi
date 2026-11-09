@@ -40,8 +40,8 @@ S13 — Mapping mode, granted by the user: "eso es lo que necesito un panel ui. 
 | T9.4 | Operator section `07 · Ruteo MIDI`: the 3x3 sheet, the three fader rows, the status block, built from the chosen direction `03-dos-columnas` (handoff started) | S1-S5, S9 | writer | `09c9e74` |
 | T9.5 | Printable and copyable sheet — folded into T9.4, because the chosen artboard already draws both controls | S6 | writer | `09c9e74` |
 | T9.6 | Own-window mode: the section alone when the page is opened for it — folded into T9.4 | S7 | writer | `09c9e74` |
-| T9.7 | Topology from configuration: ten groups of three, channel per group, score and setup sheet rewritten, mismatch reported | S12 | writer | - |
-| T9.8 | Mapping walk: the panel emits one voice per step and tells the operator what to click in Live | S13 | writer | - |
+| T9.7 | Topology from configuration: ten groups of three, channel per group, score and setup sheet rewritten, mismatch reported | S12 | writer | `cb533c2` |
+| T9.8 | Mapping walk: the panel emits one voice per step and tells the operator what to click in Live | S13 | writer | `3aa25cc` (panel) + `cb533c2` (protocol) |
 
 ## Log
 
