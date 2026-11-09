@@ -136,23 +136,35 @@ body {
 .photo-action-btn:active { background: var(--ink); color: var(--paper); }
 #touch-overlay { position: absolute; inset: 0; z-index: 5; cursor: crosshair; touch-action: none; }
 
-/* Bottom tools sheet */
-.tools-panel { position: absolute; bottom: 0; left: 0; right: 0; z-index: 30; max-height: 70vh; overflow-y: auto; background: var(--paper); border-top: var(--rule) solid var(--ink); padding: var(--space-md); padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: var(--space-md); transform: translateY(0); transition: transform var(--dur-base); }
-.tools-panel.hidden { display: flex; transform: translateY(100%); pointer-events: none; }
-.tools-handle { width: 40px; height: var(--hair); background: var(--ink); margin: 0 auto; }
-.actions-grid, .button-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--hair); }
+/* Bottom sheet: fixed to the screen, collapses to its tab strip */
+.sheet { flex: none; display: flex; flex-direction: column; background: var(--paper); border-top: var(--hair) solid var(--rule-color); padding-bottom: env(safe-area-inset-bottom); }
+.sheet-tabs { display: grid; grid-template-columns: repeat(3, 1fr) 40px; border-bottom: var(--hair) solid var(--rule-soft); }
+.sheet-tab, .sheet-toggle { appearance: none; background: transparent; border: 0; border-right: var(--hair) solid var(--rule-soft); padding: var(--space-sm) var(--space-2xs); font-family: var(--font-display); font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; color: var(--quiet); cursor: pointer; }
+.sheet-tab[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+.sheet-toggle { border-right: 0; color: var(--ink); font-size: var(--font-size-sm); }
+.sheet-body { display: flex; flex-direction: column; gap: var(--space-sm); padding: var(--space-sm); max-height: 44vh; overflow-y: auto; }
+.sheet.is-collapsed .sheet-body { display: none; }
+
+/* Row of actions: three cells, pairs of two inside */
+.row-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--hair); background: var(--rule-soft); border: var(--hair) solid var(--rule-soft); }
+.row-actions .btn { border: 0; }
+.button-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--hair); grid-column: span 2; background: var(--rule-soft); }
+.btn.recording { background: var(--ink); color: var(--paper); }
+
+/* Control rows: 1 px rail, square thumb */
+.rows { display: flex; flex-direction: column; gap: var(--space-xs); }
+.row-ctl { display: flex; flex-direction: column; gap: var(--space-3xs); padding-bottom: var(--space-xs); border-bottom: var(--hair) solid var(--rule-soft); }
+.row-ctl .row-top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); font-family: var(--font-display); font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; }
+.row-ctl .v { font-size: var(--font-size-sm); font-variant-numeric: tabular-nums; }
+.range { appearance: none; width: 100%; height: 14px; background: transparent; cursor: pointer; }
+.range::-webkit-slider-runnable-track { height: var(--hair); background: var(--ink); }
+.range::-moz-range-track { height: var(--hair); background: var(--ink); }
+.range::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; margin-top: -6.5px; background: var(--ink); border: 0; }
+.range::-moz-range-thumb { width: 14px; height: 14px; background: var(--ink); border: 0; border-radius: 0; }
+
+/* Buttons the overlays still use until they are rebuilt (T5.4) */
 .stamp-btn { min-width: 44px; min-height: 44px; padding: var(--space-sm); }
 .stamp-btn:active { background: var(--ink); color: var(--paper); }
-.stamp-btn.recording { background: var(--ink); color: var(--paper); }
-.inline-btn { width: 100%; padding: var(--space-sm) var(--space-md); }
-.control-group { display: flex; flex-direction: column; gap: var(--space-xs); border-bottom: var(--hair) solid var(--rule-soft); padding-bottom: var(--space-sm); }
-.slider-label { display: flex; justify-content: space-between; align-items: center; font: 700 var(--font-size-xs) var(--font-display); letter-spacing: var(--tracking); text-transform: uppercase; }
-.slider-value { font: 700 var(--font-size-sm) var(--font-display); font-variant-numeric: tabular-nums; }
-.vintage-slider { appearance: none; width: 100%; height: 14px; background: transparent; cursor: pointer; }
-.vintage-slider::-webkit-slider-runnable-track { height: 1px; background: var(--ink); }
-.vintage-slider::-moz-range-track { height: 1px; background: var(--ink); }
-.vintage-slider::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; margin-top: -6px; background: var(--ink); border: 0; }
-.vintage-slider::-moz-range-thumb { width: 14px; height: 14px; background: var(--ink); border: 0; border-radius: 0; }
 
 /* Recording and gesture status animations */
 @keyframes rec-pulse { 50% { opacity: .4; } }
@@ -211,8 +223,8 @@ body {
 .hint-engine.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 .hint-engine.hidden { display: none !important; }
 .hint-text { max-width: 280px; padding: var(--space-sm) var(--space-md); color: var(--paper); background: var(--ink); border: var(--hair) solid var(--ink); text-align: center; font-size: var(--font-size-sm); line-height: 1.5; }
-#dashboard.disconnected .stamp-btn, #dashboard.disconnected .inline-btn, #dashboard.disconnected .vintage-slider { opacity: .58; }
-#dashboard.disconnected .stamp-btn, #dashboard.disconnected .inline-btn { border-color: var(--quiet); }
-.tools-panel::-webkit-scrollbar { width: 4px; }
-.tools-panel::-webkit-scrollbar-track { background: transparent; }
-.tools-panel::-webkit-scrollbar-thumb { background: var(--quiet); }
+#dashboard.disconnected .sheet .btn, #dashboard.disconnected .sheet .range { opacity: .58; }
+#dashboard.disconnected .sheet .btn { border-color: var(--quiet); }
+.sheet-body::-webkit-scrollbar { width: 4px; }
+.sheet-body::-webkit-scrollbar-track { background: transparent; }
+.sheet-body::-webkit-scrollbar-thumb { background: var(--quiet); }

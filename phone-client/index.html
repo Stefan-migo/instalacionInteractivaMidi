@@ -80,53 +80,49 @@
         <!-- Touch overlay — invisible, captures drag to move cell on collage -->
         <div id="touch-overlay"></div>
         <span class="cap">Tu fragmento</span>
-        <div id="photo-actions">
-          <button class="photo-action-btn" id="fab-btn" aria-label="Herramientas">+</button>
-        </div>
       </div>
 
-      <!-- Bottom sheet: tools panel -->
-      <div id="tools-panel" class="tools-panel hidden">
-        <div class="tools-handle"></div>
-
-        <!-- Actions row -->
-        <div class="actions-grid">
-          <button class="action-btn stamp-btn" data-action="wizard" id="wizard-trigger">Gestos</button>
-          <button class="action-btn stamp-btn" data-action="shuffle">Cambiar foto</button>
+      <!-- Bottom sheet: fixed to the screen, collapses to its tab strip -->
+      <div id="tools-panel" class="sheet">
+        <div class="sheet-tabs" role="tablist">
+          <button type="button" class="sheet-tab" data-tab="forma" role="tab" aria-selected="true">Forma</button>
+          <button type="button" class="sheet-tab" data-tab="gestos" role="tab" aria-selected="false">Gestos</button>
+          <button type="button" class="sheet-tab" data-tab="guia" role="tab" aria-selected="false">Guía</button>
+          <button type="button" id="sheet-toggle" class="sheet-toggle" aria-expanded="true" aria-label="Ocultar controles">▾</button>
         </div>
 
-        <!-- Ascender + Filtro share one row, like Tránsito -->
-        <div class="button-pair">
-          <button id="bring-front-btn" class="stamp-btn inline-btn">Ascender</button>
-          <button id="filter-btn" class="stamp-btn inline-btn">Filtro</button>
-        </div>
+        <div class="sheet-body" data-panel="forma" role="tabpanel">
+          <div class="row-actions">
+            <div class="button-pair">
+              <button id="cell-prev-btn" class="btn btn--sm">‹ Anterior</button>
+              <button id="cell-next-btn" class="btn btn--sm">Siguiente ›</button>
+            </div>
+            <button id="wizard-trigger" class="btn btn--sm" data-action="wizard">Gestos</button>
+            <button class="btn btn--sm" data-action="shuffle">Látigo</button>
+            <div class="button-pair">
+              <button id="bring-front-btn" class="btn btn--sm">Al frente</button>
+              <button id="filter-btn" class="btn btn--sm">Filtro</button>
+            </div>
+          </div>
 
-        <!-- Opacity slider -->
-        <div class="control-group">
-          <label class="slider-label">Opacidad <span id="opacity-value" class="slider-value">100%</span></label>
-          <input type="range" id="opacity-slider" class="vintage-slider" min="0" max="100" value="100">
-        </div>
-
-        <!-- Rotation slider -->
-        <div class="control-group">
-          <label class="slider-label">Rotación <span id="rotation-value" class="slider-value">0°</span></label>
-          <input type="range" id="rotation-slider" class="vintage-slider" min="-180" max="180" value="0">
-        </div>
-
-        <!-- Scale slider -->
-        <div class="control-group">
-          <label class="slider-label">Escala <span id="scale-value" class="slider-value">100%</span></label>
-          <input type="range" id="scale-slider" class="vintage-slider" min="40" max="180" value="100">
-        </div>
-
-        <!-- Tránsito -->
-        <div class="control-group">
-          <label class="slider-label">Tránsito</label>
-          <div class="button-pair">
-            <button id="cell-prev-btn" class="stamp-btn inline-btn">← Anterior</button>
-            <button id="cell-next-btn" class="stamp-btn inline-btn">Siguiente →</button>
+          <div class="rows">
+            <div class="row-ctl">
+              <div class="row-top"><label for="opacity-slider">Opacidad</label><span id="opacity-value" class="v">100%</span></div>
+              <input type="range" id="opacity-slider" class="range" min="0" max="100" value="100">
+            </div>
+            <div class="row-ctl">
+              <div class="row-top"><label for="rotation-slider">Rotación</label><span id="rotation-value" class="v">0°</span></div>
+              <input type="range" id="rotation-slider" class="range" min="-180" max="180" value="0">
+            </div>
+            <div class="row-ctl">
+              <div class="row-top"><label for="scale-slider">Escala</label><span id="scale-value" class="v">100%</span></div>
+              <input type="range" id="scale-slider" class="range" min="40" max="180" value="100">
+            </div>
           </div>
         </div>
+
+        <div class="sheet-body hidden" data-panel="gestos" role="tabpanel"></div>
+        <div class="sheet-body hidden" data-panel="guia" role="tabpanel"></div>
       </div>
 
       <!-- Hint Engine -->

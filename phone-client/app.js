@@ -43,7 +43,7 @@
   var cellImage = $('cell-image');
   var cellPlaceholder = $('thumbnail-placeholder');
   var gestureStatus = $('gesture-status');
-  var fabBtn = $('fab-btn');
+  var sheetToggle = $('sheet-toggle');
   var toolsPanel = $('tools-panel');
 
   // --- 3-Screen Flow Controller ---
@@ -93,32 +93,49 @@
     });
   });
 
-  // --- Bottom Sheet toggle ---
-  var toolsOpen = false;
+  // --- Bottom sheet: starts open, collapses to its tab strip ---
+  var toolsOpen = true;
 
-  function toggleTools() {
-    toolsOpen = !toolsOpen;
-    toolsPanel.classList.toggle('hidden', !toolsOpen);
-    fabBtn.textContent = toolsOpen ? '−' : '+';
-    if (toolsOpen) {
-      document.querySelectorAll('#tools-panel .torn-container').forEach(function (el, i) {
-        if (!el.style.clipPath) {
-          el.style.clipPath = tornClipPath(6, 3, 2000 + i);
-        }
-      });
+  function setTools(open) {
+    toolsOpen = open;
+    if (!toolsPanel) return;
+    toolsPanel.classList.toggle('is-collapsed', !open);
+    if (sheetToggle) {
+      sheetToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      sheetToggle.setAttribute('aria-label', open ? 'Ocultar controles' : 'Mostrar controles');
+      sheetToggle.textContent = open ? '▾' : '▴';
     }
   }
 
-  if (fabBtn) {
-    fabBtn.addEventListener('click', toggleTools);
+  function toggleTools() {
+    setTools(!toolsOpen);
   }
 
-  // Tap outside the tools panel to close it
+  if (sheetToggle) {
+    sheetToggle.addEventListener('click', toggleTools);
+  }
+
+  // Tap outside the sheet to collapse it, once the dashboard is on screen
   document.addEventListener('click', function (e) {
-    if (!toolsOpen) return;
+    if (!toolsOpen || !toolsPanel) return;
+    if (dashboard.classList.contains('hidden')) return;
     if (toolsPanel.contains(e.target)) return;
-    if (fabBtn && fabBtn.contains(e.target)) return;
-    toggleTools();
+    if (sheetToggle && sheetToggle.contains(e.target)) return;
+    setTools(false);
+  });
+
+  // Sheet tabs: one panel at a time, and picking a tab reopens the sheet
+  document.querySelectorAll('.sheet-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var name = tab.getAttribute('data-tab');
+      document.querySelectorAll('.sheet-tab').forEach(function (other) {
+        other.setAttribute('aria-selected', other === tab ? 'true' : 'false');
+      });
+      document.querySelectorAll('.sheet-body').forEach(function (panel) {
+        panel.classList.toggle('hidden', panel.getAttribute('data-panel') !== name);
+      });
+      setTools(true);
+    });
   });
 
   function showGestureStatus(text, type) {
