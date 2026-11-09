@@ -184,3 +184,32 @@ What it does when things break:
 
 Verify the chain without Ableton: the agent logs the port it opened, and
 `Ctrl+M` on a mapped parameter in Live moves when a phone moves.
+
+## 8. The score (`music/mapping.json`)
+
+Version this file next to the `.als`. It is the score: the music is tuned on the
+show machine, so a change here is a file edit and a restart, never a deploy.
+
+| Field | Meaning |
+|-------|---------|
+| `group`, `channel` | which ten slots the group owns, and its MIDI channel |
+| `aggregation` | `average`, `max` or `last` — how ten phones become one value |
+| `ccController` | the CC number of that group's fader |
+| `curve` | `linear`, `exponential` or `logarithmic`, with `gamma` |
+| `ema` | smoothing in (0, 1]: `1` is no smoothing at all |
+| `deadband` | ignore changes smaller than this many 7-bit steps |
+| `maxPerSecond` | traffic cap for that group |
+| `gestures.*.note` | the note each gesture fires (36 tilt, 37 flick, 38 rotation) |
+
+The agent applies the pipeline in this order: **curve → EMA → deadband → rate
+limit**. That order is not arbitrary — it is the order you reason about the sound:
+what shape, how smooth, what is too small to hear, how many messages per second.
+
+A broken score never stops the show: every invalid value is replaced by its
+default and reported as one line in the agent log.
+
+**Not wired yet.** `onThreshold`, `offThreshold` and `span` are recorded here for
+the operator and for the console, but the bridge still derives gestures with its
+built-in defaults (tilt 30/20, rotation 120/60, 200 ms cooldown). Editing a
+threshold in this file changes nothing until the agent pushes them over
+`music-config`.
