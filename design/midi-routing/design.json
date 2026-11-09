@@ -1,0 +1,10 @@
+{
+  "title": "Ruteo MIDI en el Operator",
+  "brief": "Tres direcciones estructurales para la sección 07 · Ruteo MIDI: una consola de solo lectura que explica qué gesto recibe cada grupo, qué nota o CC envía, qué mapear en Ableton y el estado de la instalación.",
+  "feature": "odd/tasks/midi-routing-console.md",
+  "artboards": [
+    { "file": "01-matriz.html", "title": "01 · Matriz", "tradeoff": "La cuadrícula 3×3 es la pieza principal y organiza la lectura en tres bloques apilados; sacrifica brevedad para hacer grande cada celda.", "width": 1660, "height": 2100 },
+    { "file": "02-planilla.html", "title": "02 · Planilla", "tradeoff": "Una tabla técnica por grupo reúne gestos y CC en una hoja imprimible con diagnóstico al pie; prioriza escaneo y papel sobre aire visual.", "width": 1660, "height": 1900 },
+    { "file": "03-dos-columnas.html", "title": "03 · Dos columnas", "tradeoff": "La matriz queda a la izquierda y los faders y el diagnóstico a la derecha; mantiene el estado visible junto a la hoja, con celdas más compactas.", "width": 1660, "height": 1900 }
+  ]
+}
