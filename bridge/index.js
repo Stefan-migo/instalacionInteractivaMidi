@@ -30,7 +30,7 @@ const MIME_TYPES = {
   '.jpeg': 'image/jpeg',
   // Brand assets: a favicon served as octet-stream is ignored by browsers, and a
   // manifest served as text/plain is never read as a manifest.
-  '.svg': 'image/svg+xml', '.ico': 'image/x-icon',
+  '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.woff2': 'font/woff2',
   '.webmanifest': 'application/manifest+json',
 };
 

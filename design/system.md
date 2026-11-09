@@ -1,61 +1,86 @@
-# MIDI Ficha — system tokens
+# MIDI — system tokens
 
-The current identity is MIDI Ficha: two colours, orthogonal geometry, zero radius and no elevation. The authority is `Logo/MIDI-Brand-Pack/` (especially `Logo/MIDI-Brand-Pack/05-Guia/LEEME.md`). Sources below are the runtime stylesheets; values not declared there are not project tokens.
+The identity is MIDI: two colours, orthogonal geometry, zero radius, no elevation. The authority is the identity document **"Identidad MIDI.pdf"** (`E:\Proyectos\midiWeb\Docs\`) together with its logo pack, and the runtime authority is the stylesheets: a value not declared there is not a project token.
+
+The repository also carries an older pack under `Logo/MIDI-Brand-Pack/` (gitignored) whose variant names do not match the current one (`simbolo`/`wordmark` versus `isotipo`/`cuadrado`) and whose palette is pure `#000000`/`#ffffff`. The identity document supersedes it; see §1 and §2.
+
+**Synced from the current sources** (this board previously cited `p5-collage/control-panel.css`, which no longer exists):
+
+- `shared/theme.css` — the five runtime colour tokens, the theme inversion, and `--mark-on-canvas`.
+- `phone-client/style.css` — the type, spacing, motion and layer scales.
+- `operator/operator.css` — the Operator surface grammar, which is where the routing console will live.
 
 ## 1. Colour
 
-| Token | Value | Source path |
-|---|---|---|
-| `--ink` | `#000000` | `phone-client/style.css`, `p5-collage/control-panel.css` |
-| `--paper` | `#ffffff` | `phone-client/style.css`, `p5-collage/control-panel.css` |
-| `--quiet` | `rgba(0, 0, 0, 0.58)` | `phone-client/style.css`, `p5-collage/control-panel.css` |
-| `--rule-color` | `#000000` | `phone-client/style.css`, `p5-collage/control-panel.css` |
-| `--rule-soft` | `rgba(0, 0, 0, 0.22)` | `phone-client/style.css`, `p5-collage/control-panel.css` |
+Default theme is **dark**; light is an explicit inversion, not the base.
 
-`--ink` and `--paper` are the two brand colours. `--quiet` and `--rule-soft` are the ONLY derived neutrals: no third brand colour exists, and pure `#000`/`#FFF` alone leaves no hierarchy or AA-compliant muted level. The basis is the pack rule, quoted: “Negro #000000 sobre fondos claros; blanco #FFFFFF sobre fondos oscuros. Para fotos, usar un panel liso con contraste suficiente. No estirar, girar, aplicar sombras, contornos ni recolorear sin definir antes una paleta de marca.” Source path: `Logo/MIDI-Brand-Pack/05-Guia/LEEME.md`.
+| Token | Default (dark) | `[data-theme="light"]` | Source path |
+|---|---|---|---|
+| `--ink` | `#f4f4f4` | `#111111` | `shared/theme.css` |
+| `--paper` | `#111111` | `#f4f4f4` | `shared/theme.css` |
+| `--quiet` | `rgba(244,244,244,.60)` | `rgba(17,17,17,.58)` | `shared/theme.css` |
+| `--rule-color` | `#f4f4f4` | `#111111` | `shared/theme.css` |
+| `--rule-soft` | `rgba(244,244,244,.22)` | `rgba(17,17,17,.22)` | `shared/theme.css` |
+| `--mark-on-canvas` | `#f4f4f4` | `#f4f4f4` | `shared/theme.css` |
+
+`color-scheme` is `dark` by default and `light` under `[data-theme="light"]`, so native form controls follow the theme. `--mark-on-canvas` stays white in both themes because the p5 canvas shader is near-black regardless of UI theme; the watermark must survive it.
+
+`--ink` and `--paper` are the two brand colours. `--quiet` and `--rule-soft` are the only derived neutrals: no third brand colour exists, and `#000`/`#FFF` alone leaves no hierarchy and no AA-compliant muted level. Pack rule, verbatim: "Negro #000000 sobre fondos claros; blanco #FFFFFF sobre fondos oscuros. Para fotos, usar un panel liso con contraste suficiente. No estirar, girar, aplicar sombras, contornos ni recolorear sin definir antes una paleta de marca." Source: `Logo/MIDI-Brand-Pack/05-Guia/LEEME.md`.
 
 ## 2. Typography
 
 | Token | Value | Source path |
 |---|---|---|
-| `--font-display` | `ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace` | `phone-client/style.css`, `p5-collage/control-panel.css` |
-| `--font-text` | `system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif` | `phone-client/style.css`, `p5-collage/control-panel.css` |
-| `--font-size-xs` | `0.6875rem` | both stylesheets |
-| `--font-size-sm` | `0.75rem` | both stylesheets |
-| `--font-size-md` | `0.875rem` | both stylesheets |
-| `--font-size-lg` | `1.0625rem` | `phone-client/style.css` only |
-| `--font-size-xl` | `1.5rem` | `phone-client/style.css` only |
-| `--font-size-xxl` | `1.875rem` | `phone-client/style.css` only |
-| `--tracking` | `0.14em` | both stylesheets |
-| `--tracking-tight` | `-0.015em` | `phone-client/style.css` only |
+| `--font-display` | `ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace` | `phone-client/style.css` |
+| `--font-text` | `system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif` | `phone-client/style.css` |
+| `--font-size-xs` | `0.6875rem` | both |
+| `--font-size-sm` | `0.75rem` | both |
+| `--font-size-md` | `0.875rem` | both |
+| `--font-size-lg` | `1.0625rem` | `phone-client/style.css` |
+| `--font-size-xl` | `1.5rem` | `phone-client/style.css` |
+| `--font-size-xxl` | `1.875rem` | `phone-client/style.css` |
+| `--tracking` | `0.14em` | both |
+| `--tracking-tight` | `-0.015em` | `phone-client/style.css` |
 
-Weights used: `400` (normal/default) and `700` (explicit bold). There are NO webfonts and NO external URLs in either stylesheet; the system uses local/system stacks. This replaces the former Google Fonts dependency. The pack says, verbatim, “No se identifico ni sustituyo la tipografia.” Source path: `Logo/MIDI-Brand-Pack/05-Guia/LEEME.md`.
+The **Operator surface uses monospace exclusively**: `font-family: ui-monospace, 'SF Mono', Consolas, monospace` declared directly on `body`, with `1rem` h1, `0.75rem` h2, and `0.75rem` for `p, label, output, button, select`. Source: `operator/operator.css`.
 
-## 3. Spacing / geometry
+The identity names exactly two families, both monospaced, in Regular and Medium: **Roboto Mono** and **DM Mono**. They are **self-hosted** as woff2 (latin subset) in `shared/fonts/`, served by the bridge at `/shared/fonts/*.woff2` with `Content-Type: font/woff2`, so the show machine never depends on the network for its own typography. Licences (SIL OFL 1.1) sit beside the files as `OFL-roboto-mono.txt` and `OFL-dm-mono.txt`.
+
+| Token | Value | Usage | Source path |
+|---|---|---|---|
+| `--font-display` | `'DM Mono', ui-monospace, …` | headings, section labels, uppercase tracking | `phone-client/style.css` |
+| `--font-mono` | `'Roboto Mono', 'DM Mono', ui-monospace, …` | data, numbers, tables; the whole Operator surface | `shared/theme.css` |
+| `--font-text` | system sans stack | long paragraphs only — a project choice, not a brand one | `phone-client/style.css` |
+
+The earlier rule "no webfonts" is **superseded**: it was written when the families were unknown. Weights used are `400` and `500`. No external URL or CDN is referenced: the files are project assets.
+
+## 3. Spacing and geometry
 
 | Token | Value | Source path |
 |---|---|---|
-| `--hair` | `1px` | both stylesheets |
-| `--rule` | `2px` | both stylesheets |
-| `--space-3xs` | `0.125rem` | `phone-client/style.css` only |
-| `--space-2xs` | `0.25rem` | both stylesheets |
-| `--space-xs` | `0.375rem` | both stylesheets |
-| `--space-sm` | `0.5rem` | both stylesheets |
-| `--space-md` | `0.75rem` | both stylesheets |
-| `--space-lg` | `1rem` | both stylesheets |
-| `--space-xl` | `1.5rem` | `phone-client/style.css` only |
-| `--space-2xl` | `2rem` | `phone-client/style.css` only |
-| `--radius` | `0` | both stylesheets |
+| `--hair` | `1px` | `phone-client/style.css` |
+| `--rule` | `2px` | `phone-client/style.css` |
+| `--space-3xs` | `0.125rem` | `phone-client/style.css` |
+| `--space-2xs` | `0.25rem` | both |
+| `--space-xs` | `0.375rem` | both |
+| `--space-sm` | `0.5rem` | both |
+| `--space-md` | `0.75rem` | both |
+| `--space-lg` | `1rem` | both |
+| `--space-xl` | `1.5rem` | `phone-client/style.css` |
+| `--space-2xl` | `2rem` | `phone-client/style.css` |
+| `--radius` | `0` | `phone-client/style.css` |
 
-No shadow token exists, and there are no box-shadow declarations: elevation is not part of the identity. The legacy system's five shadow literals are gone. Source paths: `phone-client/style.css`, `p5-collage/control-panel.css`.
+`operator/operator.css` enforces the identity globally: `* { border-radius: 0 !important; box-shadow: none !important; }`. No shadow token exists and there are no `box-shadow` declarations anywhere; elevation is not part of the identity.
+
+Operator layout constants: `main` is `max-width: 960px`, `margin: 0 auto`, `padding: .75rem 1.5rem 3rem`; `header` uses `padding: 1rem 1.5rem` with a `2px solid var(--rule-color)` bottom edge; each `section` is separated by `1px solid var(--rule-soft)`.
 
 ## 4. Motion
 
-| Token/rule | Value | Source path |
+| Token | Value | Source path |
 |---|---|---|
-| `--dur-fast` | `120ms` | both stylesheets |
-| `--dur-base` | `200ms` | `phone-client/style.css` only |
-| Reduced motion | `@media (prefers-reduced-motion: reduce)`: animations, transitions and smooth scrolling disabled | both stylesheets; phone also sets `scroll-behavior: auto` |
+| `--dur-fast` | `120ms` | `phone-client/style.css` |
+| `--dur-base` | `200ms` | `phone-client/style.css` |
+| Reduced motion | `prefers-reduced-motion: reduce` disables transitions, animation and smooth scrolling | both |
 
 ## 5. Layers
 
@@ -63,47 +88,54 @@ No shadow token exists, and there are no box-shadow declarations: elevation is n
 |---|---:|---|
 | `--z-base` | `1` | `phone-client/style.css` |
 | `--z-overlay` | `100` | `phone-client/style.css` |
-| `--z-panel` | `1000` | `p5-collage/control-panel.css` |
-| `--z-toggle` | `1001` | `p5-collage/control-panel.css` |
 
-Actual declared ladder and literal layers: phone `#app` 1 → touch overlay 5 → rec/gesture 20 → tools 30 → photo actions 40 → header 50 → hint 60 → gallery 90 → practice 95 → overlay 100; page texture `body::after` 9999. Operator: floating bar 999 → panel 1000 → toggle 1001. Source paths: `phone-client/style.css`, `p5-collage/control-panel.css`; floating bar is `p5-collage/control-panel.css`.
+The former `--z-panel: 1000` / `--z-toggle: 1001` ladder belonged to `p5-collage/control-panel.css` and no longer exists; the Operator page is a normal document flow. Phone literals: `#app` 1 → touch overlay 5 → rec/gesture 20 → tools 30 → photo actions 40 → header 50 → hint 60 → gallery 90 → practice 95 → overlay 100; page texture `body::after` 9999.
 
-## 6. Components
+## 6. Components — Operator surface
 
-| Selector | Purpose | Where it appears | Source path |
-|---|---|---|---|
-| `.screen`, `.splash-content`, `.permission-content` | centered screen and content layout | splash, permission | `phone-client/style.css` |
-| `.ink-btn`, `.stamp-btn`, `.inline-btn` | outlined/inverted actions and tool buttons | splash, permission, help, gesture tools | `phone-client/style.css` |
-| `.permission-error`, `.error-text` | permission failure block | permission | `phone-client/style.css` |
-| `header`, `.slot-badge`, `.connection-status` | slot and connection HUD | dashboard | `phone-client/style.css` |
-| `#photo-frame`, `.torn-container`, `#cell-image` | photo display/frame | dashboard | `phone-client/style.css` |
-| `#photo-actions`, `.photo-action-btn`, `#touch-overlay` | photo action and touch input | dashboard | `phone-client/style.css` |
-| `.tools-panel`, `.tools-handle`, `.actions-grid`, `.button-pair` | sliding tool sheet and action layout | dashboard | `phone-client/style.css` |
-| `.control-group`, `.slider-label`, `.slider-value`, `.vintage-slider` | labelled range control | tools | `phone-client/style.css` |
-| `.rec-indicator`, `.gesture-status` | recording/gesture status chips | dashboard | `phone-client/style.css` |
-| `.wizard-overlay`, `.wizard-step`, `.duration-btn`, `.wizard-countdown-number` | gesture recording flow | gesture wizard | `phone-client/style.css` |
-| `.help-overlay`, `.help-card`, `.gesture-gallery`, `.gallery-card`, `.practice-overlay`, `.practice-card` | help, gallery and practice overlays/cards | dashboard overlays | `phone-client/style.css` |
-| `.hint-engine`, `.hint-text` | contextual hint | dashboard | `phone-client/style.css` |
-| `#control-panel`, `#panel-toggle` | operator sidebar and toggle | projector canvas | `p5-collage/control-panel.css` |
-| `#panel-header`, `#panel-body`, `.panel-section`, `.panel-section-title` | panel framing and numbered sections | operator panel | `p5-collage/control-panel.css` |
-| `.preset-grid`, `.preset-btn` | layout presets | operator panel | `p5-collage/control-panel.css` |
-| `.slider-row`, `.editor-row` | labelled slider/editor rows | operator panel | `p5-collage/control-panel.css` |
-| `.bg-selector`, `.bg-btn` | background selection | operator panel | `p5-collage/control-panel.css` |
-| `#catalog-list`, `.catalog-entry`, `.catalog-thumb`, `.catalog-title`, `.catalog-eye` | cell catalog | operator panel | `p5-collage/control-panel.css` |
-| `#per-cell-editor` | selected-cell controls | operator panel | `p5-collage/control-panel.css` |
-| `#esparcir-todo` | bulk scatter action | operator panel | `p5-collage/control-panel.css` |
-| `#floating-bar`, `.float-btn` | canvas quick actions | projector canvas | `p5-collage/control-panel.css` |
+These are the real selectors of the surface the routing console extends. Source: `operator/operator.css`.
 
-## 7. State without colour
+| Selector | Purpose |
+|---|---|
+| `header`, `h1`, `header span`, `#connection` | page head; `h1` uppercase with `--tracking`; `#connection` in `--quiet`, pushed right |
+| `main`, `section`, `h2` | 960px column; `h2` uppercase `.75rem` with a `--rule-color` underline and `space-between` layout for a right-side status |
+| `button`, `select` | outlined control: `1px solid var(--rule-color)`, paper fill, ink text, `min-height: 2.4rem` |
+| `button:hover`, `button[aria-pressed="true"]`, `[aria-current="true"]` | inverted: ink fill, paper text |
+| `:focus-visible` on button/select/input/`[role="option"]` | `outline: 2px solid var(--ink)`, `outline-offset: 3px` |
+| `.presets`, `.actions` | wrapped button groups, `gap: .4rem` |
+| `.row`, `.range` | `grid-template-columns: 8rem 1fr` labelled rows with a soft bottom rule |
+| `input[type="range"]`, `output` | full-width range with `accent-color: var(--ink)`; `output` floats right with tabular numerals |
+| `#catalog`, `.catalog-row` | scrollable list (`max-height: 22rem`); rows are `3rem 1fr auto` grids, borderless with a soft rule, left-aligned |
+| `#editor`, `#editor.enabled` | disabled state rendered as `opacity: .45`, enabled as `1` |
+| `#theme-toggle`, `#visibility-toggle:disabled` | theme switch on the right; disabled controls at `opacity: .55` with `cursor: not-allowed` |
 
-Connected/active states are filled squares or inverted (ink-filled, paper-text) blocks; disconnected/inactive states are outlined/empty squares. Recording is an inverted solid chip with a pulsing mark; granted/denied status uses filled versus outlined marks and explicit labels. Rule weight and fill distinguish states without introducing colour. Source paths: `phone-client/style.css`, `p5-collage/control-panel.css`.
+## 7. Components — Phone surface
 
-## 8. Coupling contracts
+| Selector | Purpose | Source path |
+|---|---|---|
+| `.screen`, `.splash-content`, `.permission-content` | centered screen layout | `phone-client/style.css` |
+| `.ink-btn`, `.stamp-btn`, `.inline-btn` | outlined and inverted actions | `phone-client/style.css` |
+| `header`, `.slot-badge`, `.connection-status` | slot and connection HUD | `phone-client/style.css` |
+| `#photo-frame`, `.torn-container`, `#cell-image` | photo display | `phone-client/style.css` |
+| `.tools-panel`, `.tools-handle`, `.actions-grid` | sliding tool sheet | `phone-client/style.css` |
+| `.control-group`, `.slider-label`, `.slider-value` | labelled range control | `phone-client/style.css` |
+| `.wizard-overlay`, `.wizard-step`, `.duration-btn` | gesture recording flow | `phone-client/style.css` |
+| `.help-overlay`, `.gallery-card`, `.practice-card` | help, gallery, practice | `phone-client/style.css` |
 
-These are behavior protections, not styling choices. Preserve queried class names (`.torn-container`, `.wizard-step`, `.duration-btn`, `.gallery-card`, `.practice-btn`, `.catalog-entry`, `.preset-btn`, `.bg-btn`, `.float-btn`) and JS-coupled IDs including `#catalog-list`, `#per-cell-editor`, `#preset-grid`, `#bg-selector`, `#editor-filter`, `#editor-border`, and related editor value IDs. Sources: `phone-client/app.js`, `p5-collage/control-panel.js`, `p5-collage/sketch.js`.
+## 8. State without colour
 
-`.tools-panel.hidden` must keep `display:flex` and hide via `translateY(100%)`, not `display:none`. `--user-bg` is set by JavaScript on the body. The torn `clip-path` geometry is generated by JavaScript; do not replace it with a CSS approximation. Source paths: `phone-client/style.css`, `phone-client/app.js`.
+Connection and activity states are **filled versus outlined**, never coloured: an active indicator is a filled ink square, an inactive one is an outlined empty square, and a pressed control inverts (ink fill, paper text). Motion marks use the `--dur-fast` / `--dur-base` tokens and must stop under `prefers-reduced-motion`. Sources: `shared/theme.css`, `operator/operator.css`, `phone-client/style.css`.
 
-## 9. Self-check
+## 9. Coupling contracts
 
-Every new artboard must use only `#000`/`#FFF` plus the declared neutrals; keep radius `0`; use no shadow; load no webfont; and contain no external URL. Sources: `phone-client/style.css`, `p5-collage/control-panel.css`, `Logo/MIDI-Brand-Pack/05-Guia/LEEME.md`.
+Behaviour protections, not styling choices. The Operator's JavaScript queries these IDs and classes; preserve them:
+
+`#presets`, `#scatter`, `#scatter-value`, `#noise`, `#noise-value`, `#catalog`, `#editor`, `#selected-label`, `#visibility-toggle`, `#filter`, `#rotation`, `#rotation-value`, `#scale`, `#scale-value`, `#opacity`, `#opacity-value`, `#scatter-all`, `#connection`, `#theme-toggle`; classes `.presets`, `.catalog-row`, `.row`, `.range`, `.actions`.
+
+Source: `operator/operator.js`, `operator/index.html`.
+
+`.tools-panel.hidden` must keep `display:flex` and hide via `translateY(100%)`, not `display:none`. `--user-bg` is set by JavaScript on the body. The torn `clip-path` geometry is generated by JavaScript; never replace it with a CSS approximation. Source: `phone-client/style.css`, `phone-client/app.js`.
+
+## 10. Self-check
+
+Every artboard must: use only `--ink`, `--paper`, `--quiet`, `--rule-color`, `--rule-soft` and `--mark-on-canvas`; keep `border-radius: 0`; declare no `box-shadow`; load no webfont and reference no external URL; respect `prefers-reduced-motion`; and, for Operator surfaces, use the monospace stack and the `960px` column.
