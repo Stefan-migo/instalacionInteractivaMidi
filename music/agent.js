@@ -160,6 +160,50 @@ function createMusicAgent(options = {}) {
     }
   }
 
+  // One voice on demand, so Ableton can learn the mapping in its Ctrl+M mode.
+  // A note rings for TEST_NOTE_MS; a CC sweeps the whole range and then returns
+  // to the parked value, so a rehearsal parameter is never left stuck at 127.
+  const TEST_NOTE_MS = 120;
+  const TEST_SWEEP_STEPS = 8;
+  const TEST_SWEEP_STEP_MS = 40;
+
+  function handleMusicTest(message) {
+    if (!midiOut || typeof midiOut.sendNoteOn !== 'function') return false;
+    if (!message || (message.output !== 'note' && message.output !== 'cc')) return false;
+    const channel = message.channel;
+    if (!Number.isInteger(channel) || channel < 1 || channel > 16) return false;
+
+    if (message.output === 'note') {
+      const note = message.note;
+      const velocity = Number.isInteger(message.velocity) ? message.velocity : 100;
+      if (!Number.isInteger(note) || note < 0 || note > 127) return false;
+      midiOut.sendNoteOn(channel, note, velocity);
+      const entry = { handle: null, group: channel, note };
+      entry.handle = scheduler.setTimeout(() => {
+        pendingNoteOffs.delete(entry);
+        if (midiOut && typeof midiOut.sendNoteOff === 'function') midiOut.sendNoteOff(channel, note);
+      }, TEST_NOTE_MS);
+      pendingNoteOffs.add(entry);
+      sendToBridge({ type: 'music-output', output: 'note', group: channel, gesture: 'test', note, channel, velocity, at: new Date(now()).toISOString() });
+      return true;
+    }
+
+    const controller = message.controller;
+    if (!Number.isInteger(controller) || controller < 0 || controller > 127) return false;
+    if (typeof midiOut.sendCC !== 'function') return false;
+    for (let step = 0; step <= TEST_SWEEP_STEPS; step += 1) {
+      const value = Math.round((step / TEST_SWEEP_STEPS) * 127);
+      scheduler.setTimeout(() => {
+        if (midiOut && typeof midiOut.sendCC === 'function') midiOut.sendCC(channel, controller, value);
+      }, step * TEST_SWEEP_STEP_MS);
+    }
+    scheduler.setTimeout(() => {
+      if (midiOut && typeof midiOut.sendCC === 'function') midiOut.sendCC(channel, controller, safeValue);
+      sendToBridge({ type: 'music-output', output: 'cc', group: channel, channel, controller, value: safeValue });
+    }, (TEST_SWEEP_STEPS + 1) * TEST_SWEEP_STEP_MS);
+    return true;
+  }
+
   function handleMusicState(message) {
     if (!Array.isArray(message.groups)) return;
     for (const entry of message.groups) {
@@ -207,6 +251,10 @@ function createMusicAgent(options = {}) {
         derivation: mapping.derivation,
         score: config,
       });
+      return;
+    }
+    if (message.type === 'music-test') {
+      handleMusicTest(message);
       return;
     }
     if (message.type === 'music-state') {

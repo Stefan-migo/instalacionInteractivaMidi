@@ -32,7 +32,7 @@ function createMusicState() {
     }
   }
 
-  function snapshot({ agent = false, phones = 0, now = Date.now() } = {}) {
+  function snapshot({ agent = false, phones = 0, now = Date.now(), bridgeGroups = null } = {}) {
     const groups = score ? score.groups.map(config => ({
       group: config.group,
       channel: config.channel,
@@ -41,12 +41,15 @@ function createMusicState() {
       value: values.has(config.group) ? values.get(config.group) : score.safeValue,
       lastNote: ['tilt', 'flick', 'rotation'].map(gesture => notes.get(`${config.group}:${gesture}`)).filter(Boolean).sort((a, b) => b.at.localeCompare(a.at))[0] || null,
     })) : [];
+    const scoreGroups = score ? score.groups.length : null;
+    const topology = { bridgeGroups, scoreGroups, match: scoreGroups !== null && scoreGroups === bridgeGroups };
     let symptom = null;
     if (!score) symptom = 'sin-mapeo';
+    else if (!topology.match) symptom = 'topologia';
     else if (!agent) symptom = 'sin-agente';
     else if (port !== 'open') symptom = 'sin-puerto';
     else if (!lastNoteAt || now - Date.parse(lastNoteAt) > 15000) symptom = 'sin-actividad';
-    return { score, groups, status: { port, agent, phones, lastNoteAt, symptom } };
+    return { score, groups, status: { port, agent, phones, lastNoteAt, symptom, topology } };
   }
 
   return { acceptConfig, recordOutput, snapshot };

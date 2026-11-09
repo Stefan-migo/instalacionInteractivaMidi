@@ -138,11 +138,9 @@ describe('music agent', () => {
 
     expect(sockets.last().sent).toHaveLength(1);
     expect(sockets.last().sent[0].type).toBe('music-config');
-    expect(sockets.last().sent[0].groups).toEqual([
-      { group: 1, mode: 'average' },
-      { group: 2, mode: 'average' },
-      { group: 3, mode: 'average' },
-    ]);
+    expect(sockets.last().sent[0].groups).toEqual(
+      Array.from({ length: 10 }, (_, index) => ({ group: index + 1, mode: 'average' })),
+    );
     // The score's derivation travels with the config: the bridge derives, the agent decides.
     expect(sockets.last().sent[0].derivation.gestures.tilt).toEqual({
       onThreshold: 30,
@@ -203,6 +201,35 @@ describe('music agent', () => {
     expect(agent.reconnects).toBe(1);
   });
 
+  test('fires one voice on demand for MIDI learn, with its own note-off', () => {
+    const { agent, sockets, scheduler, midiOut } = buildAgent();
+    agent.start();
+    sockets.last().open();
+    midiOut.notes.length = 0;
+
+    sockets.last().emit({ type: 'music-test', output: 'note', channel: 4, note: 37, velocity: 100 });
+
+    expect(midiOut.notes).toEqual([['on', 4, 37, 100]]);
+    expect(scheduler.pending.map((entry) => entry.delay)).toContain(120);
+    scheduler.runAll();
+    expect(midiOut.notes).toEqual([['on', 4, 37, 100], ['off', 4, 37]]);
+  });
+
+  test('a CC test sweep covers the range and parks again at the safe value', () => {
+    const { agent, sockets, scheduler, midiOut } = buildAgent();
+    agent.start();
+    sockets.last().open();
+    midiOut.sent.length = 0;
+
+    sockets.last().emit({ type: 'music-test', output: 'cc', channel: 2, controller: 21 });
+    scheduler.runAll();
+
+    const values = midiOut.sent.filter((entry) => entry[0] === 2 && entry[1] === 21).map((entry) => entry[2]);
+    expect(values[0]).toBe(0);
+    expect(values).toContain(127);
+    expect(values[values.length - 1]).toBe(64);
+  });
+
   test('losing the bridge parks every group at the safe value', () => {
     const { agent, sockets, midiOut } = buildAgent();
     agent.start();
@@ -212,11 +239,7 @@ describe('music agent', () => {
 
     sockets.last().serverClose();
 
-    expect(midiOut.sent).toEqual([
-      [1, 21, 64],
-      [2, 21, 64],
-      [3, 21, 64],
-    ]);
+    expect(midiOut.sent).toEqual(Array.from({ length: 10 }, (_, index) => [index + 1, 21, 64]));
   });
 
   test('garbage from the wire is ignored without throwing', () => {
@@ -227,7 +250,7 @@ describe('music agent', () => {
     expect(() => sockets.last().emitRaw('not json')).not.toThrow();
     expect(() => sockets.last().emit({ type: 'music-state' })).not.toThrow();
     expect(() => sockets.last().emit({ type: 'music-state', groups: 'nope' })).not.toThrow();
-    expect(() => sockets.last().emit({ type: 'music-state', groups: [{ group: 9, value: 3 }] })).not.toThrow();
+    expect(() => sockets.last().emit({ type: 'music-state', groups: [{ group: 11, value: 3 }] })).not.toThrow();
     expect(() => sockets.last().emit(null)).not.toThrow();
     expect(midiOut.sent).toEqual([]);
   });

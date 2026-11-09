@@ -109,17 +109,27 @@ binary is published, so neither `node-gyp` nor Visual Studio is needed.
 One port carries every lane; Ableton's MIDI map stores *channel + number*, so the
 lanes never collide.
 
-Three groups of ten phones, one channel per group:
+Ten groups of three phones, one channel per group:
 
 | Channel | Group | CC (continuous) | Notes (gestures) |
 |---------|-------|-----------------|------------------|
-| 1 | slots 0-9 | CC 21 | 36 tilt, 37 flick, 38 rotation |
-| 2 | slots 10-19 | CC 21 | 36 tilt, 37 flick, 38 rotation |
-| 3 | slots 20-29 | CC 21 | 36 tilt, 37 flick, 38 rotation |
+| 1 | slots 0-2 | CC 21 | 36 tilt, 37 flick, 38 rotation |
+| 2 | slots 3-5 | CC 21 | 36 tilt, 37 flick, 38 rotation |
+| 3 | slots 6-8 | CC 21 | 36 tilt, 37 flick, 38 rotation |
+| 4 | slots 9-11 | CC 21 | 36 tilt, 37 flick, 38 rotation |
+| 5 | slots 12-14 | CC 21 | 36 tilt, 37 flick, 38 rotation |
+| 6 | slots 15-17 | CC 21 | 36 tilt, 37 flick, 38 rotation |
+| 7 | slots 18-20 | CC 21 | 36 tilt, 37 flick, 38 rotation |
+| 8 | slots 21-23 | CC 21 | 36 tilt, 37 flick, 38 rotation |
+| 9 | slots 24-26 | CC 21 | 36 tilt, 37 flick, 38 rotation |
+| 10 | slots 27-29 | CC 21 | 36 tilt, 37 flick, 38 rotation |
 | 16 | operator | reserved | reserved |
 
-Nine voices in total: 3 groups x 3 gestures. Every phone in a group triggers the
-same three sounds — that is what makes a crowd learnable in five minutes.
+Forty parameters in total: ten groups x three gestures = thirty note voices, plus
+ten continuous lanes. Every phone in a group triggers the same three sounds,
+which is what makes a crowd learnable in five minutes. The number of groups is
+configuration: `GROUP_COUNT` in the bridge and the number of groups in
+`music/mapping.json` must agree, and the panel says so when they do not.
 
 Channels are written here as Ableton displays them (1..16). `bridge/midi-out.js`
 accepts 1..16 and encodes them to the wire format itself. Note numbers are
