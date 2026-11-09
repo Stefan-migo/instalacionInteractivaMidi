@@ -6,6 +6,7 @@ const { SlotAllocator } = require('./slot-allocator');
 const { MessageRelay, parseRecordingDuration } = require('./message-relay');
 const { GestureStore } = require('./gesture-store');
 const { DTWMatcher } = require('./dtw-matcher');
+const { createGroupAggregator, sensorIntensity } = require('./group-state');
 
 const ROOT_DIR = path.join(__dirname, '..');
 // Overridable so tests (and deployments with assets elsewhere) do not depend on the
@@ -67,6 +68,12 @@ const dtwMatcher = new DTWMatcher(gestureStore, {
 });
 const p5Players = new Set();
 const phoneConnections = new Map();
+// Agents are the audio side: they hold no slot, receive per-group state and
+// answer with the aggregation they want. See odd/tasks/ableton-music.md, S3.
+const musicAgents = new Set();
+const groupAggregator = createGroupAggregator({ groupCount: 3, slotsPerGroup: 10 });
+const MUSIC_STATE_INTERVAL_MS = 50;
+let musicStateTimer = null;
 
 function broadcastToPlayers(data) {
   const msg = JSON.stringify(data);
@@ -74,6 +81,31 @@ function broadcastToPlayers(data) {
     if (ws.readyState !== 1) continue;
     try { ws.send(msg); } catch (e) {}
   }
+}
+
+function broadcastToAgents(data) {
+  if (musicAgents.size === 0) return;
+  const msg = JSON.stringify(data);
+  for (const ws of musicAgents) {
+    if (ws.readyState !== 1) continue;
+    try { ws.send(msg); } catch (e) {}
+  }
+}
+
+function startMusicStateTimer() {
+  if (musicStateTimer) return;
+  musicStateTimer = setInterval(() => {
+    if (musicAgents.size === 0) return;
+    broadcastToAgents({ type: 'music-state', groups: groupAggregator.snapshot() });
+  }, MUSIC_STATE_INTERVAL_MS);
+  // The state feed must never be the reason the process (or a test run) stays alive.
+  if (typeof musicStateTimer.unref === 'function') musicStateTimer.unref();
+}
+
+function stopMusicStateTimer() {
+  if (!musicStateTimer) return;
+  clearInterval(musicStateTimer);
+  musicStateTimer = null;
 }
 
 const server = http.createServer((req, res) => {
@@ -204,6 +236,14 @@ wss.on('connection', (ws) => {
         }
         return;
       }
+      if (msg.type === 'register' && msg.role === 'agent') {
+        info.role = 'agent';
+        musicAgents.add(ws);
+        startMusicStateTimer();
+        ws.send(JSON.stringify({ type: 'system', event: 'agent-ready' }));
+        ws.send(JSON.stringify({ type: 'music-config', groups: groupAggregator.config() }));
+        return;
+      }
       if (msg.type === 'register' && msg.role === 'phone') {
         const slot = allocator.allocate();
         if (slot === -1) {
@@ -224,7 +264,7 @@ wss.on('connection', (ws) => {
         broadcastToPlayers(relay.formatAssignMessage(slot, ''));
         return;
       }
-      ws.send(JSON.stringify({ type: 'error', message: 'Send { type: "register", role: "phone"|"player" }' }));
+      ws.send(JSON.stringify({ type: 'error', message: 'Send { type: "register", role: "phone"|"player"|"agent" }' }));
       return;
     }
 
@@ -233,6 +273,8 @@ wss.on('connection', (ws) => {
       if (!validation.valid) return;
       if (msg.type === 'sensor') {
         broadcastToPlayers(relay.formatSensorBatchMessage(info.slot, msg.accel, msg.gyro, msg.orientation));
+        // Same frame, reduced once: the agents never see 30 phones, only 3 groups.
+        groupAggregator.push(info.slot, sensorIntensity(msg));
 
         // Feed samples to gesture recording (stores sensor data while recording)
         gestureStore.addSample(info.slot, msg);
@@ -339,6 +381,17 @@ wss.on('connection', (ws) => {
           }
         }
       }
+    } else if (info.role === 'agent') {
+      if (msg.type === 'music-config' && Array.isArray(msg.groups)) {
+        const applied = [];
+        for (const entry of msg.groups) {
+          if (!entry || typeof entry !== 'object') continue;
+          if (groupAggregator.setMode(entry.group, entry.mode)) {
+            applied.push({ group: entry.group, mode: entry.mode });
+          }
+        }
+        ws.send(JSON.stringify({ type: 'music-config-applied', groups: applied }));
+      }
     }
   });
 
@@ -347,10 +400,16 @@ wss.on('connection', (ws) => {
       gestureStore.discardRecording(info.slot);
       allocator.free(info.slot);
       phoneConnections.delete(ws);
+      // A disconnected phone stops contributing instead of freezing its last value.
+      groupAggregator.drop(info.slot);
       broadcastToPlayers(relay.formatDisconnectMessage(info.slot));
     }
     if (info.role === 'player') {
       p5Players.delete(ws);
+    }
+    if (info.role === 'agent') {
+      musicAgents.delete(ws);
+      if (musicAgents.size === 0) stopMusicStateTimer();
     }
   });
 });
