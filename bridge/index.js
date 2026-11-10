@@ -121,6 +121,22 @@ const FLICK_VELOCITY = 100;
 // A flick is the most specific gesture, so it silences the two derived ones for
 // this long: the same shake must not also arrive as a tilt or a rotation.
 const FLICK_SUPPRESS_MS = 400;
+
+// Diagnostic ring buffer: the last couple of seconds of raw sensor frames per
+// phone. A gesture that reads wrong is a fact about which axis the hand moved,
+// so the numbers are kept and read out, never guessed at.
+const SENSOR_TRACE_FRAMES = 900;
+const sensorTrace = new Map();
+
+function traceSensor(slot, message) {
+  let frames = sensorTrace.get(slot);
+  if (!frames) {
+    frames = [];
+    sensorTrace.set(slot, frames);
+  }
+  frames.push({ at: Date.now(), gyro: message.gyro, orientation: message.orientation });
+  if (frames.length > SENSOR_TRACE_FRAMES) frames.shift();
+}
 const MUSIC_STATE_INTERVAL_MS = 50;
 let musicStateTimer = null;
 
@@ -183,6 +199,15 @@ const server = http.createServer((req, res) => {
   if (pathname === '/api/music') {
     res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
     res.end(JSON.stringify(musicState.snapshot({ agent: musicAgents.size > 0, phones: phoneConnections.size, bridgeGroups: topology.groupCount })));
+    return;
+  }
+
+  // Read-only diagnostic: the last sensor frames per phone, in arrival order.
+  if (pathname === '/api/music/debug') {
+    const slots = {};
+    for (const [slot, frames] of sensorTrace) slots[slot] = frames;
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ frames: SENSOR_TRACE_FRAMES, slots }));
     return;
   }
 
@@ -372,6 +397,7 @@ wss.on('connection', (ws) => {
       if (!validation.valid) return;
       if (msg.type === 'sensor') {
         broadcastToPlayers(relay.formatSensorBatchMessage(info.slot, msg.accel, msg.gyro, msg.orientation));
+        traceSensor(info.slot, msg);
         // Same frame, reduced once: the agents never see 30 phones, only 3 groups.
         groupAggregator.push(info.slot, sensorIntensity(msg));
 

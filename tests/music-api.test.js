@@ -128,4 +128,17 @@ describe('GET /api/music', () => {
       type: 'music-test', output: 'note', channel: 4, note: 37, velocity: 100,
     });
   });
+
+  test('exposes the last sensor frames so a wrong gesture can be read, not guessed', async () => {
+    const body = await new Promise((resolve, reject) => {
+      http.get(`${BASE}/api/music/debug`, (res) => {
+        let raw = '';
+        res.on('data', (chunk) => { raw += chunk; });
+        res.on('end', () => resolve(JSON.parse(raw)));
+      }).on('error', reject);
+    });
+
+    expect(body.frames).toBe(900);
+    expect(body.slots).toEqual(expect.any(Object));
+  });
 });

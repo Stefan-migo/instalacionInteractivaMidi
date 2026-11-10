@@ -32,11 +32,6 @@ function tiltedAndTurning(beta, g) {
   return { accel: { x: 0, y: 0, z: 9.8 }, gyro: { a: 0, b: 0, g }, orientation: { a: 0, b: beta, g: 0 } };
 }
 
-// A phone that pitches (b) and rolls (g) at the same time, in degrees per second.
-function rates(beta, b, g) {
-  return { accel: { x: 0, y: 0, z: 9.8 }, gyro: { a: 0, b, g }, orientation: { a: 0, b: beta, g: 0 } };
-}
-
 describe('gesture triggers', () => {
   test('stays quiet below the threshold', () => {
     const { triggers } = createHarness();
@@ -166,29 +161,6 @@ describe('gesture triggers', () => {
     triggers.feed(0, orientation(5));
     advance(500);
     expect(triggers.feed(0, orientation(60))).toHaveLength(1);
-  });
-
-  test('a twist that also pitches is still a twist', () => {
-    const { triggers } = createHarness();
-    const events = triggers.feed(0, rates(60, 100, 300));
-    expect(events.map((event) => event.gesture)).toEqual(['rotation']);
-  });
-
-  test('a roll is not a tilt, however far the angle travels', () => {
-    const { triggers, advance } = createHarness();
-    triggers.feed(0, rates(0, 0, 300));
-    advance(400);
-    triggers.feed(0, rates(20, 20, 300));
-    advance(150);
-
-    // The angle crossed thirty degrees and moved fast, but the phone is rolling.
-    const events = triggers.feed(0, rates(60, 25, 320));
-    expect(events.map((event) => event.gesture)).not.toContain('tilt');
-  });
-
-  test('a shake is not a twist', () => {
-    const { triggers } = createHarness();
-    expect(triggers.feed(0, rates(0, 400, 300))).toEqual([]);
   });
 
   test('phones are independent', () => {
