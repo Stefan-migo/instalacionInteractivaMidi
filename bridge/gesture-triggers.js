@@ -29,9 +29,6 @@ const DEFAULT_EXCLUSIVE_MS = 300;
 const MOVE_WINDOW_MS = 150;
 // Samples older than this are dropped: they cannot serve as a movement reference.
 const HISTORY_MS = 400;
-// How much the gesture's own rotation axis has to lead the other two before the
-// motion counts as that gesture. A shake moves all three at once; a twist does not.
-const DEFAULT_DOMINANCE = 1.4;
 
 // Most specific first. Flick is derived elsewhere (the DTW matcher) and reaches
 // this module through suppress(); rotation is a velocity, tilt is the loosest.
@@ -46,7 +43,6 @@ const DEFAULT_GESTURES = {
     minVelocity: 40,
     maxVelocity: 127,
     minDelta: 15,
-    dominanceAxis: 'b',
   },
   rotation: {
     source: 'gyro',
@@ -56,7 +52,6 @@ const DEFAULT_GESTURES = {
     minVelocity: 40,
     maxVelocity: 127,
     minDelta: 0,
-    dominanceAxis: 'g',
   },
 };
 
@@ -87,12 +82,6 @@ function normalizeGesture(name, config, fallback) {
     // Zero means the value itself is already a motion (the gyro), so no change
     // is required; anything above zero demands that much movement in the window.
     minDelta: Number.isFinite(merged.minDelta) && merged.minDelta > 0 ? merged.minDelta : 0,
-    // The gyro axis this gesture owns. Its rate has to lead the other two, or the
-    // motion is read as something else.
-    dominanceAxis: typeof merged.dominanceAxis === 'string' ? merged.dominanceAxis : null,
-    dominanceFactor: Number.isFinite(merged.dominanceFactor) && merged.dominanceFactor > 0
-      ? merged.dominanceFactor
-      : DEFAULT_DOMINANCE,
     minVelocity,
     maxVelocity: Math.max(minVelocity, maxVelocity),
   };
@@ -175,24 +164,6 @@ function createGestureTriggers(options = {}) {
     return Math.abs(value - reference.value) >= minDelta;
   }
 
-  // A gesture counts only when its own rotation axis leads the others: a shake
-  // moves all three at once, a twist moves one. Without this, a shake reads as a
-  // twist and a roll reads as a tilt. A phone that reports no gyro passes, so the
-  // rule never silences a browser that omits the sensor.
-  function dominates(sensor, gesture) {
-    if (!gesture.dominanceAxis) return true;
-    const gyro = sensor.gyro;
-    if (!gyro || typeof gyro !== 'object') return true;
-    const own = Math.abs(toFiniteNumber(gyro[gesture.dominanceAxis]) ?? 0);
-    let others = 0;
-    for (const axis of ['a', 'b', 'g']) {
-      if (axis === gesture.dominanceAxis) continue;
-      const value = Math.abs(toFiniteNumber(gyro[axis]) ?? 0);
-      if (value > others) others = value;
-    }
-    return own >= gesture.dominanceFactor * others;
-  }
-
   function feed(slot, sensor) {
     const events = [];
     if (!Number.isInteger(slot) || !sensor || typeof sensor !== 'object') return events;
@@ -222,7 +193,6 @@ function createGestureTriggers(options = {}) {
       if (at - state.lastFiredAt < cooldownMs) continue;
       if (at < entry.suppressUntil) continue;
       if (gesture.minDelta > 0 && !moved(state, at, raw, gesture.minDelta)) continue;
-      if (!dominates(sensor, gesture)) continue;
 
       state.armed = false;
       state.lastFiredAt = at;
