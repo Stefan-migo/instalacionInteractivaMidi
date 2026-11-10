@@ -57,6 +57,20 @@ class SlotAllocator {
     return true;
   }
 
+  /**
+   * Take a specific slot back for the phone that used to own it. A slot left
+   * cooling by its own phone is not "taken", it is reserved for it: without
+   * this, every reconnect lands in a different group and therefore a different
+   * instrument in Ableton.
+   */
+  reclaim(slot) {
+    if (!Number.isInteger(slot) || slot < 0 || slot >= this.maxSlots) return false;
+    if (this.slots[slot] !== null) return false;
+    this.slots[slot] = Date.now();
+    this.cooldowns[slot] = 0;
+    return true;
+  }
+
   get activeSlots() {
     return this.slots.map((s, i) => s !== null ? i : null).filter(s => s !== null);
   }

@@ -128,6 +128,29 @@ const FLICK_SUPPRESS_MS = 400;
 const SENSOR_TRACE_FRAMES = 900;
 const sensorTrace = new Map();
 
+// deviceId -> { slot, seenAt }. A phone that comes back keeps its fragment: its
+// slot stays reserved for it, so a reconnect never moves a performer into another
+// group mid-show. The record expires so a phone that really left frees its slot.
+const DEVICE_MEMORY_MS = 10 * 60 * 1000;
+const deviceSlots = new Map();
+
+function rememberDevice(deviceId, slot) {
+  if (typeof deviceId !== 'string' || !deviceId) return;
+  deviceSlots.set(deviceId, { slot, seenAt: Date.now() });
+}
+
+function slotForDevice(deviceId) {
+  if (typeof deviceId !== 'string' || !deviceId) return null;
+  const record = deviceSlots.get(deviceId);
+  if (!record) return null;
+  if (Date.now() - record.seenAt > DEVICE_MEMORY_MS) {
+    deviceSlots.delete(deviceId);
+    return null;
+  }
+  if (!allocator.reclaim(record.slot)) return null;
+  return record.slot;
+}
+
 function traceSensor(slot, message) {
   let frames = sensorTrace.get(slot);
   if (!frames) {
@@ -369,12 +392,15 @@ wss.on('connection', (ws) => {
         return;
       }
       if (msg.type === 'register' && msg.role === 'phone') {
-        const slot = allocator.allocate();
+        // A returning phone gets its own slot back before anyone else's.
+        const remembered = slotForDevice(msg.deviceId);
+        const slot = remembered !== null ? remembered : allocator.allocate();
         if (slot === -1) {
           ws.send(JSON.stringify({ type: 'error', message: 'All slots full' }));
           ws.close();
           return;
         }
+        rememberDevice(msg.deviceId, slot);
         info.role = 'phone';
         info.slot = slot;
         phoneConnections.set(ws, info);
