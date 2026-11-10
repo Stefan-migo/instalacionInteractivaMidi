@@ -10,6 +10,36 @@ const { createGroupAggregator, sensorIntensity, groupForSlot } = require('./grou
 const { createGestureTriggers } = require('./gesture-triggers');
 const { createVoiceGate } = require('./voice-gate');
 const { startHeartbeat } = require('./heartbeat');
+const { createMusicState } = require('./music-state');
+const { SLOT_COUNT, DEFAULT_GROUP_COUNT, deriveTopology } = require('./topology');
+const { parseEmitRequest } = require('./message-relay');
+
+function sendJson(res, status, payload) {
+  res.writeHead(status, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify(payload));
+}
+
+function readJsonBody(req, limit, callback) {
+  let size = 0;
+  const chunks = [];
+  req.on('data', (chunk) => {
+    size += chunk.length;
+    if (size > limit) {
+      req.destroy();
+      callback(new Error('body too large'));
+      return;
+    }
+    chunks.push(chunk);
+  });
+  req.on('end', () => {
+    try {
+      callback(null, JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'));
+    } catch (error) {
+      callback(error);
+    }
+  });
+  req.on('error', (error) => callback(error));
+}
 
 const ROOT_DIR = path.join(__dirname, '..');
 // Overridable so tests (and deployments with assets elsewhere) do not depend on the
@@ -42,7 +72,10 @@ const GESTURE_ACTIONS = {
 // instances is the failure mode this whole design forbids: the state is in memory.
 const STARTED_AT = new Date().toISOString();
 
-const allocator = new SlotAllocator(30, 5000);
+// The partition is configuration, never a constant (S12): GROUP_COUNT decides how
+// many groups the thirty phones form, and the score must declare the same number.
+const topology = deriveTopology(SLOT_COUNT, Number(process.env.GROUP_COUNT || DEFAULT_GROUP_COUNT));
+const allocator = new SlotAllocator(topology.slotCount, 5000);
 const relay = new MessageRelay();
 const gestureStore = new GestureStore();
 
@@ -78,9 +111,10 @@ const phoneConnections = new Map();
 // Agents are the audio side: they hold no slot, receive per-group state and
 // answer with the aggregation they want. See odd/tasks/ableton-music.md, S3.
 const musicAgents = new Set();
-const groupAggregator = createGroupAggregator({ groupCount: 3, slotsPerGroup: 10 });
+const groupAggregator = createGroupAggregator({ groupCount: topology.groupCount, slotsPerGroup: topology.slotsPerGroup });
 const gestureTriggers = createGestureTriggers();
 const voiceGate = createVoiceGate();
+const musicState = createMusicState();
 // Flick comes from the DTW matcher as an already-discrete event, so it has no
 // derived velocity. 100 reads as a firm hit without pretending to measure it.
 const FLICK_VELOCITY = 100;
@@ -140,6 +174,30 @@ const server = http.createServer((req, res) => {
       clients: wss.clients.size,
       agents: musicAgents.size,
     }));
+    return;
+  }
+
+  if (pathname === '/api/music') {
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify(musicState.snapshot({ agent: musicAgents.size > 0, phones: phoneConnections.size, bridgeGroups: topology.groupCount })));
+    return;
+  }
+
+  // Firing one voice so Live can learn it. The panel may ask; it may never write.
+  if (pathname === '/api/music/emit' && req.method === 'POST') {
+    readJsonBody(req, 4096, (error, body) => {
+      if (error) return sendJson(res, 400, { ok: false, reason: 'invalido' });
+      const message = parseEmitRequest(body);
+      if (!message) return sendJson(res, 400, { ok: false, reason: 'invalido' });
+      if (musicAgents.size === 0) return sendJson(res, 409, { ok: false, reason: 'sin-agente' });
+      const port = musicState.snapshot({ agent: true }).status.port;
+      if (port !== 'open') return sendJson(res, 409, { ok: false, reason: 'sin-puerto' });
+      const payload = JSON.stringify(message);
+      for (const client of musicAgents) {
+        if (client.readyState === 1) client.send(payload);
+      }
+      return sendJson(res, 200, { ok: true });
+    });
     return;
   }
 
@@ -438,9 +496,14 @@ wss.on('connection', (ws) => {
         }
       }
     } else if (info.role === 'agent') {
-      if (msg.type === 'music-config' && Array.isArray(msg.groups)) {
+      if (msg.type === 'music-output') {
+        musicState.recordOutput(msg);
+      }
+      if (msg.type === 'music-config') {
+        if (msg.portStatus === 'open' || msg.portStatus === 'closed') musicState.recordOutput({ output: 'port', status: msg.portStatus });
+        musicState.acceptConfig(msg);
         const applied = [];
-        for (const entry of msg.groups) {
+        for (const entry of (Array.isArray(msg.groups) ? msg.groups : [])) {
           if (!entry || typeof entry !== 'object') continue;
           if (groupAggregator.setMode(entry.group, entry.mode)) {
             applied.push({ group: entry.group, mode: entry.mode });

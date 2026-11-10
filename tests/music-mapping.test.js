@@ -9,11 +9,11 @@ const {
 const FILE = require('../music/mapping.json');
 
 describe('normalizeMapping', () => {
-  test('an empty file becomes three usable groups', () => {
+  test('an empty file becomes ten usable groups', () => {
     const { mapping, errors } = normalizeMapping({});
     expect(errors).toEqual([]);
-    expect(mapping.groups).toHaveLength(3);
-    expect(mapping.groups.map(g => g.channel)).toEqual([1, 2, 3]);
+    expect(mapping.groups).toHaveLength(10);
+    expect(mapping.groups.map(g => g.channel)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   });
 
   test('the shipped score is valid and gives every group its nine voices', () => {
@@ -53,7 +53,7 @@ describe('normalizeMapping', () => {
   test('nonsense input still returns something usable', () => {
     for (const input of [null, undefined, 'nope', 42, []]) {
       expect(() => normalizeMapping(input)).not.toThrow();
-      expect(normalizeMapping(input).mapping.groups).toHaveLength(3);
+      expect(normalizeMapping(input).mapping.groups).toHaveLength(10);
     }
   });
 });

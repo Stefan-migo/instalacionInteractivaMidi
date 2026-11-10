@@ -26,4 +26,46 @@ output { float: right; font-variant-numeric: tabular-nums; }
 #scatter-all { margin-bottom: .75rem; }
 #visibility-toggle { margin-bottom: .75rem; }
 #visibility-toggle:disabled { cursor: not-allowed; opacity: .55; }
+/* MIDI ROUTING START */
+.routing-actions { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem; }
+.routing-actions a { color: var(--ink); font-size: .75rem; }
+#routing-copy-status, .routing-limit, .routing-quiet { color: var(--quiet); }
+.routing-split { display: grid; grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr); gap: 1.5rem; }
+.routing-lead { font-size: 1.5rem; }
+.routing-matrix { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--rule-color); border-left: 1px solid var(--rule-color); }
+.routing-cell { min-height: 0; padding: .35rem; border-right: 1px solid var(--rule-soft); border-bottom: 1px solid var(--rule-soft); }
+.routing-matrix { max-height: 70vh; overflow: auto; }
+.routing-cell h3 { margin: .2rem 0; }
+.routing-cell p { margin: .2rem 0; }
+.routing-walk { margin: 1rem 0; padding: .75rem 0; border-top: 1px solid var(--rule-color); border-bottom: 1px solid var(--rule-soft); }
+.routing-walk-controls { display: flex; flex-wrap: wrap; gap: .4rem; }
+#routing-emit-status { min-height: 1.5em; color: var(--quiet); }
+#routing-emit:disabled { cursor: not-allowed; opacity: .55; }
+.routing-cell h3, .routing-live h3 { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; }
+.routing-cell p, .routing-fader p { color: var(--quiet); line-height: 1.6; }
+.routing-dot { display: inline-block; width: .625rem; height: .625rem; margin-right: .4rem; border: 1px solid var(--ink); vertical-align: middle; }
+.routing-dot.is-on { background: var(--ink); }
+.routing-live { padding-left: 1rem; border-left: 1px solid var(--rule-color); }
+.routing-fader { padding: .5rem 0; border-bottom: 1px solid var(--rule-soft); }
+.routing-rail { height: .5rem; margin: .5rem 0; border: 1px solid var(--rule-color); }
+.routing-fill { height: 100%; background: var(--ink); }
+.routing-copy-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: pre; }
+.routing-copy-text.is-visible { position: static; display: block; width: 100%; height: 8rem; margin-top: .75rem; padding: .5rem; overflow: auto; clip-path: none; border: 1px solid var(--rule-color); background: var(--paper); color: var(--ink); font: inherit; }
+body.routing-window header, body.routing-window main > section:not(#routing) { display: none; }
+body.routing-window main { max-width: 1500px; }
+@media (max-width: 760px) { .routing-split { grid-template-columns: 1fr; } .routing-live { padding: 1rem 0 0; border-left: 0; border-top: 1px solid var(--rule-color); } }
+@media print {
+  body:has(#routing) * { visibility: hidden !important; }
+  #routing, #routing * { visibility: visible !important; }
+  body:has(#routing) { min-height: 0; background: #f4f4f4; color: #111; }
+  #routing { position: absolute; inset: 0; width: 100%; padding: 1rem; background: #f4f4f4; color: #111; }
+  #routing button, #routing a, #routing-copy-status, #routing-copy-text { display: none !important; }
+  #routing .routing-split { grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr); }
+  #routing .routing-live { border-color: #111; }
+  #routing .routing-cell, #routing .routing-fader, #routing .routing-matrix, #routing .routing-rail { border-color: #111; }
+  #routing .routing-cell p, #routing .routing-fader p, #routing .routing-limit, #routing .routing-quiet { color: #111; }
+  #routing .routing-fill, #routing .routing-dot.is-on { background: #111; }
+  #routing .routing-dot { border-color: #111; }
+}
+/* MIDI ROUTING END */
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }

@@ -38,13 +38,19 @@ const DEFAULT_DERIVATION = {
   },
 };
 
+const DEFAULT_GROUP_COUNT = 10;
+
 const DEFAULT_MAPPING = {
   version: 2,
   safeValue: 64,
   derivation: DEFAULT_DERIVATION,
-  groups: [1, 2, 3].map((group) => ({
-    group,
-    channel: group,
+  // Ten groups of three phones: one channel per group, the same three gestures
+  // on every channel. The count is configuration, so the score file is free to
+  // declare another number and the bridge reports the mismatch instead of
+  // silently truncating it.
+  groups: Array.from({ length: DEFAULT_GROUP_COUNT }, (_, index) => ({
+    group: index + 1,
+    channel: index + 1,
     aggregation: 'average',
     ccController: 21,
     curve: { shape: 'linear', gamma: 1 },
@@ -105,7 +111,11 @@ function normalizeDerivation(raw) {
 }
 
 function normalizeGroup(raw, index, errors) {
-  const fallback = DEFAULT_MAPPING.groups[index];
+  const fallback = DEFAULT_MAPPING.groups[index] || {
+    ...DEFAULT_MAPPING.groups[DEFAULT_MAPPING.groups.length - 1],
+    group: index + 1,
+    channel: Math.min(16, index + 1),
+  };
   const source = raw && typeof raw === 'object' ? raw : {};
 
   let channel = integerOr(source.channel, fallback.channel);
@@ -165,12 +175,11 @@ function normalizeMapping(raw) {
     errors.push('groups is not an array, using defaults');
   }
 
-  const groups = DEFAULT_MAPPING.groups.map((fallback, index) =>
-    normalizeGroup(provided[index], index, errors)
-  );
+  const count = provided.length > 0 ? Math.min(provided.length, 16) : DEFAULT_MAPPING.groups.length;
+  const groups = Array.from({ length: count }, (_, index) => normalizeGroup(provided[index], index, errors));
 
-  if (provided.length > groups.length) {
-    errors.push('more groups than channels: only the first ' + groups.length + ' were used');
+  if (provided.length > 16) {
+    errors.push('more groups than channels: only the first 16 were used');
   }
 
   const safeValue = clamp7(numberOr(source.safeValue, DEFAULT_MAPPING.safeValue));

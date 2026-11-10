@@ -61,13 +61,13 @@ describe('bridge agent WebSocket', () => {
     const agent = await connect();
     agent.send(JSON.stringify({ type: 'register', role: 'agent' }));
     expect(await next(agent, m => m.event === 'agent-ready')).toMatchObject({ type: 'system', event: 'agent-ready' });
-    expect((await next(agent, m => m.type === 'music-config')).groups).toHaveLength(3);
-    agent.send(JSON.stringify({ type: 'music-config', groups: [{ group: 1, mode: 'max' }, { group: 9, mode: 'average' }, { group: 2, mode: 'token' }] }));
+    expect((await next(agent, m => m.type === 'music-config')).groups).toHaveLength(10);
+    agent.send(JSON.stringify({ type: 'music-config', groups: [{ group: 1, mode: 'max' }, { group: 11, mode: 'average' }, { group: 2, mode: 'token' }] }));
     expect(await next(agent, m => m.type === 'music-config-applied')).toEqual({ type: 'music-config-applied', groups: [{ group: 1, mode: 'max' }] });
     agent.close();
   });
 
-  test('fans out three group frames and removes disconnected phones', async () => {
+  test('fans out ten group frames and removes disconnected phones', async () => {
     const agent = await connect();
     agent.send(JSON.stringify({ type: 'register', role: 'agent' }));
     await next(agent, m => m.event === 'agent-ready');
@@ -77,11 +77,11 @@ describe('bridge agent WebSocket', () => {
     const assigned = await next(phone, m => m.type === 'assigned');
     phone.send(JSON.stringify(sensor));
     const frame = await next(agent, m => m.type === 'music-state' && m.groups.some(g => g.phones > 0));
-    expect(frame.groups).toHaveLength(3);
-    expect(frame.groups.find(g => g.group === Math.floor(assigned.slot / 10) + 1).phones).toBe(1);
+    expect(frame.groups).toHaveLength(10);
+    expect(frame.groups.find(g => g.group === Math.floor(assigned.slot / 3) + 1).phones).toBe(1);
     phone.close();
     const dropped = await next(agent, m => m.type === 'music-state' && m.groups.every(g => g.phones === 0));
-    expect(dropped.groups).toHaveLength(3);
+    expect(dropped.groups).toHaveLength(10);
     agent.close();
   });
 

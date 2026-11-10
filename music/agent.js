@@ -22,6 +22,18 @@ const DEFAULT_SAFE_VALUE = 64;
 const DEFAULT_GESTURE_NOTES = { tilt: 36, flick: 37, rotation: 38 };
 const DEFAULT_NOTE_DURATION_MS = 120;
 
+function buildMusicConfig(rawMapping) {
+  const { mapping } = normalizeMapping(rawMapping);
+  return {
+    version: mapping.version,
+    safeValue: mapping.safeValue,
+    derivation: mapping.derivation,
+    groups: mapping.groups.map(({ group, channel, ccController, aggregation, curve, ema, deadband, maxPerSecond, notes }) => ({
+      group, channel, ccController, aggregation, curve, ema, deadband, maxPerSecond, notes,
+    })),
+  };
+}
+
 function backoffDelay(attempt, options = {}) {
   const baseMs = Number.isFinite(options.baseMs) ? options.baseMs : 500;
   const maxMs = Number.isFinite(options.maxMs) ? options.maxMs : 8000;
@@ -148,6 +160,50 @@ function createMusicAgent(options = {}) {
     }
   }
 
+  // One voice on demand, so Ableton can learn the mapping in its Ctrl+M mode.
+  // A note rings for TEST_NOTE_MS; a CC sweeps the whole range and then returns
+  // to the parked value, so a rehearsal parameter is never left stuck at 127.
+  const TEST_NOTE_MS = 120;
+  const TEST_SWEEP_STEPS = 8;
+  const TEST_SWEEP_STEP_MS = 40;
+
+  function handleMusicTest(message) {
+    if (!midiOut || typeof midiOut.sendNoteOn !== 'function') return false;
+    if (!message || (message.output !== 'note' && message.output !== 'cc')) return false;
+    const channel = message.channel;
+    if (!Number.isInteger(channel) || channel < 1 || channel > 16) return false;
+
+    if (message.output === 'note') {
+      const note = message.note;
+      const velocity = Number.isInteger(message.velocity) ? message.velocity : 100;
+      if (!Number.isInteger(note) || note < 0 || note > 127) return false;
+      midiOut.sendNoteOn(channel, note, velocity);
+      const entry = { handle: null, group: channel, note };
+      entry.handle = scheduler.setTimeout(() => {
+        pendingNoteOffs.delete(entry);
+        if (midiOut && typeof midiOut.sendNoteOff === 'function') midiOut.sendNoteOff(channel, note);
+      }, TEST_NOTE_MS);
+      pendingNoteOffs.add(entry);
+      sendToBridge({ type: 'music-output', output: 'note', group: channel, gesture: 'test', note, channel, velocity, at: new Date(now()).toISOString() });
+      return true;
+    }
+
+    const controller = message.controller;
+    if (!Number.isInteger(controller) || controller < 0 || controller > 127) return false;
+    if (typeof midiOut.sendCC !== 'function') return false;
+    for (let step = 0; step <= TEST_SWEEP_STEPS; step += 1) {
+      const value = Math.round((step / TEST_SWEEP_STEPS) * 127);
+      scheduler.setTimeout(() => {
+        if (midiOut && typeof midiOut.sendCC === 'function') midiOut.sendCC(channel, controller, value);
+      }, step * TEST_SWEEP_STEP_MS);
+    }
+    scheduler.setTimeout(() => {
+      if (midiOut && typeof midiOut.sendCC === 'function') midiOut.sendCC(channel, controller, safeValue);
+      sendToBridge({ type: 'music-output', output: 'cc', group: channel, channel, controller, value: safeValue });
+    }, (TEST_SWEEP_STEPS + 1) * TEST_SWEEP_STEP_MS);
+    return true;
+  }
+
   function handleMusicState(message) {
     if (!Array.isArray(message.groups)) return;
     for (const entry of message.groups) {
@@ -156,7 +212,10 @@ function createMusicAgent(options = {}) {
       if (!Number.isInteger(group) || group < 1 || group > groupCount) continue;
       // curve -> EMA -> deadband -> rate limit, then to the wire.
       const value = shaperFor(group).push(to7Bit(entry.value));
-      if (value !== null) emitCC(group, value);
+      if (value !== null) {
+        emitCC(group, value);
+        sendToBridge({ type: 'music-output', output: 'cc', group, channel: channelFor(group), controller: controllerFor(group), value });
+      }
     }
   }
 
@@ -166,9 +225,10 @@ function createMusicAgent(options = {}) {
     const note = notesFor(group)[gesture];
     if (!Number.isInteger(note)) return false;
     if (!Number.isInteger(group) || group < 1) return false;
+    sendToBridge({ type: 'music-output', output: 'note', group, gesture, note, channel: channelFor(group), velocity, at: new Date(now()).toISOString() });
     if (!midiOut || typeof midiOut.sendNoteOn !== 'function') return false;
 
-    midiOut.sendNoteOn(group, note, velocity);
+    midiOut.sendNoteOn(channelFor(group), note, velocity);
     const entry = { handle: null, group, note };
     entry.handle = scheduler.setTimeout(() => {
       pendingNoteOffs.delete(entry);
@@ -183,13 +243,18 @@ function createMusicAgent(options = {}) {
     if (message.type === 'music-config') {
       // The bridge reports what it is applying; the agent answers with what it
       // wants, which is the point of keeping the musical score local.
+      const config = buildMusicConfig(mapping);
       sendToBridge({
         type: 'music-config',
+        portStatus: midiOut && typeof midiOut.isAvailable === 'function' && midiOut.isAvailable() ? 'open' : 'closed',
         groups: modes.map((mode, index) => ({ group: index + 1, mode })),
-        // Thresholds are physics, so they travel with the score but apply to
-        // every phone: the bridge derives, the agent decides.
         derivation: mapping.derivation,
+        score: config,
       });
+      return;
+    }
+    if (message.type === 'music-test') {
+      handleMusicTest(message);
       return;
     }
     if (message.type === 'music-state') {
@@ -343,4 +408,4 @@ if (require.main === module) {
   process.on('SIGTERM', shutdown);
 }
 
-module.exports = { createMusicAgent, backoffDelay };
+module.exports = { createMusicAgent, backoffDelay, buildMusicConfig };
