@@ -57,7 +57,7 @@ const SHARED_DIR = path.join(ROOT_DIR, 'shared');
 const MIME_TYPES = {
   '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript',
   '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg',
-  '.jpeg': 'image/jpeg',
+  '.jpeg': 'image/jpeg', '.webp': 'image/webp',
   // Brand assets: a favicon served as octet-stream is ignored by browsers, and a
   // manifest served as text/plain is never read as a manifest.
   '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.woff2': 'font/woff2',
