@@ -10,7 +10,7 @@ S2 — Scope of this phase: "la idea aqui es reestructurar este proyecto. elimin
 
 S3 — Phase boundary: "por ahora nos enfocaremos el organizar. resolver deuda tecnica y neutralizarlo (remover todo lo de la reforma y dejarlo neutro). luego en un paso posteriro nos enfocaremos en darle una nueva identidad y nuevas features de interactividad." A new identity, a new visual language and new interactivity features are OUT of scope.
 
-S4 — Reform-era content is deleted permanently, with no backup: `images/content/` (93 files), `images/manifest.json`, `images/raw/`, `images/borders/`, `DataSet/`, `curation/`, `phone-client/assets/*.docx`, `phone-client/assets/*.zip`, and the MIDI logo files. Tracked deletions remain recoverable from git history; untracked data is gone. The system MUST keep running with zero image content: 30 layout cells, borders rendered, `imageFile: null`, no crash and no thrown error.
+S4 — Reform-era content is deleted permanently, with no backup: `images/content/` (93 files), `images/manifest.json`, `images/raw/`, `images/borders/`, `DataSet/`, `curation/`, `phone-client/assets/*.docx`, `phone-client/assets/*.zip`, and the MIDI logo files. Tracked deletions remain recoverable from git history; untracked data is gone. The system MUST keep running with zero image content: 30 layout cells, borders rendered, `imageFile: null`, no crash and no thrown error. **Superseded** — the library now ships; see the last Log entry.
 
 S5 — Historical artifacts are preserved: `openspec/changes/archive/`, `sdd/`, `bridge/openspec/`, `.atl/`, `bridge/.atl/` stay untouched. Only the completed change `phone-client-controls-revamp` (16/16 tasks) is archived, and the active specs are neutralized.
 
@@ -53,6 +53,8 @@ L4 — Evidence that the neutral system still works: `CollageLayout` builds `byS
 L5 — Untracked material deleted in T2 beyond the questionnaire summary (`DataSet/`, `curation/`, `images/content/`, assets zips): `images/raw/` (355 MB) is also Reform photographic content and falls under S2/S4. It is unrecoverable. `tempExample/` (261 KB, third-party reference project) is NOT Reform content and is left untouched.
 
 L6 — Slice accounting: U1 reports 991 authored changed lines because it carries 93 data-file deletions plus the layout rewrite; the reviewable logic is ~30 lines (bridge `IMAGES_DIR`, `generate-layout` guard, test fixture). U2-U4 stay well under the 400-line budget. Deleting data files is not a review burden requiring a further split.
+
+- **L5** — Superseded: S4 no longer holds. User, verbatim: "ok perfecto continua con pr psuh y merge ahora quiero verlo en produccion es posible?", then chose to commit the library so the Render deploy renders a collage instead of empty cells. `images/content/` is tracked again (130 normalized WebP files), `images/manifest.json` and `images/layout.json` lost their skip-worktree flag, and `.gitignore` documents the new split. Nothing else in this document changes: history, specs and evidence stay as the record of that phase. Superseding feature: `odd/tasks/normalize-image-library.md`.
 
 ## Evidence
 

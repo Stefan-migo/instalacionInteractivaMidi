@@ -268,8 +268,9 @@ Order of verification before handing phones to people:
 5. Pull the network on the laptop: the agent parks every group at the safe
    value and reconnects with backoff when the link returns.
 
-Two honest caveats. The repository ships no image content, so the deployed
-collage shows empty cells — the sound path does not depend on it. And a phone
+Two honest caveats. The deployed collage renders whatever
+`images/manifest.json` describes; a deployment whose manifest is empty shows
+empty cells, and the sound path does not depend on it either way. And a phone
 that walks out of range now gets dropped by the heartbeat after one missed
 ping interval (`HEARTBEAT_MS`, 30 s by default) instead of holding its slot
 forever.
