@@ -53,6 +53,12 @@ describe('Bridge', () => {
       expect(res.headers['content-type']).toContain('image');
     });
 
+    test('GET /images/content/sample.webp serves the webp MIME type', async () => {
+      const res = await get('/images/content/sample.webp');
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toBe('image/webp');
+    });
+
     test('GET /images/content/with%20space.png serves encoded filename', async () => {
       const res = await get('/images/content/with%20space.png');
       expect(res.status).toBe(200);
