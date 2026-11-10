@@ -160,12 +160,48 @@
     if (dashboard) dashboard.classList.toggle('disconnected', !connected);
   }
 
+  // The phone keeps an identity so the bridge can hand its fragment back after a
+  // reconnect. Without one, every drop lands in another group, and therefore in
+  // another instrument in Ableton.
+  function deviceId() {
+    var key = 'midi-device-id';
+    var fresh = 'd-' + Math.random().toString(36).slice(2) + '-' + Date.now().toString(36);
+    try {
+      var storage = typeof window !== 'undefined' && window.localStorage ? window.localStorage : null;
+      if (!storage) return fresh;
+      var existing = storage.getItem(key);
+      if (existing) return existing;
+      storage.setItem(key, fresh);
+      return fresh;
+    } catch (error) {
+      return fresh;
+    }
+  }
+
+  // A show phone must not dim: a throttled tab stops answering the heartbeat and
+  // the bridge drops it. Best effort, and harmless where the browser says no.
+  var wakeLock = null;
+  function keepScreenAwake() {
+    if (typeof window === 'undefined' || !window.navigator || !window.navigator.wakeLock) return;
+    if (typeof window.navigator.wakeLock.request !== 'function') return;
+    if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return;
+    window.navigator.wakeLock.request('screen').then(function (lock) {
+      wakeLock = lock;
+    }).catch(function () { /* the installation keeps running with a dimmed screen */ });
+  }
+  if (typeof document !== 'undefined' && document.addEventListener) {
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') keepScreenAwake();
+    });
+  }
+
   function connect() {
     try { ws = new WebSocket(wsUrl); } catch (e) { setTimeout(connect, 2000); return; }
 
     ws.onopen = function () {
       setStatus(true);
-      ws.send(JSON.stringify({ type: 'register', role: 'phone' }));
+      keepScreenAwake();
+      ws.send(JSON.stringify({ type: 'register', role: 'phone', deviceId: deviceId() }));
     };
 
     ws.onmessage = function (e) {

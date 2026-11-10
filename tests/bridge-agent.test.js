@@ -67,6 +67,29 @@ describe('bridge agent WebSocket', () => {
     agent.close();
   });
 
+  test('a phone that reconnects keeps its own slot, so it keeps its group', async () => {
+    const first = await connect();
+    first.send(JSON.stringify({ type: 'register', role: 'phone', deviceId: 'device-aaa' }));
+    const assigned = await next(first, m => m.type === 'assigned');
+    first.close();
+
+    // The slot is in cooldown for everybody else, reserved for this device.
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    const again = await connect();
+    again.send(JSON.stringify({ type: 'register', role: 'phone', deviceId: 'device-aaa' }));
+    const reassigned = await next(again, m => m.type === 'assigned');
+    expect(reassigned.slot).toBe(assigned.slot);
+
+    // A different phone still gets a slot of its own.
+    const stranger = await connect();
+    stranger.send(JSON.stringify({ type: 'register', role: 'phone', deviceId: 'device-bbb' }));
+    const other = await next(stranger, m => m.type === 'assigned');
+    expect(other.slot).not.toBe(assigned.slot);
+
+    again.close();
+    stranger.close();
+  });
+
   test('fans out ten group frames and removes disconnected phones', async () => {
     const agent = await connect();
     agent.send(JSON.stringify({ type: 'register', role: 'agent' }));
