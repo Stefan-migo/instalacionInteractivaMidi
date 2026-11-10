@@ -2,7 +2,7 @@
 
 Phone-sensor-controlled collage installation. Every connected phone owns one fragment of a shared 1920×1080 canvas and drives it with motion, gestures and direct controls.
 
-The repository ships **no image content**. It runs with 30 empty cells (no photos) until you add images. See [Content](#content).
+The repository ships a normalized 130-image WebP library in `images/content/`, so a fresh clone renders the full collage. Replace it with your own dataset by following [Content](#content); with an empty manifest the system still runs 30 empty cells.
 
 ## Architecture
 
@@ -110,7 +110,7 @@ The deck deals distinct images: with at least as many files as cells, no two fra
 
 ```bash
 npm install
-npm test                    # Jest, 33 suites
+npm test                    # Jest, 44 suites
 npm run test:coverage
 npm run bridge              # http://localhost:8080
 # projector:  http://localhost:8080/p5-collage/

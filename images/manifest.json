@@ -1,1 +1,1042 @@
-{}
+{
+  "100": {
+    "file": "100.webp",
+    "w": 1080,
+    "h": 1080,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "101": {
+    "file": "101.webp",
+    "w": 1080,
+    "h": 1080,
+    "role": "figura",
+    "axis": "civilizacion_barbarie",
+    "pole": "barbarie"
+  },
+  "102": {
+    "file": "102.webp",
+    "w": 1080,
+    "h": 543,
+    "role": "figura",
+    "axis": "civilizacion_barbarie",
+    "pole": "civilizacion"
+  },
+  "103": {
+    "file": "103.webp",
+    "w": 1080,
+    "h": 543,
+    "role": "texto",
+    "axis": "civilizacion_barbarie",
+    "pole": "barbarie"
+  },
+  "104": {
+    "file": "104.webp",
+    "w": 761,
+    "h": 305,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "105": {
+    "file": "105.webp",
+    "w": 650,
+    "h": 890,
+    "role": "texto",
+    "axis": "fe_herejia",
+    "pole": "herejia"
+  },
+  "106": {
+    "file": "106.webp",
+    "w": 1080,
+    "h": 1080,
+    "role": "texto",
+    "axis": "civilizacion_barbarie",
+    "pole": "barbarie"
+  },
+  "107": {
+    "file": "107.webp",
+    "w": 412,
+    "h": 494,
+    "role": "texto",
+    "axis": "fe_herejia",
+    "pole": "herejia"
+  },
+  "108": {
+    "file": "108.webp",
+    "w": 736,
+    "h": 862,
+    "role": "texto",
+    "axis": "infinito_limite",
+    "pole": "infinito"
+  },
+  "109": {
+    "file": "109.webp",
+    "w": 736,
+    "h": 1025,
+    "role": "texto",
+    "axis": "fe_herejia",
+    "pole": "herejia"
+  },
+  "110": {
+    "file": "110.webp",
+    "w": 736,
+    "h": 1308,
+    "role": "figura",
+    "axis": "infinito_limite",
+    "pole": "limite"
+  },
+  "111": {
+    "file": "111.webp",
+    "w": 675,
+    "h": 1200,
+    "role": "papel",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "112": {
+    "file": "112.webp",
+    "w": 736,
+    "h": 983,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "113": {
+    "file": "113.webp",
+    "w": 568,
+    "h": 720,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "114": {
+    "file": "114.webp",
+    "w": 667,
+    "h": 1000,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "115": {
+    "file": "115.webp",
+    "w": 675,
+    "h": 1200,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "116": {
+    "file": "116.webp",
+    "w": 675,
+    "h": 1200,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "117": {
+    "file": "117.webp",
+    "w": 736,
+    "h": 1308,
+    "role": "figura",
+    "axis": "civilizacion_barbarie",
+    "pole": "barbarie"
+  },
+  "118": {
+    "file": "118.webp",
+    "w": 736,
+    "h": 1308,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "119": {
+    "file": "119.webp",
+    "w": 592,
+    "h": 604,
+    "role": "papel",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "120": {
+    "file": "120.webp",
+    "w": 1600,
+    "h": 536,
+    "role": "texto",
+    "axis": "original_copia",
+    "pole": "copia"
+  },
+  "121": {
+    "file": "121.webp",
+    "w": 1600,
+    "h": 616,
+    "role": "texto",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "122": {
+    "file": "122.webp",
+    "w": 1600,
+    "h": 533,
+    "role": "texto",
+    "axis": "infinito_limite",
+    "pole": "infinito"
+  },
+  "123": {
+    "file": "123.webp",
+    "w": 1600,
+    "h": 533,
+    "role": "texto",
+    "axis": "original_copia",
+    "pole": "copia"
+  },
+  "124": {
+    "file": "124.webp",
+    "w": 1600,
+    "h": 533,
+    "role": "texto",
+    "axis": "civilizacion_barbarie",
+    "pole": "civilizacion"
+  },
+  "125": {
+    "file": "125.webp",
+    "w": 1600,
+    "h": 533,
+    "role": "texto",
+    "axis": "infinito_limite",
+    "pole": "infinito"
+  },
+  "126": {
+    "file": "126.webp",
+    "w": 1600,
+    "h": 533,
+    "role": "texto",
+    "axis": "original_copia",
+    "pole": "copia"
+  },
+  "127": {
+    "file": "127.webp",
+    "w": 1600,
+    "h": 533,
+    "role": "texto",
+    "axis": "infinito_limite",
+    "pole": "limite"
+  },
+  "128": {
+    "file": "128.webp",
+    "w": 1600,
+    "h": 533,
+    "role": "texto",
+    "axis": "original_copia",
+    "pole": "copia"
+  },
+  "129": {
+    "file": "129.webp",
+    "w": 1600,
+    "h": 533,
+    "role": "texto",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "130": {
+    "file": "130.webp",
+    "w": 1080,
+    "h": 543,
+    "role": "acento",
+    "axis": "fe_herejia",
+    "pole": "herejia"
+  },
+  "001": {
+    "file": "001.webp",
+    "w": 615,
+    "h": 784,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "002": {
+    "file": "002.webp",
+    "w": 735,
+    "h": 1204,
+    "role": "figura",
+    "axis": "original_copia",
+    "pole": "copia"
+  },
+  "003": {
+    "file": "003.webp",
+    "w": 736,
+    "h": 736,
+    "role": "figura",
+    "axis": "civilizacion_barbarie",
+    "pole": "civilizacion"
+  },
+  "004": {
+    "file": "004.webp",
+    "w": 736,
+    "h": 611,
+    "role": "figura",
+    "axis": "fe_herejia",
+    "pole": "fe"
+  },
+  "005": {
+    "file": "005.webp",
+    "w": 735,
+    "h": 577,
+    "role": "figura",
+    "axis": "fe_herejia",
+    "pole": "herejia"
+  },
+  "006": {
+    "file": "006.webp",
+    "w": 602,
+    "h": 812,
+    "role": "figura",
+    "axis": "infinito_limite",
+    "pole": "infinito"
+  },
+  "007": {
+    "file": "007.webp",
+    "w": 308,
+    "h": 474,
+    "role": "figura",
+    "axis": "civilizacion_barbarie",
+    "pole": "barbarie"
+  },
+  "008": {
+    "file": "008.webp",
+    "w": 388,
+    "h": 506,
+    "role": "figura",
+    "axis": "original_copia",
+    "pole": "copia"
+  },
+  "009": {
+    "file": "009.webp",
+    "w": 360,
+    "h": 789,
+    "role": "acento",
+    "axis": "civilizacion_barbarie",
+    "pole": "barbarie"
+  },
+  "010": {
+    "file": "010.webp",
+    "w": 734,
+    "h": 515,
+    "role": "acento",
+    "axis": "civilizacion_barbarie",
+    "pole": "barbarie"
+  },
+  "011": {
+    "file": "011.webp",
+    "w": 428,
+    "h": 605,
+    "role": "figura",
+    "axis": "infinito_limite",
+    "pole": "limite"
+  },
+  "012": {
+    "file": "012.webp",
+    "w": 545,
+    "h": 665,
+    "role": "figura",
+    "axis": "civilizacion_barbarie",
+    "pole": "barbarie"
+  },
+  "013": {
+    "file": "013.webp",
+    "w": 736,
+    "h": 1104,
+    "role": "figura",
+    "axis": "civilizacion_barbarie",
+    "pole": "barbarie"
+  },
+  "014": {
+    "file": "014.webp",
+    "w": 458,
+    "h": 618,
+    "role": "figura",
+    "axis": "fe_herejia",
+    "pole": "fe"
+  },
+  "015": {
+    "file": "015.webp",
+    "w": 700,
+    "h": 906,
+    "role": "figura",
+    "axis": "fe_herejia",
+    "pole": "herejia"
+  },
+  "016": {
+    "file": "016.webp",
+    "w": 710,
+    "h": 469,
+    "role": "figura",
+    "axis": "original_copia",
+    "pole": "copia"
+  },
+  "017": {
+    "file": "017.webp",
+    "w": 675,
+    "h": 1200,
+    "role": "figura",
+    "axis": "fe_herejia",
+    "pole": "fe"
+  },
+  "018": {
+    "file": "018.webp",
+    "w": 611,
+    "h": 947,
+    "role": "figura",
+    "axis": "infinito_limite",
+    "pole": "limite"
+  },
+  "019": {
+    "file": "019.webp",
+    "w": 736,
+    "h": 1308,
+    "role": "figura",
+    "axis": "original_copia",
+    "pole": "copia"
+  },
+  "020": {
+    "file": "020.webp",
+    "w": 735,
+    "h": 568,
+    "role": "figura",
+    "axis": "infinito_limite",
+    "pole": "infinito"
+  },
+  "021": {
+    "file": "021.webp",
+    "w": 384,
+    "h": 579,
+    "role": "figura",
+    "axis": "civilizacion_barbarie",
+    "pole": "civilizacion"
+  },
+  "022": {
+    "file": "022.webp",
+    "w": 1600,
+    "h": 800,
+    "role": "papel",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "023": {
+    "file": "023.webp",
+    "w": 1262,
+    "h": 1246,
+    "role": "papel",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "024": {
+    "file": "024.webp",
+    "w": 1600,
+    "h": 800,
+    "role": "papel",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "025": {
+    "file": "025.webp",
+    "w": 1312,
+    "h": 1199,
+    "role": "papel",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "026": {
+    "file": "026.webp",
+    "w": 1600,
+    "h": 854,
+    "role": "papel",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "027": {
+    "file": "027.webp",
+    "w": 1254,
+    "h": 1254,
+    "role": "papel",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "028": {
+    "file": "028.webp",
+    "w": 591,
+    "h": 305,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "029": {
+    "file": "029.webp",
+    "w": 675,
+    "h": 1200,
+    "role": "texto",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "030": {
+    "file": "030.webp",
+    "w": 736,
+    "h": 718,
+    "role": "texto",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "031": {
+    "file": "031.webp",
+    "w": 420,
+    "h": 548,
+    "role": "papel",
+    "axis": "infinito_limite",
+    "pole": "infinito"
+  },
+  "032": {
+    "file": "032.webp",
+    "w": 663,
+    "h": 1000,
+    "role": "figura",
+    "axis": "fe_herejia",
+    "pole": "herejia"
+  },
+  "033": {
+    "file": "033.webp",
+    "w": 736,
+    "h": 736,
+    "role": "figura",
+    "axis": "original_copia",
+    "pole": "copia"
+  },
+  "034": {
+    "file": "034.webp",
+    "w": 735,
+    "h": 574,
+    "role": "texto",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "035": {
+    "file": "035.webp",
+    "w": 666,
+    "h": 1000,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "036": {
+    "file": "036.webp",
+    "w": 675,
+    "h": 896,
+    "role": "papel",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "037": {
+    "file": "037.webp",
+    "w": 736,
+    "h": 842,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "038": {
+    "file": "038.webp",
+    "w": 1451,
+    "h": 1084,
+    "role": "figura",
+    "axis": "civilizacion_barbarie",
+    "pole": "civilizacion"
+  },
+  "039": {
+    "file": "039.webp",
+    "w": 1080,
+    "h": 1080,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "040": {
+    "file": "040.webp",
+    "w": 1080,
+    "h": 1080,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "041": {
+    "file": "041.webp",
+    "w": 1080,
+    "h": 1080,
+    "role": "texto",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "042": {
+    "file": "042.webp",
+    "w": 247,
+    "h": 418,
+    "role": "figura",
+    "axis": "infinito_limite",
+    "pole": "limite"
+  },
+  "043": {
+    "file": "043.webp",
+    "w": 720,
+    "h": 1008,
+    "role": "figura",
+    "axis": "civilizacion_barbarie",
+    "pole": "civilizacion"
+  },
+  "044": {
+    "file": "044.webp",
+    "w": 736,
+    "h": 1043,
+    "role": "acento",
+    "axis": "civilizacion_barbarie",
+    "pole": "barbarie"
+  },
+  "045": {
+    "file": "045.webp",
+    "w": 1536,
+    "h": 1024,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "046": {
+    "file": "046.webp",
+    "w": 1339,
+    "h": 1174,
+    "role": "figura",
+    "axis": "civilizacion_barbarie",
+    "pole": "barbarie"
+  },
+  "047": {
+    "file": "047.webp",
+    "w": 1448,
+    "h": 1086,
+    "role": "figura",
+    "axis": "original_copia",
+    "pole": "copia"
+  },
+  "048": {
+    "file": "048.webp",
+    "w": 1312,
+    "h": 1199,
+    "role": "figura",
+    "axis": "infinito_limite",
+    "pole": "infinito"
+  },
+  "049": {
+    "file": "049.webp",
+    "w": 736,
+    "h": 1308,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "050": {
+    "file": "050.webp",
+    "w": 640,
+    "h": 640,
+    "role": "texto",
+    "axis": "fe_herejia",
+    "pole": "herejia"
+  },
+  "051": {
+    "file": "051.webp",
+    "w": 736,
+    "h": 718,
+    "role": "texto",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "052": {
+    "file": "052.webp",
+    "w": 735,
+    "h": 922,
+    "role": "texto",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "053": {
+    "file": "053.webp",
+    "w": 736,
+    "h": 1308,
+    "role": "figura",
+    "axis": "original_copia",
+    "pole": "copia"
+  },
+  "054": {
+    "file": "054.webp",
+    "w": 736,
+    "h": 1104,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "055": {
+    "file": "055.webp",
+    "w": 736,
+    "h": 1104,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "056": {
+    "file": "056.webp",
+    "w": 440,
+    "h": 985,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "057": {
+    "file": "057.webp",
+    "w": 287,
+    "h": 580,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "058": {
+    "file": "058.webp",
+    "w": 736,
+    "h": 1261,
+    "role": "texto",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "059": {
+    "file": "059.webp",
+    "w": 736,
+    "h": 981,
+    "role": "texto",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "060": {
+    "file": "060.webp",
+    "w": 675,
+    "h": 1200,
+    "role": "acento",
+    "axis": "civilizacion_barbarie",
+    "pole": "civilizacion"
+  },
+  "061": {
+    "file": "061.webp",
+    "w": 675,
+    "h": 1200,
+    "role": "acento",
+    "axis": "civilizacion_barbarie",
+    "pole": "civilizacion"
+  },
+  "062": {
+    "file": "062.webp",
+    "w": 621,
+    "h": 877,
+    "role": "figura",
+    "axis": "fe_herejia",
+    "pole": "fe"
+  },
+  "063": {
+    "file": "063.webp",
+    "w": 509,
+    "h": 709,
+    "role": "figura",
+    "axis": "civilizacion_barbarie",
+    "pole": "barbarie"
+  },
+  "064": {
+    "file": "064.webp",
+    "w": 736,
+    "h": 1308,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "065": {
+    "file": "065.webp",
+    "w": 675,
+    "h": 1200,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "066": {
+    "file": "066.webp",
+    "w": 736,
+    "h": 920,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "067": {
+    "file": "067.webp",
+    "w": 715,
+    "h": 1000,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "068": {
+    "file": "068.webp",
+    "w": 736,
+    "h": 1444,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "069": {
+    "file": "069.webp",
+    "w": 492,
+    "h": 720,
+    "role": "figura",
+    "axis": "civilizacion_barbarie",
+    "pole": "barbarie"
+  },
+  "070": {
+    "file": "070.webp",
+    "w": 562,
+    "h": 1000,
+    "role": "figura",
+    "axis": "civilizacion_barbarie",
+    "pole": "barbarie"
+  },
+  "071": {
+    "file": "071.webp",
+    "w": 694,
+    "h": 1004,
+    "role": "papel",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "072": {
+    "file": "072.webp",
+    "w": 590,
+    "h": 885,
+    "role": "figura",
+    "axis": "original_copia",
+    "pole": "copia"
+  },
+  "073": {
+    "file": "073.webp",
+    "w": 675,
+    "h": 1200,
+    "role": "figura",
+    "axis": "infinito_limite",
+    "pole": "limite"
+  },
+  "074": {
+    "file": "074.webp",
+    "w": 536,
+    "h": 815,
+    "role": "figura",
+    "axis": "original_copia",
+    "pole": "copia"
+  },
+  "075": {
+    "file": "075.webp",
+    "w": 339,
+    "h": 855,
+    "role": "papel",
+    "axis": "infinito_limite",
+    "pole": "infinito"
+  },
+  "076": {
+    "file": "076.webp",
+    "w": 736,
+    "h": 1308,
+    "role": "figura",
+    "axis": "fe_herejia",
+    "pole": "herejia"
+  },
+  "077": {
+    "file": "077.webp",
+    "w": 544,
+    "h": 962,
+    "role": "figura",
+    "axis": "fe_herejia",
+    "pole": "herejia"
+  },
+  "078": {
+    "file": "078.webp",
+    "w": 361,
+    "h": 589,
+    "role": "figura",
+    "axis": "infinito_limite",
+    "pole": "limite"
+  },
+  "079": {
+    "file": "079.webp",
+    "w": 736,
+    "h": 1308,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "080": {
+    "file": "080.webp",
+    "w": 736,
+    "h": 1048,
+    "role": "acento",
+    "axis": "original_copia",
+    "pole": "copia"
+  },
+  "081": {
+    "file": "081.webp",
+    "w": 736,
+    "h": 1102,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "082": {
+    "file": "082.webp",
+    "w": 408,
+    "h": 612,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "083": {
+    "file": "083.webp",
+    "w": 1080,
+    "h": 1080,
+    "role": "texto",
+    "axis": "fe_herejia",
+    "pole": "herejia"
+  },
+  "084": {
+    "file": "084.webp",
+    "w": 736,
+    "h": 736,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "085": {
+    "file": "085.webp",
+    "w": 620,
+    "h": 573,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "086": {
+    "file": "086.webp",
+    "w": 1080,
+    "h": 1080,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "087": {
+    "file": "087.webp",
+    "w": 1080,
+    "h": 543,
+    "role": "acento",
+    "axis": "civilizacion_barbarie",
+    "pole": "civilizacion"
+  },
+  "088": {
+    "file": "088.webp",
+    "w": 1080,
+    "h": 543,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "089": {
+    "file": "089.webp",
+    "w": 1080,
+    "h": 543,
+    "role": "figura",
+    "axis": "fe_herejia",
+    "pole": "herejia"
+  },
+  "090": {
+    "file": "090.webp",
+    "w": 1080,
+    "h": 543,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "091": {
+    "file": "091.webp",
+    "w": 620,
+    "h": 573,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "092": {
+    "file": "092.webp",
+    "w": 761,
+    "h": 305,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "093": {
+    "file": "093.webp",
+    "w": 761,
+    "h": 305,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "094": {
+    "file": "094.webp",
+    "w": 761,
+    "h": 305,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "095": {
+    "file": "095.webp",
+    "w": 1080,
+    "h": 1080,
+    "role": "figura",
+    "axis": "fe_herejia",
+    "pole": "herejia"
+  },
+  "096": {
+    "file": "096.webp",
+    "w": 1080,
+    "h": 1080,
+    "role": "figura",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "097": {
+    "file": "097.webp",
+    "w": 1080,
+    "h": 1080,
+    "role": "figura",
+    "axis": "civilizacion_barbarie",
+    "pole": "barbarie"
+  },
+  "098": {
+    "file": "098.webp",
+    "w": 1080,
+    "h": 543,
+    "role": "acento",
+    "axis": "neutro",
+    "pole": "neutro"
+  },
+  "099": {
+    "file": "099.webp",
+    "w": 1080,
+    "h": 543,
+    "role": "acento",
+    "axis": "original_copia",
+    "pole": "copia"
+  }
+}

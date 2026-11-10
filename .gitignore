@@ -21,14 +21,14 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# Local image sources — the repository ships no image content
+# Local image sources and working data. `images/content/` IS tracked: the
+# normalized WebP library ships with the repository so a clone renders the
+# collage. Everything below stays local: un-normalized originals, curation
+# tooling and rename maps, the reform-era dataset, and brand source files.
 DataSet/
 images/raw/
 curation/
 Logo/
-# Local-only dataset while the final curation is in progress: un-ignore once the
-# curated library is final, then commit the WebP files with `git add -f`.
-images/content/
 
 # Temp / Examples
 temp/
