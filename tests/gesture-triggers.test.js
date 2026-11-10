@@ -27,6 +27,11 @@ function gyro(g) {
   return { accel: { x: 0, y: 0, z: 9.8 }, gyro: { a: 0, b: 0, g }, orientation: { a: 0, b: 0, g: 0 } };
 }
 
+// One physical motion that satisfies both detectors at once.
+function tiltedAndTurning(beta, g) {
+  return { accel: { x: 0, y: 0, z: 9.8 }, gyro: { a: 0, b: 0, g }, orientation: { a: 0, b: beta, g: 0 } };
+}
+
 describe('gesture triggers', () => {
   test('stays quiet below the threshold', () => {
     const { triggers } = createHarness();
@@ -77,7 +82,9 @@ describe('gesture triggers', () => {
     expect(triggers.feed(0, orientation(31))).toEqual([]);
 
     triggers.feed(0, orientation(5));
-    advance(200);
+    // Past the cooldown (200) and past the exclusivity window (300): the window
+    // is what a second gesture from the same phone has to clear now.
+    advance(350);
     expect(triggers.feed(0, orientation(31))).toHaveLength(1);
   });
 
@@ -105,6 +112,55 @@ describe('gesture triggers', () => {
     expect(triggers.feed(1, orientation(90))[0].gesture).toBe('tilt');
     // gyro.a is not wired to anything yet: no event, no throw.
     expect(triggers.feed(2, { accel: { x: 0, y: 0, z: 9.8 }, gyro: { a: 900, b: 0, g: 0 }, orientation: { a: 0, b: 0, g: 0 } })).toEqual([]);
+  });
+
+  test('rotation outranks tilt when one motion satisfies both', () => {
+    const { triggers } = createHarness();
+    const events = triggers.feed(0, tiltedAndTurning(60, 300));
+    expect(events.map((event) => event.gesture)).toEqual(['rotation']);
+  });
+
+  test('after a gesture fires, the others stay latched until the phone rests', () => {
+    const { triggers, advance } = createHarness();
+    triggers.feed(0, tiltedAndTurning(60, 300));
+    advance(400);
+
+    // The tilt is still past its threshold but the twist shut its latch.
+    expect(triggers.feed(0, tiltedAndTurning(60, 0))).toEqual([]);
+
+    // Coming back to rest re-arms it, and a real movement then fires.
+    triggers.feed(0, tiltedAndTurning(5, 0));
+    advance(400);
+    expect(triggers.feed(0, tiltedAndTurning(45, 0)).map((event) => event.gesture)).toEqual(['tilt']);
+  });
+
+  test('a tilt held still is not a gesture: the angle has to move', () => {
+    const { triggers, advance } = createHarness();
+    triggers.feed(0, orientation(5));
+
+    // A slow climb to thirty-two degrees, five degrees at a time: never the
+     // fifteen degrees inside the window that a decided tilt needs.
+    for (const beta of [10, 15, 20, 25, 32]) {
+      advance(150);
+      expect(triggers.feed(0, orientation(beta))).toEqual([]);
+    }
+
+    advance(150);
+    expect(triggers.feed(0, orientation(50)).map((event) => event.gesture)).toEqual(['tilt']);
+  });
+
+  test('suppressing a phone for a flick silences the derived gestures', () => {
+    const { triggers, advance } = createHarness();
+    triggers.suppress(0, 400);
+
+    expect(triggers.feed(0, orientation(60))).toEqual([]);
+    advance(500);
+    // Still latched: the suppression also closed the latch, so it has to rest.
+    expect(triggers.feed(0, orientation(60))).toEqual([]);
+
+    triggers.feed(0, orientation(5));
+    advance(500);
+    expect(triggers.feed(0, orientation(60))).toHaveLength(1);
   });
 
   test('phones are independent', () => {

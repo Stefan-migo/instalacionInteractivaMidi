@@ -118,6 +118,9 @@ const musicState = createMusicState();
 // Flick comes from the DTW matcher as an already-discrete event, so it has no
 // derived velocity. 100 reads as a firm hit without pretending to measure it.
 const FLICK_VELOCITY = 100;
+// A flick is the most specific gesture, so it silences the two derived ones for
+// this long: the same shake must not also arrive as a tilt or a rotation.
+const FLICK_SUPPRESS_MS = 400;
 const MUSIC_STATE_INTERVAL_MS = 50;
 let musicStateTimer = null;
 
@@ -395,6 +398,7 @@ wss.on('connection', (ws) => {
           if (musicAgents.size > 0 && flickGroup !== null) {
             voiceGate.add(flickGroup, 'flick', FLICK_VELOCITY);
           }
+          gestureTriggers.suppress(info.slot, FLICK_SUPPRESS_MS);
         }
       } else if (msg.type === 'gesture') {
         const action = GESTURE_ACTIONS[msg.gesture];
@@ -404,6 +408,7 @@ wss.on('connection', (ws) => {
           if (musicAgents.size > 0 && declaredGroup !== null) {
             voiceGate.add(declaredGroup, 'flick', FLICK_VELOCITY);
           }
+          gestureTriggers.suppress(info.slot, FLICK_SUPPRESS_MS);
         }
       } else if (msg.type === 'action') {
         if (msg.action === 'record-start') {
