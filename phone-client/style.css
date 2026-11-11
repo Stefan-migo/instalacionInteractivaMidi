@@ -130,10 +130,10 @@ body {
 .sheet-body { display: flex; flex-direction: column; gap: var(--space-sm); padding: var(--space-sm); max-height: 44vh; overflow-y: auto; }
 .sheet.is-collapsed .sheet-body { display: none; }
 
-/* Row of actions: the primary action spans the full width, pairs sit below it */
+/* Row of actions: two primaries, the z-order pair, and a wide row for Filtro */
 .row-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--hair); background: var(--rule-soft); border: var(--hair) solid var(--rule-soft); }
 .row-actions .btn { border: 0; }
-.row-actions .row-primary { grid-column: span 2; }
+.row-actions .row-wide { grid-column: span 2; }
 .button-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--hair); grid-column: span 2; background: var(--rule-soft); }
 
 /* Control rows: 1 px rail, square thumb */

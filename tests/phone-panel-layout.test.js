@@ -45,17 +45,28 @@ describe('phone tools panel layout', () => {
     }
   });
 
-  // Regression: the grid carried a Gestos button next to the Gestos tab, two
-  // doors to the same room, and it read as the primary action of the panel.
-  test('Cambiar foto owns the full width and the duplicate Gestos button is gone', () => {
+  // The two primaries are the two things a visitor can change: the photo, and
+  // the place it sits in. Filtro is a wide row, not a third primary.
+  test('Reubicar and Cambiar foto are the filled primaries; Filtro is the wide row', () => {
     const html = read('phone-client/index.html');
     const css = read('phone-client/style.css');
     expect(html).not.toContain('id="wizard-trigger"');
-    expect(html).toMatch(/<button id="change-photo-btn"[^>]*class="[^"]*row-primary[^"]*"/);
-    expect(html).toMatch(/<button id="change-photo-btn"[^>]*class="[^"]*btn--fill[^"]*"/);
-    const primary = css.match(/\.row-actions \.row-primary\s*\{([^}]*)\}/s);
-    expect(primary).not.toBeNull();
-    expect(primary[1]).toMatch(/grid-column:\s*span\s*2/);
+
+    const actions = html.slice(html.indexOf('class="row-actions"'), html.indexOf('class="rows"'));
+    expect(actions.length).toBeGreaterThan(0);
+    const filled = [...actions.matchAll(/<button id="([^"]+)"[^>]*class="([^"]*)"/g)]
+      .filter((match) => match[2].split(/\s+/).includes('btn--fill'))
+      .map((match) => match[1]);
+    expect(filled).toEqual(['reubicar-btn', 'change-photo-btn']);
+
+    const wide = actions.match(/<button id="([^"]+)"[^>]*class="([^"]*row-wide[^"]*)"/);
+    expect(wide).not.toBeNull();
+    expect(wide[1]).toBe('filter-btn');
+    expect(wide[2]).not.toContain('btn--fill');
+
+    const rule = css.match(/\.row-actions \.row-wide\s*\{([^}]*)\}/s);
+    expect(rule).not.toBeNull();
+    expect(rule[1]).toMatch(/grid-column:\s*span\s*2/);
   });
 
   // Regression: the action grid was three columns while every child was a
