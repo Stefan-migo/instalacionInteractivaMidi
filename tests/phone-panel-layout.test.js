@@ -37,12 +37,36 @@ describe('phone tools panel layout', () => {
     const app = read('phone-client/app.js');
     const ids = [
       'bring-front-btn', 'send-back-btn', 'filter-btn', 'reubicar-btn',
-      'change-photo-btn', 'wizard-trigger',
+      'change-photo-btn',
     ];
     for (const id of ids) {
       expect(html).toContain(`id="${id}"`);
       expect(app).toContain(`'${id}'`);
     }
+  });
+
+  // The two primaries are the two things a visitor can change: the photo, and
+  // the place it sits in. Filtro is a wide row, not a third primary.
+  test('Reubicar and Cambiar foto are the filled primaries; Filtro is the wide row', () => {
+    const html = read('phone-client/index.html');
+    const css = read('phone-client/style.css');
+    expect(html).not.toContain('id="wizard-trigger"');
+
+    const actions = html.slice(html.indexOf('class="row-actions"'), html.indexOf('class="rows"'));
+    expect(actions.length).toBeGreaterThan(0);
+    const filled = [...actions.matchAll(/<button id="([^"]+)"[^>]*class="([^"]*)"/g)]
+      .filter((match) => match[2].split(/\s+/).includes('btn--fill'))
+      .map((match) => match[1]);
+    expect(filled).toEqual(['reubicar-btn', 'change-photo-btn']);
+
+    const wide = actions.match(/<button id="([^"]+)"[^>]*class="([^"]*row-wide[^"]*)"/);
+    expect(wide).not.toBeNull();
+    expect(wide[1]).toBe('filter-btn');
+    expect(wide[2]).not.toContain('btn--fill');
+
+    const rule = css.match(/\.row-actions \.row-wide\s*\{([^}]*)\}/s);
+    expect(rule).not.toBeNull();
+    expect(rule[1]).toMatch(/grid-column:\s*span\s*2/);
   });
 
   // Regression: the action grid was three columns while every child was a

@@ -394,7 +394,7 @@ function draw() {
     drawBrandMark(drawingContext, {
       width: 1920,
       height: 1080,
-      opacity: 0.6,
+      opacity: 0.35,
       color: brandMarkColor(),
     });
 

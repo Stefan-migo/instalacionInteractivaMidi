@@ -97,3 +97,52 @@ describe('PadTransform — twist drives the rotation slider', () => {
     expect(PadTransform.rotationFromTwist(15, NaN)).toBe(15);
   });
 });
+
+describe('PadTransform — resting transform', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const read = (file) => fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
+
+  test('a fragment at rest is full size, upright and opaque', () => {
+    expect(PadTransform.restingTransform()).toEqual({ opacity: 100, rotation: 0, scale: 100 });
+  });
+
+  test('every resting value stays inside the range the bridge accepts', () => {
+    const resting = PadTransform.restingTransform();
+    expect(resting.scale).toBeGreaterThanOrEqual(PadTransform.SCALE_MIN);
+    expect(resting.scale).toBeLessThanOrEqual(PadTransform.SCALE_MAX);
+    expect(Math.abs(resting.rotation)).toBeLessThanOrEqual(180);
+    expect(resting.opacity).toBeGreaterThanOrEqual(0);
+    expect(resting.opacity).toBeLessThanOrEqual(100);
+  });
+
+  test('returns a fresh object, so a caller cannot poison the next reset', () => {
+    const first = PadTransform.restingTransform();
+    first.scale = 40;
+    expect(PadTransform.restingTransform().scale).toBe(100);
+  });
+
+  // The reset writes the sliders back, so its values have to be the values the
+  // sliders already ship with; otherwise it would move a control nobody touched.
+  test('resting matches the values the sliders ship with', () => {
+    const html = read('phone-client/index.html');
+    const shipped = (id) => {
+      const found = html.match(new RegExp(`id="${id}"[^>]*value="(-?\\d+)"`));
+      return found ? Number(found[1]) : null;
+    };
+    const resting = PadTransform.restingTransform();
+    expect(shipped('opacity-slider')).toBe(resting.opacity);
+    expect(shipped('rotation-slider')).toBe(resting.rotation);
+    expect(shipped('scale-slider')).toBe(resting.scale);
+  });
+
+  // Regression: a new image kept the last transform, so the photo arrived
+  // cropped by a scale the visitor had set for the previous one.
+  test('a new image resets the transform the sliders hold', () => {
+    const app = read('phone-client/app.js');
+    const branch = app.match(/if \(msg\.type === 'cell-image'\) \{([\s\S]*?)\n        \}/);
+    expect(branch).not.toBeNull();
+    expect(branch[1]).toMatch(/resetTransform\(\)/);
+    expect(app).toMatch(/function resetTransform\(\) \{/);
+  });
+});

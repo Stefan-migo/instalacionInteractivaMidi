@@ -50,7 +50,7 @@ describe('drawing the brand mark on the collage canvas', () => {
 
     drawBrandMark(ctx, { width: 1920, height: 1080, color: '#fefefe', pathFactory: factory });
 
-    expect(find(calls, 'globalAlpha')[1]).toBe(0.6);
+    expect(find(calls, 'globalAlpha')[1]).toBe(0.35);
     expect(find(calls, 'fillStyle')[1]).toBe('#fefefe');
   });
 

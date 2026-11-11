@@ -15,7 +15,6 @@
 
   var ws = null;
   var slot = -1;
-  var recording = false;
   var sendInterval = null;
   var lastSensor = {
     accel: { x: 0, y: 0, z: 0 },
@@ -39,12 +38,11 @@
   var permScreen = $('permission-screen');
   var dashboard = $('dashboard');
   var permBtn = $('permission-btn');
-  var recIndicator = $('rec-indicator');
   var cellImage = $('cell-image');
   var cellPlaceholder = $('thumbnail-placeholder');
-  var gestureStatus = $('gesture-status');
   var sheetToggle = $('sheet-toggle');
   var toolsPanel = $('tools-panel');
+  var helpBtn = $('help-btn');
 
   // --- 3-Screen Flow Controller ---
   var currentScreen = 'splash';
@@ -115,12 +113,15 @@
     sheetToggle.addEventListener('click', toggleTools);
   }
 
-  // Tap outside the sheet to collapse it, once the dashboard is on screen
+  // Tap outside the sheet to collapse it, once the dashboard is on screen.
+  // The guide control lives outside the sheet and owns its own toggle, so a
+  // press on it must not also be read as a tap outside.
   document.addEventListener('click', function (e) {
     if (!toolsOpen || !toolsPanel) return;
     if (dashboard.classList.contains('hidden')) return;
     if (toolsPanel.contains(e.target)) return;
     if (sheetToggle && sheetToggle.contains(e.target)) return;
+    if (helpBtn && helpBtn.contains(e.target)) return;
     setTools(false);
   });
 
@@ -143,16 +144,6 @@
       selectSheetTab(tab.getAttribute('data-tab'));
     });
   });
-
-  function showGestureStatus(text, type) {
-    gestureStatus.textContent = text;
-    gestureStatus.className = 'gesture-status ' + type;
-    gestureStatus.classList.remove('hidden');
-  }
-
-  function hideGestureStatus() {
-    gestureStatus.className = 'gesture-status hidden';
-  }
 
   function setStatus(connected) {
     statusDot.className = 'connection-status ' + (connected ? 'connected' : 'disconnected');
@@ -216,33 +207,7 @@
             cellImage.src = msg.imageUrl;
             if (cellPlaceholder) cellPlaceholder.style.display = 'none';
           }
-        }
-        if (msg.type === 'gesture-status') {
-          if (msg.recording) {
-            recording = true;
-            recIndicator.classList.remove('hidden');
-            if (wiz.step === 'recording') {
-              // Wizard already showing recording step — keep it
-            } else {
-              $('wizard-trigger')?.classList.add('recording');
-              showGestureStatus('Grabando — mové el teléfono', 'recording');
-            }
-          } else {
-            recording = false;
-            recIndicator.classList.add('hidden');
-            $('wizard-trigger')?.classList.remove('recording');
-            if (msg.gestureId) {
-              if (wiz.step === 'recording') {
-                wizClearTimers();
-                wizGoTo('confirmed');
-                wiz.autoReturnTimer = setTimeout(wizClose, 4000);
-              } else {
-                showGestureStatus('Gesto grabado. Repetilo para activarlo', 'recorded');
-              }
-            } else {
-              hideGestureStatus();
-            }
-          }
+          resetTransform();
         }
       } catch (err) { /* ignore parse errors */ }
     };
@@ -281,6 +246,31 @@
     }
   }
 
+  // A fragment enters at its own size. When its image changes — a deck cycle or a
+  // reubicación, both arrive as `cell-image` — the three sliders go back to rest
+  // and the collage is told, because the sliders are the single source of truth
+  // for the transform: writing them alone would leave the cell transformed.
+  function resetTransform() {
+    var pad = window.PadTransform;
+    if (!pad || typeof pad.restingTransform !== 'function') return;
+    var resting = pad.restingTransform();
+    var controls = {
+      opacity: { el: $('opacity-slider'), label: $('opacity-value'), format: function (v) { return v + '%'; } },
+      rotation: { el: $('rotation-slider'), label: $('rotation-value'), format: function (v) { return (v > 0 ? '+' : '') + v + '°'; } },
+      scale: { el: $('scale-slider'), label: $('scale-value'), format: function (v) { return v + '%'; } }
+    };
+    Object.keys(controls).forEach(function (action) {
+      var control = controls[action];
+      var value = resting[action];
+      // Only a slider that actually moves needs telling the collage; a fragment
+      // that was already at rest gets no redundant action.
+      var moved = control.el ? parseInt(control.el.value, 10) !== value : false;
+      if (control.el) control.el.value = String(value);
+      if (control.label) control.label.textContent = control.format(value);
+      if (moved) sendActionWithPayload(action, { value: value });
+    });
+  }
+
   // --- Gesture Gallery State Machine ---
   var gestureActionMap = {
     inclinar: 'cell-next',
@@ -293,19 +283,6 @@
     latigo: 'Sacudí el teléfono → cambia foto',
     twist: 'Girá el teléfono como una perilla → cambia filtro'
   };
-
-  function openGallery() {
-    if (galleryState !== null) closeGallery();
-    galleryState = 'gallery';
-    selectSheetTab('gestos');
-  }
-
-  function closeGallery() {
-    if (galleryState === 'practice' || galleryState === 'practice-done') {
-      endPractice();
-    }
-    galleryState = null;
-  }
 
   function startPractice(gesture) {
     // 'latigo' has no detector — it uses the existing flick detection
@@ -344,95 +321,6 @@
       }, 2000);
     }
   }
-
-  // --- Gesture Wizard State Machine ---
-  var wiz = {
-    step: null,
-    chosenDuration: 3000,
-    practiceStartTs: 0,
-    practiceSamples: 0,
-    practiceTimer: null,
-    countdownTimer: null,
-    countdownValue: 3,
-    autoReturnTimer: null,
-  };
-
-  function wizOpen() {
-    wizClose();
-    wiz.step = 'practice';
-    wiz.chosenDuration = 3000;
-    $('wizard-overlay').classList.remove('hidden');
-    document.querySelectorAll('.wizard-step').forEach(function (el) { el.classList.add('hidden'); });
-    $('wizard-step-practice').classList.remove('hidden');
-  }
-
-  function wizClose() {
-    if (wiz.step === 'recording' && recording) {
-      sendAction('record-stop');
-    }
-    wizClearTimers();
-    wiz.step = null;
-    wiz.practiceSamples = 0;
-    $('wizard-overlay').classList.add('hidden');
-  }
-
-  function wizClearTimers() {
-    if (wiz.practiceTimer) { clearTimeout(wiz.practiceTimer); wiz.practiceTimer = null; }
-    if (wiz.countdownTimer) { clearInterval(wiz.countdownTimer); wiz.countdownTimer = null; }
-    if (wiz.autoReturnTimer) { clearTimeout(wiz.autoReturnTimer); wiz.autoReturnTimer = null; }
-  }
-
-  function wizGoTo(step) {
-    wiz.step = step;
-    document.querySelectorAll('.wizard-step').forEach(function (el) { el.classList.add('hidden'); });
-    var el = $('wizard-step-' + step);
-    if (el) el.classList.remove('hidden');
-  }
-
-  $('wizard-cancel').addEventListener('click', wizClose);
-
-  $('wizard-practice-btn').addEventListener('click', function () {
-    if (wiz.step !== 'practice') return;
-    wiz.practiceStartTs = Date.now();
-    wiz.practiceSamples = 0;
-    this.textContent = 'Grabando práctica…';
-
-    var collector = setInterval(function () {
-      wiz.practiceSamples++;
-    }, 33);
-
-    wiz.practiceTimer = setTimeout(function () {
-      clearInterval(collector);
-      var elapsed = Date.now() - wiz.practiceStartTs;
-      var rounded = Math.min(Math.round(elapsed / 1000), 5);
-      $('wizard-practice-duration').textContent = rounded;
-      wizGoTo('duration');
-    }, 3000);
-  });
-
-  document.querySelectorAll('.duration-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      if (wiz.step !== 'duration') return;
-      wiz.chosenDuration = parseInt(this.dataset.duration, 10);
-      wiz.countdownValue = 3;
-      $('wizard-countdown-number').textContent = '3';
-      wizGoTo('countdown');
-
-      wiz.countdownTimer = setInterval(function () {
-        wiz.countdownValue--;
-        if (wiz.countdownValue > 0) {
-          $('wizard-countdown-number').textContent = wiz.countdownValue;
-        } else {
-          clearInterval(wiz.countdownTimer);
-          wiz.countdownTimer = null;
-          wizGoTo('recording');
-          recording = true;
-          recIndicator.classList.remove('hidden');
-          sendActionWithPayload('record-start', { duration: wiz.chosenDuration });
-        }
-      }, 1000);
-    });
-  });
 
   // --- Permission flow ---
   permBtn.addEventListener('click', async function () {
@@ -973,10 +861,24 @@
   // connected: idle timer after help dismissed
   // dragged: triggered when first drag ends (touchend after movement)
 
-  // --- Guide: the sheet's third tab, reachable from the ? control ---
-  var helpBtn = $('help-btn');
+  // --- Guide: the sheet's third tab, toggled by the ? control ---
+  function guideTabSelected() {
+    var selected = false;
+    document.querySelectorAll('.sheet-tab').forEach(function (tab) {
+      if (tab.getAttribute('data-tab') === 'guia' && tab.getAttribute('aria-selected') === 'true') {
+        selected = true;
+      }
+    });
+    return selected;
+  }
 
+  // The ? control opens the guide, and closes it when the guide is already the
+  // panel on screen: one control, one state, no hunting for the chevron.
   function openHelp() {
+    if (guideTabSelected() && toolsOpen) {
+      setTools(false);
+      return;
+    }
     selectSheetTab('guia');
   }
 
@@ -984,18 +886,8 @@
     helpBtn.addEventListener('click', openHelp);
   }
 
-  // --- Wizard trigger button → Gallery ---
-  $('wizard-trigger')?.addEventListener('click', function () {
-    if (recording) {
-      sendAction('record-stop');
-    } else {
-      openGallery();
-    }
-  });
-
   // --- Gestures tab wiring ---
   (function initGallery() {
-    var createBtn = $('create-gesture-btn');
     var practiceBackBtn = $('practice-back-btn');
 
     // [Practicar] buttons
@@ -1009,13 +901,6 @@
     // [Volver] from practice
     if (practiceBackBtn) {
       practiceBackBtn.addEventListener('click', endPractice);
-    }
-
-    // [+ Crear mi gesto] → wizard overlays on top of gallery
-    if (createBtn) {
-      createBtn.addEventListener('click', function () {
-        wizOpen();
-      });
     }
   })();
 

@@ -16,14 +16,64 @@ describe('phone control sheet actions', () => {
   const fs = require('fs');
   const html = fs.readFileSync(require('path').join(__dirname, '../phone-client/index.html'), 'utf8');
 
-  test('shows the three requested actions and removes the previous/next button pair', () => {
-    expect(html).toMatch(/>Reubicar<\/button>/);
-    expect(html).toMatch(/>Cambiar foto<\/button>/);
+  // Both primaries name the object they change, in the same shape, so the
+  // difference is the noun and not a low-frequency verb like "reubicar".
+  test('the primaries name what changes: another photo, another cell', () => {
+    expect(html).toMatch(/>Otra foto<\/button>/);
+    expect(html).toMatch(/>Otra celda<\/button>/);
     expect(html).toMatch(/>Enviar atrás<\/button>/);
+    expect(html).not.toMatch(/>Reubicar<\/button>/);
+    expect(html).not.toMatch(/>Cambiar foto<\/button>/);
     expect(html).not.toContain('id="cell-prev-btn"');
     expect(html).not.toContain('id="cell-next-btn"');
-    // Látigo stays a gesture: Reubicar already changes the cell position.
+    // Látigo stays a gesture: the cell change already has its own button.
     expect(html).not.toContain('data-action="shuffle"');
+  });
+});
+
+describe('phone intro screens', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const html = fs.readFileSync(path.join(__dirname, '../phone-client/index.html'), 'utf8');
+  const css = fs.readFileSync(path.join(__dirname, '../phone-client/style.css'), 'utf8');
+
+  test('the splash introduces the piece and dedicates it to the night', () => {
+    expect(html).toMatch(/Collage<br>interactivo<br>sonoro-visual/);
+    expect(html).toMatch(/sumate a la experiencia MIDI desde tu celular\./);
+    expect(html).toMatch(/Noche de los Museos 2026/);
+    expect(html).toMatch(/«Somos ese quimérico museo de formas inconstantes, ese montón de espejos rotos\.»/);
+    expect(html).toMatch(/Jorge Luis Borges, <cite>Cambridge<\/cite>/);
+  });
+
+  // Regression: the splash reported Fragmentos / Lienzo / Sesión, which describes
+  // the machinery instead of the piece the visitor is about to join.
+  test('the splash no longer reports the session as data rows', () => {
+    expect(html).not.toMatch(/class="data"/);
+    expect(html).not.toMatch(/>Fragmentos</);
+    expect(html).not.toMatch(/>Sesión</);
+    expect(css).not.toMatch(/\.data\s*\{/);
+  });
+
+  test('the permission screen asks for the sensors only, and says what it keeps', () => {
+    const screen = html.slice(html.indexOf('id="permission-screen"'), html.indexOf('id="dashboard"'));
+    expect([...screen.matchAll(/class="field"/g)]).toHaveLength(1);
+    expect(screen).not.toMatch(/Campo 02/);
+    expect(screen).toMatch(/No recopilamos datos personales/);
+  });
+});
+
+describe('phone vocabulary', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const html = fs.readFileSync(path.join(__dirname, '../phone-client/index.html'), 'utf8');
+
+  // The client names the thing and the place separately: a fragment lives in a
+  // cell. The alt used to hand a screen reader the place's name for the thing,
+  // so the same object arrived with two names.
+  test('the image is announced as the fragment, and cells stay the place', () => {
+    expect(html).toMatch(/<img id="cell-image" alt="Tu fragmento"/);
+    expect(html).toMatch(/<span class="cap">Tu fragmento<\/span>/);
+    expect(html).toMatch(/>Otra celda<\/button>/);
   });
 });
 
