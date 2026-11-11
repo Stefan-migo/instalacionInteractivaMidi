@@ -56,19 +56,29 @@ function createCellActionHandler(ctx) {
         }
         break;
       case 'send-back': {
-        let lower = -Infinity;
-        const sortedSlots = typeof ctx.getSortedSlots === 'function' ? ctx.getSortedSlots() : [];
-        for (const other of sortedSlots) {
-          if (other.slot === slot) continue;
-          const otherState = ctx.getRendererCellStates()[other.slot];
-          if (otherState && otherState.pos.zIndex < s.pos.zIndex && otherState.pos.zIndex > lower) {
-            lower = otherState.pos.zIndex;
-          }
-        }
-        if (lower !== -Infinity) {
-          s.pos.zIndex = lower - 1;
-          if (typeof ctx.onZOrderChanged === 'function') ctx.onZOrderChanged();
-        }
+        // Step exactly one position down the draw order, then rewrite the
+        // zIndexes densely. `zIndex = lower - 1` used to collide with the cell
+        // already sitting there — the layout ships consecutive pairs such as
+        // 57/58 — which left two cells sharing a zIndex and an undefined draw
+        // order. It also walked past the bottom cell into negative values.
+        const cells = ctx.getRendererCellStates();
+        const order = (typeof ctx.getSortedSlots === 'function' ? ctx.getSortedSlots() : [])
+          .map(entry => {
+            const cell = cells[entry.slot];
+            return { slot: entry.slot, zIndex: cell ? cell.pos.zIndex : entry.zIndex };
+          })
+          .sort((a, b) => (a.zIndex - b.zIndex) || (a.slot - b.slot));
+
+        const at = order.findIndex(entry => entry.slot === slot);
+        if (at <= 0) break; // unknown slot, or already at the back
+
+        const [moved] = order.splice(at, 1);
+        order.splice(at - 1, 0, moved);
+        order.forEach((entry, index) => {
+          const cell = cells[entry.slot];
+          if (cell) cell.pos.zIndex = index;
+        });
+        if (typeof ctx.onZOrderChanged === 'function') ctx.onZOrderChanged();
         break;
       }
       case 'bring-front': {
