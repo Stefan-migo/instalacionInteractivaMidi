@@ -220,6 +220,7 @@
             cellImage.src = msg.imageUrl;
             if (cellPlaceholder) cellPlaceholder.style.display = 'none';
           }
+          resetTransform();
         }
         if (msg.type === 'gesture-status') {
           if (msg.recording) {
@@ -283,6 +284,31 @@
     if (ws && ws.readyState === WebSocket.OPEN && slot >= 0) {
       ws.send(JSON.stringify({ type: 'action', action, ...payload }));
     }
+  }
+
+  // A fragment enters at its own size. When its image changes — a deck cycle or a
+  // reubicación, both arrive as `cell-image` — the three sliders go back to rest
+  // and the collage is told, because the sliders are the single source of truth
+  // for the transform: writing them alone would leave the cell transformed.
+  function resetTransform() {
+    var pad = window.PadTransform;
+    if (!pad || typeof pad.restingTransform !== 'function') return;
+    var resting = pad.restingTransform();
+    var controls = {
+      opacity: { el: $('opacity-slider'), label: $('opacity-value'), format: function (v) { return v + '%'; } },
+      rotation: { el: $('rotation-slider'), label: $('rotation-value'), format: function (v) { return (v > 0 ? '+' : '') + v + '°'; } },
+      scale: { el: $('scale-slider'), label: $('scale-value'), format: function (v) { return v + '%'; } }
+    };
+    Object.keys(controls).forEach(function (action) {
+      var control = controls[action];
+      var value = resting[action];
+      // Only a slider that actually moves needs telling the collage; a fragment
+      // that was already at rest gets no redundant action.
+      var moved = control.el ? parseInt(control.el.value, 10) !== value : false;
+      if (control.el) control.el.value = String(value);
+      if (control.label) control.label.textContent = control.format(value);
+      if (moved) sendActionWithPayload(action, { value: value });
+    });
   }
 
   // --- Gesture Gallery State Machine ---

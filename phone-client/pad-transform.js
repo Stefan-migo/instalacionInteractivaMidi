@@ -67,6 +67,16 @@ var PadTransform = (function () {
     return wrapAngle(base + finite(deltaDeg, 0));
   }
 
+  /**
+   * The transform a fragment starts with: its own size, upright and opaque.
+   * A fresh object every call, so a caller writing to it cannot poison the next
+   * reset. The sliders ship with exactly these values; a reset is these values
+   * written back, never a second set of defaults kept somewhere else.
+   */
+  function restingTransform() {
+    return { opacity: 100, rotation: 0, scale: 100 };
+  }
+
   return {
     SCALE_MIN: SCALE_MIN,
     SCALE_MAX: SCALE_MAX,
@@ -75,7 +85,8 @@ var PadTransform = (function () {
     wrapAngle: wrapAngle,
     deltaAngle: deltaAngle,
     scaleFromPinch: scaleFromPinch,
-    rotationFromTwist: rotationFromTwist
+    rotationFromTwist: rotationFromTwist,
+    restingTransform: restingTransform
   };
 })();
 
