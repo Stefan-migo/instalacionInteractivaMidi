@@ -67,7 +67,10 @@ body {
 /* Splash plaque: the dedication that took the place of the read-only data rows */
 .plaque { display: flex; flex-direction: column; gap: var(--space-sm); padding-top: var(--space-sm); border-top: var(--hair) solid var(--rule-color); }
 .plaque-event { font-family: var(--font-display); font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; }
-.plaque-quote { max-width: 32ch; font-family: var(--font-display); font-size: var(--font-size-sm); line-height: 1.7; }
+/* 45ch is the two-line window: the quote is 80 chars in DM Mono, so its second
+   line needs 43ch. Below 43ch it breaks into three lines; at 50ch or more the
+   break pulls "inconstantes," up and leaves a lonely short line. */
+.plaque-quote { max-width: 45ch; font-family: var(--font-display); font-size: var(--font-size-sm); line-height: 1.7; }
 .plaque-credit { color: var(--quiet); font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; }
 .btn { appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2xs); min-height: 44px; padding: var(--space-sm) var(--space-md); background: var(--paper); color: var(--ink); border: var(--hair) solid var(--rule-color); font-family: var(--font-display); font-size: var(--font-size-sm); font-weight: 500; line-height: 1.25; letter-spacing: var(--tracking); text-transform: uppercase; cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast); }
 .btn:active { background: var(--ink); color: var(--paper); }
