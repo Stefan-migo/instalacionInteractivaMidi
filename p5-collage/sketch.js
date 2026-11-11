@@ -195,6 +195,13 @@ function connectWebSocket() {
         if (msg.event === 'assign') {
           deviceManager.assign(msg.slot);
           activeSlots = getSortedSlots();
+          // The bridge caches what each slot shows so it can answer a phone that
+          // registers or is reassigned. Publish the cell's real image: the deck
+          // is the authority, and the layout's imageFile is geometry-era noise.
+          const assigned = deviceManager.renderer.cellStates[msg.slot];
+          if (assigned && assigned.currentImageFile) {
+            sendImageUpdate(msg.slot, assigned.currentImageFile);
+          }
         } else if (msg.event === 'disconnect') {
           deviceManager.disconnect(msg.slot);
           activeSlots = getSortedSlots();
