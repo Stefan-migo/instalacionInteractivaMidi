@@ -37,12 +37,25 @@ describe('phone tools panel layout', () => {
     const app = read('phone-client/app.js');
     const ids = [
       'bring-front-btn', 'send-back-btn', 'filter-btn', 'reubicar-btn',
-      'change-photo-btn', 'wizard-trigger',
+      'change-photo-btn',
     ];
     for (const id of ids) {
       expect(html).toContain(`id="${id}"`);
       expect(app).toContain(`'${id}'`);
     }
+  });
+
+  // Regression: the grid carried a Gestos button next to the Gestos tab, two
+  // doors to the same room, and it read as the primary action of the panel.
+  test('Cambiar foto owns the full width and the duplicate Gestos button is gone', () => {
+    const html = read('phone-client/index.html');
+    const css = read('phone-client/style.css');
+    expect(html).not.toContain('id="wizard-trigger"');
+    expect(html).toMatch(/<button id="change-photo-btn"[^>]*class="[^"]*row-primary[^"]*"/);
+    expect(html).toMatch(/<button id="change-photo-btn"[^>]*class="[^"]*btn--fill[^"]*"/);
+    const primary = css.match(/\.row-actions \.row-primary\s*\{([^}]*)\}/s);
+    expect(primary).not.toBeNull();
+    expect(primary[1]).toMatch(/grid-column:\s*span\s*2/);
   });
 
   // Regression: the action grid was three columns while every child was a

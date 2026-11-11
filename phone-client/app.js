@@ -1002,15 +1002,6 @@
     helpBtn.addEventListener('click', openHelp);
   }
 
-  // --- Wizard trigger button → Gallery ---
-  $('wizard-trigger')?.addEventListener('click', function () {
-    if (recording) {
-      sendAction('record-stop');
-    } else {
-      openGallery();
-    }
-  });
-
   // --- Gestures tab wiring ---
   (function initGallery() {
     var createBtn = $('create-gesture-btn');
