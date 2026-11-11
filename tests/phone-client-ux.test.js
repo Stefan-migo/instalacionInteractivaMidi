@@ -27,6 +27,37 @@ describe('phone control sheet actions', () => {
   });
 });
 
+describe('phone intro screens', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const html = fs.readFileSync(path.join(__dirname, '../phone-client/index.html'), 'utf8');
+  const css = fs.readFileSync(path.join(__dirname, '../phone-client/style.css'), 'utf8');
+
+  test('the splash introduces the piece and dedicates it to the night', () => {
+    expect(html).toMatch(/Collage<br>interactivo<br>sonoro-visual/);
+    expect(html).toMatch(/sumate a la experiencia MIDI desde tu celular\./);
+    expect(html).toMatch(/Noche de los Museos 2026/);
+    expect(html).toMatch(/«Somos ese quimérico museo de formas inconstantes, ese montón de espejos rotos\.»/);
+    expect(html).toMatch(/Jorge Luis Borges, <cite>Cambridge<\/cite>/);
+  });
+
+  // Regression: the splash reported Fragmentos / Lienzo / Sesión, which describes
+  // the machinery instead of the piece the visitor is about to join.
+  test('the splash no longer reports the session as data rows', () => {
+    expect(html).not.toMatch(/class="data"/);
+    expect(html).not.toMatch(/>Fragmentos</);
+    expect(html).not.toMatch(/>Sesión</);
+    expect(css).not.toMatch(/\.data\s*\{/);
+  });
+
+  test('the permission screen asks for the sensors only, and says what it keeps', () => {
+    const screen = html.slice(html.indexOf('id="permission-screen"'), html.indexOf('id="dashboard"'));
+    expect([...screen.matchAll(/class="field"/g)]).toHaveLength(1);
+    expect(screen).not.toMatch(/Campo 02/);
+    expect(screen).toMatch(/No recopilamos datos personales/);
+  });
+});
+
 describe('renderPaperTexture', () => {
   // Skip all tests if module couldn't load (e.g., DOM-dependent)
   beforeAll(() => {

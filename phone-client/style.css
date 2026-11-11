@@ -64,9 +64,11 @@ body {
 .num { font-family: var(--font-display); font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; color: var(--quiet); }
 .lead { max-width: 34ch; color: var(--quiet); font-size: var(--font-size-sm); line-height: 1.6; }
 .rule { border: 0; border-top: var(--hair) solid var(--rule-soft); }
-.data { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); padding: var(--space-xs) 0; border-bottom: var(--hair) solid var(--rule-soft); font-family: var(--font-display); font-size: var(--font-size-sm); }
-.data .k { color: var(--quiet); }
-.data .v { font-variant-numeric: tabular-nums; }
+/* Splash plaque: the dedication that took the place of the read-only data rows */
+.plaque { display: flex; flex-direction: column; gap: var(--space-sm); padding-top: var(--space-sm); border-top: var(--hair) solid var(--rule-color); }
+.plaque-event { font-family: var(--font-display); font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; }
+.plaque-quote { max-width: 32ch; font-family: var(--font-display); font-size: var(--font-size-sm); line-height: 1.7; }
+.plaque-credit { color: var(--quiet); font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; }
 .btn { appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2xs); min-height: 44px; padding: var(--space-sm) var(--space-md); background: var(--paper); color: var(--ink); border: var(--hair) solid var(--rule-color); font-family: var(--font-display); font-size: var(--font-size-sm); font-weight: 500; line-height: 1.25; letter-spacing: var(--tracking); text-transform: uppercase; cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast); }
 .btn:active { background: var(--ink); color: var(--paper); }
 .btn--fill { background: var(--ink); color: var(--paper); border-color: var(--ink); }
@@ -84,8 +86,9 @@ body {
 .splash .fields { display: flex; flex-direction: column; gap: var(--space-sm); margin-top: auto; }
 .splash .cta { margin-top: var(--space-sm); }
 
-/* Permission: two numbered fields and the error block */
+/* Permission: one numbered field and the error block */
 .perm { justify-content: flex-start; gap: var(--space-md); padding-top: calc(var(--space-xl) + env(safe-area-inset-top)); }
+.perm .display { margin-bottom: var(--space-md); }
 .perm .field { display: flex; flex-direction: column; gap: var(--space-2xs); padding-bottom: var(--space-sm); border-bottom: var(--hair) solid var(--rule-soft); }
 .perm .field .head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); }
 .perm .field p { color: var(--quiet); font-size: var(--font-size-sm); line-height: 1.6; }
