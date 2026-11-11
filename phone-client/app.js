@@ -45,6 +45,7 @@
   var gestureStatus = $('gesture-status');
   var sheetToggle = $('sheet-toggle');
   var toolsPanel = $('tools-panel');
+  var helpBtn = $('help-btn');
 
   // --- 3-Screen Flow Controller ---
   var currentScreen = 'splash';
@@ -115,12 +116,15 @@
     sheetToggle.addEventListener('click', toggleTools);
   }
 
-  // Tap outside the sheet to collapse it, once the dashboard is on screen
+  // Tap outside the sheet to collapse it, once the dashboard is on screen.
+  // The guide control lives outside the sheet and owns its own toggle, so a
+  // press on it must not also be read as a tap outside.
   document.addEventListener('click', function (e) {
     if (!toolsOpen || !toolsPanel) return;
     if (dashboard.classList.contains('hidden')) return;
     if (toolsPanel.contains(e.target)) return;
     if (sheetToggle && sheetToggle.contains(e.target)) return;
+    if (helpBtn && helpBtn.contains(e.target)) return;
     setTools(false);
   });
 
@@ -973,10 +977,24 @@
   // connected: idle timer after help dismissed
   // dragged: triggered when first drag ends (touchend after movement)
 
-  // --- Guide: the sheet's third tab, reachable from the ? control ---
-  var helpBtn = $('help-btn');
+  // --- Guide: the sheet's third tab, toggled by the ? control ---
+  function guideTabSelected() {
+    var selected = false;
+    document.querySelectorAll('.sheet-tab').forEach(function (tab) {
+      if (tab.getAttribute('data-tab') === 'guia' && tab.getAttribute('aria-selected') === 'true') {
+        selected = true;
+      }
+    });
+    return selected;
+  }
 
+  // The ? control opens the guide, and closes it when the guide is already the
+  // panel on screen: one control, one state, no hunting for the chevron.
   function openHelp() {
+    if (guideTabSelected() && toolsOpen) {
+      setTools(false);
+      return;
+    }
     selectSheetTab('guia');
   }
 
