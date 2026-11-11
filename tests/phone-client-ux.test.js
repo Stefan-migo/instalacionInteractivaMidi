@@ -62,6 +62,21 @@ describe('phone intro screens', () => {
   });
 });
 
+describe('phone vocabulary', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const html = fs.readFileSync(path.join(__dirname, '../phone-client/index.html'), 'utf8');
+
+  // The client names the thing and the place separately: a fragment lives in a
+  // cell. The alt used to hand a screen reader the place's name for the thing,
+  // so the same object arrived with two names.
+  test('the image is announced as the fragment, and cells stay the place', () => {
+    expect(html).toMatch(/<img id="cell-image" alt="Tu fragmento"/);
+    expect(html).toMatch(/<span class="cap">Tu fragmento<\/span>/);
+    expect(html).toMatch(/>Otra celda<\/button>/);
+  });
+});
+
 describe('renderPaperTexture', () => {
   // Skip all tests if module couldn't load (e.g., DOM-dependent)
   beforeAll(() => {
