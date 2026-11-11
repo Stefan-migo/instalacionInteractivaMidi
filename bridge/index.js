@@ -79,27 +79,11 @@ const allocator = new SlotAllocator(topology.slotCount, 5000);
 const relay = new MessageRelay();
 const gestureStore = new GestureStore();
 
-// Pre-populate slotImageMap from layout.json so phones always get initial image on connect
+// Which image a slot is actually showing. The p5 collage is the only authority:
+// it owns the deck, and `images/layout.json` carries geometry only, so seeding
+// this from the layout handed phones an image the deck had never drawn. Every
+// entry here comes from an `image-update` published by a player.
 const slotImageMap = {};
-(function initSlotImageMap() {
-  try {
-    if (fs.existsSync(LAYOUT_PATH)) {
-      const layout = JSON.parse(fs.readFileSync(LAYOUT_PATH, 'utf-8'));
-      if (layout && Array.isArray(layout.cells)) {
-        for (const cell of layout.cells) {
-          if (cell && typeof cell.slot === 'number' && cell.imageFile) {
-            slotImageMap[cell.slot] = {
-              imageFile: cell.imageFile,
-              imageUrl: '/images/content/' + cell.imageFile,
-            };
-          }
-        }
-      }
-    }
-  } catch (e) {
-    console.error('Failed to init slotImageMap from layout:', e.message);
-  }
-})();
 const dtwMatcher = new DTWMatcher(gestureStore, {
   threshold: 0.5,
   downsampleHz: 10,
