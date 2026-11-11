@@ -110,7 +110,7 @@ The deck deals distinct images: with at least as many files as cells, no two fra
 
 ```bash
 npm install
-npm test                    # Jest, 44 suites
+npm test                    # Jest, 51 suites
 npm run test:coverage
 npm run bridge              # http://localhost:8080
 # projector:  http://localhost:8080/p5-collage/

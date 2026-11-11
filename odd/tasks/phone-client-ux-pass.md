@@ -64,13 +64,13 @@ The `La hoja de abajo ajusta opacidad, rotación y escala` step is gone; step 6 
 
 | ID | Spec | Route | Commit |
 |----|------|-------|--------|
-| T1 | S1 | inline: `p5-collage/brand-mark.js`, `p5-collage/sketch.js`, `tests/brand-mark.test.js`, `tests/brand-mark-draw.test.js` | `style(collage): lower the brand mark opacity` |
-| T2 | S2, S3, S4 | inline: `phone-client/index.html`, `phone-client/style.css` | `feat(phone): reword the intro screens and dedicate the splash` |
-| T3 | S5, S6, S7 | inline: `phone-client/index.html`, `phone-client/app.js`, `phone-client/style.css`, `tests/tilt-jump.test.js` | `feat(phone): rename the first tab and make ? toggle the guide` |
-| T4 | S8 | inline: `phone-client/index.html`, `phone-client/style.css`, `tests/phone-panel-layout.test.js` | `feat(phone): promote Cambiar foto and drop the Gestos button` |
-| T5 | S9 | inline: `phone-client/pad-transform.js`, `phone-client/app.js`, `tests/phone-pad-transform.test.js` | `fix(phone): reset the transform when the fragment changes image` |
-| T6 | S10, S11 | inline: `phone-client/index.html`, `phone-client/app.js`, `phone-client/style.css` | `feat(phone): retire gesture creation and teach the pad` |
-| T7 | S1–S11 | verify: full Jest suite + a browser pass over the three screens | verification |
+| T1 | S1 | inline: `p5-collage/brand-mark.js`, `p5-collage/sketch.js`, `tests/brand-mark.test.js`, `tests/brand-mark-draw.test.js` | `5a6aee0` |
+| T2 | S2, S3, S4 | inline: `phone-client/index.html`, `phone-client/style.css`, `tests/phone-client-ux.test.js` | `46a3433` |
+| T3 | S5, S6, S7 | inline: `phone-client/index.html`, `phone-client/app.js`, `tests/phone-sheet-navigation.test.js` | `ce51ec3` |
+| T4 | S8 | inline: `phone-client/index.html`, `phone-client/style.css`, `phone-client/app.js`, `tests/phone-panel-layout.test.js` | `d67b608` |
+| T5 | S9 | inline: `phone-client/pad-transform.js`, `phone-client/app.js`, `tests/phone-pad-transform.test.js` | `36d308a` |
+| T6 | S10, S11 | inline: `phone-client/index.html`, `phone-client/app.js`, `phone-client/style.css`, `tests/phone-gestos-tab.test.js` | `2876ef8` |
+| T7 | S1–S11 | verify: full Jest suite + structural pass over the served pages | — |
 
 ## Log
 
@@ -95,3 +95,5 @@ The `La hoja de abajo ajusta opacidad, rotación y escala` step is gone; step 6 
 **L10 (decisión) —** Opacidad del logo: **0.35**. «Aun mayor» transparencia que 0.6, sin volverlo invisible sobre el papel.
 
 **L11 (diagnóstico) —** El `?` no estaba roto: `openHelp()` (`phone-client/app.js:979-981`) llamaba a `selectSheetTab('guia')`, que siempre hace `setTools(true)`. Pero el listener de "tap afuera" (`app.js:119-126`) corre después en el mismo click y, como el `?` no está dentro de `#tools-panel` ni es `#sheet-toggle`, colapsaba la hoja recién abierta. De ahí la sensación de que "compacta el cajón".
+
+**L12 (evidencia T7) —** Suite completa: **51 suites, 542 tests, todos verdes**. Cada tarea observó RED con `git stash` de su fuente antes de GREEN: T2 3 fallos, T3 3, T4 1, T5 5, T6 3. Chequeo estructural sobre lo servido por el bridge (`node bridge/index.js`, :8080): los 7 assets responden 200; las 33 referencias `$('id')` de `app.js` tienen markup (0 colgadas); 0 selectores huérfanos en `style.css` para las clases removidas (`rec-indicator`, `gesture-status`, `state-sq`, `chip`, `hud`, `wizard*`, `duration-btn`, `data`); `<div>` 43/43 balanceados; la placa y la nota del pad llegan en el HTML servido. **Pendiente:** confirmación visual en un teléfono real — el repo no tiene navegador headless, así que el ancho de la placa y el corte de las tres líneas del título se verifican a ojo.
