@@ -1,5 +1,6 @@
 const {
   groupForSlot,
+  groupForOrdinal,
   aggregate,
   createGroupAggregator,
   touchPositionToCc,
@@ -9,6 +10,15 @@ const {
 } = require('../bridge/group-state');
 
 describe('group state', () => {
+  test('maps 1-based connection ordinals round-robin and rejects invalid inputs', () => {
+    expect(Array.from({ length: 10 }, (_, index) => groupForOrdinal(index + 1, 10)))
+      .toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(groupForOrdinal(11, 10)).toBe(1);
+    expect(groupForOrdinal(12, 10)).toBe(2);
+    for (const ordinal of [0, -1, 1.5]) expect(groupForOrdinal(ordinal, 10)).toBeNull();
+    for (const count of [0, -1, 1.5]) expect(groupForOrdinal(1, count)).toBeNull();
+  });
+
   test('maps the zero-based first and last slots into three contiguous groups of ten', () => {
     expect(groupForSlot(0)).toBe(1);
     expect(groupForSlot(29)).toBe(3);
@@ -39,6 +49,37 @@ describe('group state', () => {
       lanes: { position: 10, scale: null, rotation: null },
       phones: 2,
     });
+  });
+
+  test('injected connection groups aggregate across slots and reject null groups', () => {
+    const groups = new Map([[0, 4], [29, 4], [5, null]]);
+    const state = createGroupAggregator({
+      groupCount: 10,
+      slotsPerGroup: 3,
+      resolveGroup: slot => groups.get(slot),
+    });
+    expect(state.pushLane(0, 'scale', 20, 1000)).toBe(true);
+    expect(state.pushLane(29, 'scale', 80, 1000)).toBe(true);
+    expect(state.pushLane(5, 'scale', 50, 1000)).toBe(false);
+    expect(state.snapshot({ now: 1000 })[3]).toMatchObject({
+      group: 4, lanes: { scale: 50 }, phones: 2,
+    });
+  });
+
+  test('move preserves the sample group and lane values across slots', () => {
+    const state = createGroupAggregator({
+      groupCount: 10,
+      resolveGroup: slot => slot === 0 || slot === 29 ? 7 : null,
+    });
+    state.pushLane(0, 'scale', 82, 1000);
+    state.pushLane(0, 'rotation', 31, 2000);
+    expect(state.move(0, 29)).toBe(true);
+    expect(state.move(4, 29)).toBe(false);
+    expect(state.snapshot({ now: 2000 })[6]).toMatchObject({
+      group: 7, lanes: { scale: 82, rotation: 31 }, phones: 1,
+    });
+    expect(state.snapshot({ now: 2000 }).flatMap(group => group.phones ? [group.group] : []))
+      .toEqual([7]);
   });
 
   test('drop removes a phone contribution', () => {

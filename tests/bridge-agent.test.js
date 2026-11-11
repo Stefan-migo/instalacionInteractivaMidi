@@ -1,4 +1,5 @@
 const WebSocket = require('ws');
+const fs = require('fs');
 
 const PORT = 8101;
 describe('bridge agent WebSocket', () => {
@@ -90,6 +91,34 @@ describe('bridge agent WebSocket', () => {
     stranger.close();
   });
 
+  test('a phone keeps its group when its cell is reassigned', async () => {
+    const agent = await connect();
+    agent.send(JSON.stringify({ type: 'register', role: 'agent' }));
+    await next(agent, m => m.event === 'agent-ready');
+    await next(agent, m => m.type === 'music-config');
+
+    const phone = await connect();
+    phone.send(JSON.stringify({ type: 'register', role: 'phone' }));
+    await next(phone, m => m.type === 'assigned');
+    phone.send(JSON.stringify({ type: 'action', action: 'scale', value: 180 }));
+
+    const before = await next(agent, m => m.type === 'music-state' && m.groups.some(g => g.phones > 0));
+    const groupBefore = before.groups.find(g => g.phones > 0).group;
+
+    phone.send(JSON.stringify({ type: 'action', action: 'cell-next' }));
+    const after = await next(agent, m => m.type === 'music-state' && m.groups.some(g => g.phones > 0));
+
+    const active = after.groups.filter(g => g.phones > 0);
+    expect(active).toHaveLength(1);
+    expect(active[0].group).toBe(groupBefore);
+    // The pad value travelled with the phone: a drop-and-reseed would have put
+    // it back on the resting value (54) instead of the full scale (127).
+    expect(active[0].lanes.scale).toBe(127);
+
+    phone.close();
+    agent.close();
+  });
+
   test('fans out ten group frames and removes disconnected phones', async () => {
     const agent = await connect();
     agent.send(JSON.stringify({ type: 'register', role: 'agent' }));
@@ -101,10 +130,13 @@ describe('bridge agent WebSocket', () => {
     phone.send(JSON.stringify(sensor));
     const frame = await next(agent, m => m.type === 'music-state' && m.groups.some(g => g.phones > 0));
     expect(frame.groups).toHaveLength(10);
-    expect(frame.groups.find(g => g.group === Math.floor(assigned.slot / 3) + 1).phones).toBe(1);
+    const active = frame.groups.filter(g => g.phones > 0);
+    expect(active).toHaveLength(1);
+    const activeGroup = active[0].group;
     phone.close();
     const dropped = await next(agent, m => m.type === 'music-state' && m.groups.every(g => g.phones === 0));
     expect(dropped.groups).toHaveLength(10);
+    expect(dropped.groups.find(g => g.group === activeGroup).phones).toBe(0);
     agent.close();
   });
 
@@ -116,8 +148,11 @@ describe('bridge agent WebSocket', () => {
 
     const phone = await connect();
     phone.send(JSON.stringify({ type: 'register', role: 'phone' }));
-    const assigned = await next(phone, m => m.type === 'assigned');
-    const expectedGroup = Math.floor(assigned.slot / 10) + 1;
+    await next(phone, m => m.type === 'assigned');
+    // The group comes from the connection now, so read it from the bridge
+    // instead of deriving it from the allocated slot.
+    const shape = await next(agent, m => m.type === 'music-state' && m.groups.some(g => g.phones > 0));
+    const expectedGroup = shape.groups.find(g => g.phones > 0).group;
 
     // Two phones' worth of tilts inside one tick must collapse into one voice.
     for (let i = 0; i < 4; i += 1) {
@@ -131,7 +166,7 @@ describe('bridge agent WebSocket', () => {
 
     const gesture = await next(agent, m => m.type === 'music-gesture');
     expect(gesture.voices).toHaveLength(1);
-    expect(gesture.voices[0]).toMatchObject({ group: expectedGroup, gesture: 'tilt' });
+    expect(gesture.voices[0]).toMatchObject({ gesture: 'tilt', group: expectedGroup });
     expect(gesture.voices[0].velocity).toBeGreaterThanOrEqual(40);
 
     phone.close();

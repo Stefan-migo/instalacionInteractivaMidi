@@ -71,8 +71,14 @@ describe('the pad drives the routing faders', () => {
     await waitMessage(agent, m => m.type === 'music-config');
 
     phone = await open('phone');
-    const assigned = await waitMessage(phone, m => m.type === 'assigned');
-    group = Math.floor(assigned.slot / 3) + 1;
+    await waitMessage(phone, m => m.type === 'assigned');
+    // Groups rotate with connection order now, not with the slot: read the group
+    // the bridge reports instead of deriving it from the allocated slot.
+    const joinedFrame = await waitMessage(
+      agent,
+      m => m.type === 'music-state' && m.groups.some(g => g.phones === 1)
+    );
+    group = joinedFrame.groups.find(g => g.phones === 1).group;
 
     const resting = await waitGroup(agent, group, entry => entry.lanes.scale !== null);
     expect(resting.lanes).toEqual({ position: 0, scale: 54, rotation: 64 });
@@ -97,10 +103,18 @@ describe('the pad drives the routing faders', () => {
   });
 
   test('a phone that never touches still holds the group average', async () => {
-    const second = await open('phone');
-    await waitMessage(second, m => m.type === 'assigned');
-
-    const joined = await waitGroup(agent, group, entry => entry.phones === 2);
+    // Groups rotate with connection order, so the next phone usually lands in a
+    // different group. Open phones until one shares the group under test.
+    let joined = null;
+    for (let attempt = 0; attempt < 10 && !joined; attempt += 1) {
+      const second = await open('phone');
+      await waitMessage(second, m => m.type === 'assigned');
+      try {
+        joined = await waitGroup(agent, group, entry => entry.phones === 2, 500);
+      } catch (error) {
+        if (attempt === 9) throw error;
+      }
+    }
     expect(joined.phones).toBe(2);
 
     // Put the first phone back on its resting values: with both phones resting,

@@ -41,6 +41,12 @@ function groupForSlot(slot, groupCount = DEFAULT_GROUP_COUNT, slotsPerGroup = DE
   return Math.floor(slot / slotsPerGroup) + 1;
 }
 
+function groupForOrdinal(ordinal, groupCount) {
+  if (!Number.isInteger(ordinal) || ordinal < 1) return null;
+  if (!Number.isInteger(groupCount) || groupCount < 1) return null;
+  return ((ordinal - 1) % groupCount) + 1;
+}
+
 function toFiniteNumber(value) {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
@@ -190,8 +196,10 @@ function createGroupAggregator(options = {}) {
 
   function pushLane(slot, lane, value, at = Date.now()) {
     if (!TOUCH_LANES.includes(lane)) return false;
-    const group = groupForSlot(slot, groupCount, slotsPerGroup);
-    if (group === null) return false;
+    const group = typeof options.resolveGroup === 'function'
+      ? options.resolveGroup(slot)
+      : groupForSlot(slot, groupCount, slotsPerGroup);
+    if (!Number.isInteger(group) || group < 1 || group > groupCount) return false;
     const numeric = toFiniteNumber(value);
     if (numeric === null) return false;
     seq += 1;
@@ -212,6 +220,14 @@ function createGroupAggregator(options = {}) {
 
   function drop(slot) {
     return samples.delete(slot);
+  }
+
+  function move(fromSlot, toSlot) {
+    const entry = samples.get(fromSlot);
+    if (!entry) return false;
+    samples.delete(fromSlot);
+    samples.set(toSlot, entry);
+    return true;
   }
 
   function snapshot(options = {}) {
@@ -264,6 +280,7 @@ function createGroupAggregator(options = {}) {
     push,
     pushLane,
     drop,
+    move,
     snapshot,
     config,
   };
@@ -279,6 +296,7 @@ module.exports = {
   POSITION_FULL_SCALE,
   POSITION_DECAY_MS,
   groupForSlot,
+  groupForOrdinal,
   aggregate,
   touchScaleToCc,
   touchRotationToCc,
