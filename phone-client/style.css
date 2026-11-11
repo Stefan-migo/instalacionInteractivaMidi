@@ -135,7 +135,7 @@ body {
 .sheet.is-collapsed .sheet-body { display: none; }
 
 /* Row of actions: three cells, pairs of two inside */
-.row-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--hair); background: var(--rule-soft); border: var(--hair) solid var(--rule-soft); }
+.row-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--hair); background: var(--rule-soft); border: var(--hair) solid var(--rule-soft); }
 .row-actions .btn { border: 0; }
 .button-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--hair); grid-column: span 2; background: var(--rule-soft); }
 .btn.recording { background: var(--ink); color: var(--paper); }

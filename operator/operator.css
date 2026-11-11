@@ -47,7 +47,8 @@ output { float: right; font-variant-numeric: tabular-nums; }
 .routing-dot.is-on { background: var(--ink); }
 .routing-live { padding-left: 1rem; border-left: 1px solid var(--rule-color); }
 .routing-fader { padding: .5rem 0; border-bottom: 1px solid var(--rule-soft); }
-.routing-rail { height: .5rem; margin: .5rem 0; border: 1px solid var(--rule-color); }
+.routing-lane { display: grid; grid-template-columns: 7rem minmax(3rem, 1fr) 2.5rem; align-items: center; gap: .5rem; margin-top: .35rem; font-size: .8rem; }
+.routing-rail { height: .5rem; margin: .25rem 0; border: 1px solid var(--rule-color); }
 .routing-fill { height: 100%; background: var(--ink); }
 .routing-copy-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: pre; }
 .routing-copy-text.is-visible { position: static; display: block; width: 100%; height: 8rem; margin-top: .75rem; padding: .5rem; overflow: auto; clip-path: none; border: 1px solid var(--rule-color); background: var(--paper); color: var(--ink); font: inherit; }

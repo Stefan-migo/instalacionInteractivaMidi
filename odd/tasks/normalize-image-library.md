@@ -51,7 +51,22 @@ and T7 can produce a committable diff.
   representative files q80/q88/q94; q90 chosen because halftone gradients band
   at q80 while q94 doubles weight for no visible gain at cell scale (cells render
   at most ~400x650 px).
-- **L5** — Outcome evidence: `images/content/` holds 130 files `001.webp`…
+- **L6** — Production evidence (supersedes S4 of `repo-neutralization.md`).
+  User chose to ship the library so the Render deploy renders a collage instead
+  of empty cells. PR #24 (`fix(bridge): serve webp with the image/webp MIME
+  type`) and PR #25 (`feat(images): ship the normalized image library`, 137
+  files: 130 webp + manifest + layout + corrected docs) merged to `main`, which
+  deploys to Render on merge. Production host: `collageinteractivomidi.onrender.com`
+  (from the local, gitignored `.env`). Verified live: `/health` 200;
+  `/api/manifest` 130 entries; `/api/layout` 30/30 cells with `imageFile`;
+  `/p5-collage/`, `/phone-client/` and `/operator/` all 200;
+  `/images/content/048.webp` 200 with `Content-Type: image/webp` and a valid
+  1312x1199 alpha WebP out of the wire. `images/raw/` (101 MB) and `curation/`
+  stayed local.
+  Known production caveat: a free Render instance sleeps when idle, and the
+  bridge keeps slots, deck, gestures and groups in memory, so an idle period
+  loses that state and the next request pays a cold start.
+
   `130.webp`, 17.1 MB (from 131 files / 99.7 MB); originals kept in
   `images/raw/` (101 MB) with provenance in `curation/rename-map.json`.
   `images/manifest.json` has 130 entries with role/axis/pole; `images/layout.json`

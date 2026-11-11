@@ -166,8 +166,13 @@
       faders.innerHTML = sourceGroups.map(function (group) { return group.group; }).map(function (id) {
         var spec = sourceGroups.find(function (item) { return item.group === id; }) || groups[id - 1];
         var live = data && data.groups && data.groups.find(function (item) { return item.group === id; });
-        var value = live && Number.isFinite(live.value) ? Math.max(0, Math.min(100, live.value)) : 0;
-        return '<div class="routing-fader"><strong>Grupo ' + id + ' · CC ' + (spec.ccController || 21) + ' · canal ' + (spec.channel || id) + '</strong><p>Agregación: promedio · ' + Math.round(value) + '</p><div class="routing-rail"><div class="routing-fill" style="width:' + value + '%"></div></div></div>';
+        var controllers = spec.ccControllers || { position: spec.ccController || 21, scale: (spec.ccController || 21) + 1, rotation: (spec.ccController || 21) + 2 };
+        var lanes = ['position', 'scale', 'rotation'].map(function (lane) {
+          var value = live && live.lanes && Number.isFinite(live.lanes[lane]) ? Math.max(0, Math.min(127, live.lanes[lane])) : 0;
+          var label = { position: 'Posición', scale: 'Escala', rotation: 'Rotación' }[lane];
+          return '<div class="routing-lane"><span>' + label + ' · CC ' + controllers[lane] + '</span><div class="routing-rail"><div class="routing-fill" style="width:' + (value / 127 * 100) + '%"></div></div><span>' + value + '</span></div>';
+        }).join('');
+        return '<div class="routing-fader"><strong>Grupo ' + id + ' · canal ' + (spec.channel || id) + ' · CC ' + controllers.position + ' / ' + controllers.scale + ' / ' + controllers.rotation + '</strong>' + lanes + '</div>';
       }).join('');
       if (!data) {
         diagnosis.innerHTML = '<p class="routing-quiet">Sin respuesta del puente: no se pudo consultar /api/music. La hoja de ruteo fija sigue visible.</p>';
@@ -186,16 +191,21 @@
       renderWalk(sourceGroups);
     }
 
-    // The mapping walk: thirty note voices and ten continuous ones, in a fixed
-    // order, one per step, so Live can learn them without hunting cells.
+    // The mapping walk: thirty note voices, followed by three continuous lanes
+    // per group in the same fixed group order.
     function walkFor(sourceGroups) {
       var notes = sourceGroups.flatMap(function (group) {
         return ROUTING_VOICES.map(function (voice) {
           return { output: 'note', group: group.group, channel: group.channel, note: group.notes ? group.notes[voice.gesture] : voice.note, label: voice.label };
         });
       });
-      var lanes = sourceGroups.map(function (group) {
-        return { output: 'cc', group: group.group, channel: group.channel, controller: group.ccController || 21, label: 'Movimiento continuo' };
+      var lanes = sourceGroups.flatMap(function (group) {
+        var controllers = group.ccControllers || { position: group.ccController || 21, scale: (group.ccController || 21) + 1, rotation: (group.ccController || 21) + 2 };
+        return [
+          { output: 'cc', group: group.group, channel: group.channel, controller: controllers.position, label: 'Posición' },
+          { output: 'cc', group: group.group, channel: group.channel, controller: controllers.scale, label: 'Escala' },
+          { output: 'cc', group: group.group, channel: group.channel, controller: controllers.rotation, label: 'Rotación' },
+        ];
       });
       return notes.concat(lanes);
     }
@@ -209,7 +219,7 @@
       var target = voice.output === 'note'
         ? 'canal ' + voice.channel + ' · NOTA ' + voice.note
         : 'canal ' + voice.channel + ' · CC ' + voice.controller;
-      var lane = voice.output === 'note' ? 'Gestos · ' + voice.label : 'Movimiento continuo';
+      var lane = voice.output === 'note' ? 'Gestos · ' + voice.label : voice.label;
       var html = '<p><strong>Grupo ' + voice.group + ' · ' + lane + '</strong></p>'
         + '<p>Envía: ' + target + '</p>'
         + '<ol><li>En Live: Ctrl + M.</li><li>Click en el parámetro a mapear.</li><li>Volvé acá y tocá Enviar.</li></ol>'

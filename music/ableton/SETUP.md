@@ -113,22 +113,24 @@ Ten groups of three phones, one channel per group:
 
 | Channel | Group | CC (continuous) | Notes (gestures) |
 |---------|-------|-----------------|------------------|
-| 1 | slots 0-2 | CC 21 | 36 tilt, 37 flick, 38 rotation |
-| 2 | slots 3-5 | CC 21 | 36 tilt, 37 flick, 38 rotation |
-| 3 | slots 6-8 | CC 21 | 36 tilt, 37 flick, 38 rotation |
-| 4 | slots 9-11 | CC 21 | 36 tilt, 37 flick, 38 rotation |
-| 5 | slots 12-14 | CC 21 | 36 tilt, 37 flick, 38 rotation |
-| 6 | slots 15-17 | CC 21 | 36 tilt, 37 flick, 38 rotation |
-| 7 | slots 18-20 | CC 21 | 36 tilt, 37 flick, 38 rotation |
-| 8 | slots 21-23 | CC 21 | 36 tilt, 37 flick, 38 rotation |
-| 9 | slots 24-26 | CC 21 | 36 tilt, 37 flick, 38 rotation |
-| 10 | slots 27-29 | CC 21 | 36 tilt, 37 flick, 38 rotation |
+| 1 | slots 0-2 | CC 21 posición, 22 escala, 23 rotación | 36 tilt, 37 flick, 38 rotation |
+| 2 | slots 3-5 | CC 21 posición, 22 escala, 23 rotación | 36 tilt, 37 flick, 38 rotation |
+| 3 | slots 6-8 | CC 21 posición, 22 escala, 23 rotación | 36 tilt, 37 flick, 38 rotation |
+| 4 | slots 9-11 | CC 21 posición, 22 escala, 23 rotación | 36 tilt, 37 flick, 38 rotation |
+| 5 | slots 12-14 | CC 21 posición, 22 escala, 23 rotación | 36 tilt, 37 flick, 38 rotation |
+| 6 | slots 15-17 | CC 21 posición, 22 escala, 23 rotación | 36 tilt, 37 flick, 38 rotation |
+| 7 | slots 18-20 | CC 21 posición, 22 escala, 23 rotación | 36 tilt, 37 flick, 38 rotation |
+| 8 | slots 21-23 | CC 21 posición, 22 escala, 23 rotación | 36 tilt, 37 flick, 38 rotation |
+| 9 | slots 24-26 | CC 21 posición, 22 escala, 23 rotación | 36 tilt, 37 flick, 38 rotation |
+| 10 | slots 27-29 | CC 21 posición, 22 escala, 23 rotación | 36 tilt, 37 flick, 38 rotation |
 | 16 | operator | reserved | reserved |
 
-Forty parameters in total: ten groups x three gestures = thirty note voices, plus
-ten continuous lanes. Every phone in a group triggers the same three sounds,
-which is what makes a crowd learnable in five minutes. The number of groups is
-configuration: `GROUP_COUNT` in the bridge and the number of groups in
+Sixty parameters: thirty note voices plus thirty continuous mappings (three per
+group channel). CC 21 follows the pad's position, CC 22 its scale and CC 23 its
+rotation. These are touch parameters, not gyroscope data. When the pad is
+released the position decays back to rest on its own; scale and rotation keep
+their last value. Every phone in the group shares these controls. The number of
+groups is configuration: `GROUP_COUNT` in the bridge and the groups declared in
 `music/mapping.json` must agree, and the panel says so when they do not.
 
 Channels are written here as Ableton displays them (1..16). `bridge/midi-out.js`
@@ -177,8 +179,8 @@ npm run agent
 | `BRIDGE_URL` | `ws://localhost:8080` | where the bridge listens |
 | `MIDI_PORT` | `Collage-MIDI` | the virtual port from section 1 |
 
-What it does: registers as `agent`, receives three group values at 20 Hz, and
-sends one CC per group on that group's channel (group 1 -> channel 1, and so on).
+What it does: registers as `agent`, receives three continuous lane values per group at 20 Hz, and
+sends one CC per lane on that group's channel (group 1 -> channel 1, and so on).
 It only sends when a value changes, so a still crowd is not a CC flood. It also
 turns each gesture voice into a note on that same channel.
 
@@ -204,7 +206,8 @@ show machine, so a change here is a file edit and a restart, never a deploy.
 |-------|---------|
 | `group`, `channel` | which ten slots the group owns, and its MIDI channel |
 | `aggregation` | `average`, `max` or `last` — how ten phones become one value |
-| `ccController` | the CC number of that group's fader |
+| `ccController` | legacy CC number for position (CC 21) |
+| `ccControllers` | continuous CC numbers: position 21, scale 22, rotation 23 |
 | `curve` | `linear`, `exponential` or `logarithmic`, with `gamma` |
 | `ema` | smoothing in (0, 1]: `1` is no smoothing at all |
 | `deadband` | ignore changes smaller than this many 7-bit steps |

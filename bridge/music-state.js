@@ -2,6 +2,13 @@
 
 const { validateMusicScore } = require('./message-relay');
 
+// One continuous value per lane, per group (odd/tasks/touch-faders.md, S3).
+const SCORE_LANES = ['position', 'scale', 'rotation'];
+
+function laneOf(message) {
+  return SCORE_LANES.includes(message.lane) ? message.lane : 'position';
+}
+
 function createMusicState() {
   let score = null;
   let port = 'absent';
@@ -24,7 +31,7 @@ function createMusicState() {
     if (!message) return;
     if (message.output === 'port') { port = message.status === 'open' ? 'open' : 'closed'; return; }
     if (!score || !Number.isInteger(message.group)) return;
-    if (message.output === 'cc' && Number.isInteger(message.value)) values.set(message.group, message.value);
+    if (message.output === 'cc' && Number.isInteger(message.value)) values.set(message.group + ':' + laneOf(message), message.value);
     if (message.output === 'note' && typeof message.gesture === 'string' && Number.isInteger(message.note)) {
       const note = { gesture: message.gesture, note: message.note, channel: message.channel, velocity: message.velocity, at: message.at || new Date().toISOString() };
       notes.set(`${message.group}:${message.gesture}`, note);
@@ -33,14 +40,25 @@ function createMusicState() {
   }
 
   function snapshot({ agent = false, phones = 0, now = Date.now(), bridgeGroups = null } = {}) {
-    const groups = score ? score.groups.map(config => ({
-      group: config.group,
-      channel: config.channel,
-      ccController: config.ccController,
-      aggregation: config.aggregation,
-      value: values.has(config.group) ? values.get(config.group) : score.safeValue,
-      lastNote: ['tilt', 'flick', 'rotation'].map(gesture => notes.get(`${config.group}:${gesture}`)).filter(Boolean).sort((a, b) => b.at.localeCompare(a.at))[0] || null,
-    })) : [];
+    const groups = score ? score.groups.map(config => {
+      const lanes = {};
+      for (const lane of SCORE_LANES) {
+        const key = config.group + ':' + lane;
+        lanes[lane] = values.has(key) ? values.get(key) : score.safeValue;
+      }
+      return {
+        group: config.group,
+        channel: config.channel,
+        ccController: config.ccController,
+        ccControllers: config.ccControllers || null,
+        aggregation: config.aggregation,
+        // `value` stays the position lane so an older reader of /api/music keeps
+        // seeing a single continuous number.
+        value: lanes.position,
+        lanes,
+        lastNote: ['tilt', 'flick', 'rotation'].map(gesture => notes.get(`${config.group}:${gesture}`)).filter(Boolean).sort((a, b) => b.at.localeCompare(a.at))[0] || null,
+      };
+    }) : [];
     const scoreGroups = score ? score.groups.length : null;
     const topology = { bridgeGroups, scoreGroups, match: scoreGroups !== null && scoreGroups === bridgeGroups };
     let symptom = null;

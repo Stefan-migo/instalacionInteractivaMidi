@@ -63,7 +63,7 @@ Phone → bridge:
 
 Bridge → phone: `{ type: "assigned", slot }`, `{ type: "error", message }`, `{ type: "gesture-status", … }`.
 
-Bridge ⇄ agent: `{ type: "system", event: "agent-ready" }`, `{ type: "music-config", groups }`, `{ type: "music-config-applied", groups }`, and `{ type: "music-state", groups: [{ group, value, phones }] }` at 20 Hz.
+Bridge ⇄ agent: `{ type: "system", event: "agent-ready" }`, `{ type: "music-config", groups }`, `{ type: "music-config-applied", groups }`, and `{ type: "music-state", groups: [{ group, value, lanes, phones }] }` at 20 Hz. Each group's continuous lane carries three controllers on its group channel: CC 21 position, CC 22 scale and CC 23 rotation, fed by the phone pad's touch parameters (not the gyroscope).
 
 Bridge → p5: `{ type: "device", slot, accel, gyro, orientation }`, `{ type: "action", slot, action, value?, dx?, dy? }`, `{ type: "system", event: "assign"|"disconnect"|"count" }`, `{ type: "gesture-event", slot, event, gestureId, action }`, `{ type: "cell-image", slot, imageFile, imageUrl }`.
 

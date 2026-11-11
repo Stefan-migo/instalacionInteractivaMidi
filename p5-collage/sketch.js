@@ -340,7 +340,9 @@ let _markColor = null;
  */
 function brandMarkColor() {
   if (_markColor) return _markColor;
-  let color = '#ffffff';
+  // Fallback is the ink tone, not white: the canvas is the paper tone, so a
+  // white mark would be invisible if the token cannot be read.
+  let color = '#111111';
   try {
     const value = getComputedStyle(document.documentElement).getPropertyValue('--mark-on-canvas').trim();
     if (value) color = value;
@@ -352,9 +354,11 @@ function brandMarkColor() {
 let _bgTexture = null;
 let _bgSeed = Math.floor(Math.random() * 100000);
 
-// Canvas background color — shader-paper only
+// Canvas background color — the artwork surface, not UI chrome. 'solid' is the
+// identity paper tone; 'shader-paper' keeps the texture available.
 const CANVAS_BG_COLORS = {
   'shader-paper': [235, 217, 179],  // warm yellow-beige (shader-generated)
+  'solid': [244, 244, 244],         // identity paper tone, same as the phone client
 };
 
 function draw() {
@@ -367,8 +371,11 @@ function draw() {
     const bgColor = CANVAS_BG_COLORS[CONFIG.canvasBgStyle] || [235, 217, 179];
     background(bgColor[0], bgColor[1], bgColor[2]);
 
-    // Draw background texture behind all cells (lazy-init on first frame)
-    if (CONFIG.noiseIntensity > 0) {
+    // Draw background texture behind all cells (lazy-init on first frame).
+    // Only the shader-paper style has a texture: the helper falls back to a
+    // solid black fill for any other style, so raising the noise slider on a
+    // flat canvas would paint the whole canvas black.
+    if (CONFIG.noiseIntensity > 0 && CONFIG.canvasBgStyle === 'shader-paper') {
       if (!_bgTexture) {
         _bgTexture = drawBackgroundTexture(window, 1920, 1080, CONFIG.noiseIntensity, _bgSeed, CONFIG.canvasBgStyle);
       }
