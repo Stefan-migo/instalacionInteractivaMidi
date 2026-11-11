@@ -45,7 +45,7 @@ describe('brand mark placements', () => {
     const sketch = read('p5-collage/sketch.js');
     expect(sketch).toMatch(/--mark-on-canvas/);
     const call = sketch.slice(sketch.indexOf('drawBrandMark(drawingContext'), sketch.indexOf('drawGrid(dt)'));
-    expect(call).toMatch(/opacity:\s*0\.6/);
+    expect(call).toMatch(/opacity:\s*0\.35/);
   });
 
   test('the collage geometry ships as inline path data, since Logo/ is not published', () => {

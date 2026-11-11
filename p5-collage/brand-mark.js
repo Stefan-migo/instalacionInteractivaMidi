@@ -45,7 +45,7 @@ function getMarkPath(pathFactory) {
  * @param {object} [options]
  * @param {number} options.width    — canvas width in px (required)
  * @param {number} options.height   — canvas height in px (required)
- * @param {number} [options.opacity=0.6]
+ * @param {number} [options.opacity=0.35]
  * @param {string} [options.color='#ffffff'] — pass `--mark-on-canvas`
  * @param {number} [options.widthRatio=0.4]  — fraction of the canvas width
  * @param {number} [options.maxWidth=780]    — hard ceiling in px
@@ -60,7 +60,7 @@ function drawBrandMark(ctx, options) {
 
   const widthRatio = opts.widthRatio === undefined ? 0.4 : opts.widthRatio;
   const maxWidth = opts.maxWidth === undefined ? 780 : opts.maxWidth;
-  const opacity = opts.opacity === undefined ? 0.6 : opts.opacity;
+  const opacity = opts.opacity === undefined ? 0.35 : opts.opacity;
   const color = opts.color || '#ffffff';
 
   const targetWidth = Math.min(width * widthRatio, maxWidth);
