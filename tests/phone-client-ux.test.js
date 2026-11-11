@@ -16,13 +16,17 @@ describe('phone control sheet actions', () => {
   const fs = require('fs');
   const html = fs.readFileSync(require('path').join(__dirname, '../phone-client/index.html'), 'utf8');
 
-  test('shows the three requested actions and removes the previous/next button pair', () => {
-    expect(html).toMatch(/>Reubicar<\/button>/);
-    expect(html).toMatch(/>Cambiar foto<\/button>/);
+  // Both primaries name the object they change, in the same shape, so the
+  // difference is the noun and not a low-frequency verb like "reubicar".
+  test('the primaries name what changes: another photo, another cell', () => {
+    expect(html).toMatch(/>Otra foto<\/button>/);
+    expect(html).toMatch(/>Otra celda<\/button>/);
     expect(html).toMatch(/>Enviar atrás<\/button>/);
+    expect(html).not.toMatch(/>Reubicar<\/button>/);
+    expect(html).not.toMatch(/>Cambiar foto<\/button>/);
     expect(html).not.toContain('id="cell-prev-btn"');
     expect(html).not.toContain('id="cell-next-btn"');
-    // Látigo stays a gesture: Reubicar already changes the cell position.
+    // Látigo stays a gesture: the cell change already has its own button.
     expect(html).not.toContain('data-action="shuffle"');
   });
 });
