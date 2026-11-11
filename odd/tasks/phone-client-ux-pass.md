@@ -48,6 +48,14 @@ Usamos el acelerómetro y el giroscopio para mover tu fragmento en vivo. No reco
 
 The `La hoja de abajo ajusta opacidad, rotación y escala` step is gone; step 6 covers it.
 
+Above the list, one preamble says what the piece is, so the two primaries have something to mean. Verbatim:
+
+```
+Un collage se arma con pedazos. Este reparte el lienzo en 30 celdas: en cada una vive un fragmento, y podés saltar entre todas. Las fotos salen de una librería: cada una que entra deja el collage distinto.
+```
+
+It is a preamble, not an eighth step: the numbered list stays at seven. It also settles the vocabulary without renaming anything — **fragmento** is the thing that lives in a **celda**, the place — which is the model the client already used in the header and in step 3.
+
 **S6 — `?` opens the guide, and only collapses it when the guide is already there.** Pressing the header's `?` always selects the Guía tab and opens the sheet. If Guía was already the selected tab and the sheet was already open, the same press collapses the sheet instead.
 
 **S7 — The first tab is called Controles.** The visible label `Forma` becomes `Controles`; its `data-tab` / `data-panel` identifier becomes `controles` so the markup and the guide's step 6 agree.
@@ -109,3 +117,5 @@ The `La hoja de abajo ajusta opacidad, rotación y escala` step is gone; step 6 
 **L17 (decisión de copy) —** El par de primarios pasa a `Otra foto` / `Otra celda`. Principio: cada primario nombra el **objeto** que cambia, con la misma forma que el otro, así la diferencia es el sustantivo y no un verbo de baja frecuencia como "reubicar". `Otra foto` trae otra imagen del mazo; `Otra celda` te mueve a otro lugar del collage.
 
 **L18 (deuda abierta) —** Consecuencia de L17: "celda" tiene que existir como palabra del cliente, y hoy el vocabulario mezcla **fragmento** (header `Fragmento`, `.cap` "Tu fragmento", guía paso 1, texto del permiso, nota del pad) con **celda** (guía paso 3 "saltás a otra celda", `alt="Tu celda"`). Recomendación: mantener *fragmento* como **la cosa** y *celda* como **el lugar**, que es el uso que la guía paso 3 ya hace, y anclar ambos nombres una sola vez en la guía paso 6 (que hoy es "Revisá la pestaña controles para más opciones"). Pendiente de aprobación porque toca la lista de 7 pasos de S5.
+
+**L19 (cambio de requisito) —** "puedes agregar un poco mas de info a la guia. un texto que explique el proyecto. que es un collage y que hay 30 celdas disponibles en las cuales se puede ir saltando, y tambien hay una libreria de imagenes que puede ir cambiando las imagenes que estan actualmente en el collage. eso pero resumido. preciso y conciso". Afecta solo S5: se agrega un preámbulo de tres oraciones arriba de la lista numerada, que sigue en 7 pasos. Resuelve L18 sin renombrar nada: *fragmento* es la cosa, *celda* es el lugar. Deja sin efecto la propuesta de reescribir el paso 6 (L18), porque el preámbulo ya ancla los dos nombres de los primarios.
