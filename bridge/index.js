@@ -6,7 +6,7 @@ const { SlotAllocator } = require('./slot-allocator');
 const { MessageRelay, parseRecordingDuration } = require('./message-relay');
 const { GestureStore } = require('./gesture-store');
 const { DTWMatcher } = require('./dtw-matcher');
-const { createGroupAggregator, groupForSlot, touchPositionToCc, touchScaleToCc, touchRotationToCc } = require('./group-state');
+const { createGroupAggregator, groupForOrdinal, touchPositionToCc, touchScaleToCc, touchRotationToCc } = require('./group-state');
 const { createGestureTriggers } = require('./gesture-triggers');
 const { createVoiceGate } = require('./voice-gate');
 const { startHeartbeat } = require('./heartbeat');
@@ -108,10 +108,24 @@ const dtwMatcher = new DTWMatcher(gestureStore, {
 });
 const p5Players = new Set();
 const phoneConnections = new Map();
+let phoneOrdinal = 0;
+function slotToConnection(slot) {
+  for (const info of phoneConnections.values()) {
+    if (info.slot === slot) return info;
+  }
+  return null;
+}
 // Agents are the audio side: they hold no slot, receive per-group state and
 // answer with the aggregation they want. See odd/tasks/ableton-music.md, S3.
 const musicAgents = new Set();
-const groupAggregator = createGroupAggregator({ groupCount: topology.groupCount, slotsPerGroup: topology.slotsPerGroup });
+const groupAggregator = createGroupAggregator({
+  groupCount: topology.groupCount,
+  slotsPerGroup: topology.slotsPerGroup,
+  resolveGroup: slot => {
+    const info = slotToConnection(slot);
+    return info ? info.group : null;
+  },
+});
 const gestureTriggers = createGestureTriggers();
 const voiceGate = createVoiceGate();
 const musicState = createMusicState();
@@ -432,6 +446,7 @@ wss.on('connection', (ws) => {
         rememberDevice(msg.deviceId, slot);
         info.role = 'phone';
         info.slot = slot;
+        info.group = groupForOrdinal(++phoneOrdinal, topology.groupCount);
         phoneConnections.set(ws, info);
         ws.send(JSON.stringify({ type: 'assigned', slot }));
         // Send current cell-image if available
@@ -457,7 +472,7 @@ wss.on('connection', (ws) => {
 
         // Continuous signals become discrete gestures only when someone wants them.
         if (musicAgents.size > 0) {
-          const group = groupForSlot(info.slot);
+          const group = info.group;
           if (group !== null) {
             for (const event of gestureTriggers.feed(info.slot, msg)) {
               voiceGate.add(group, event.gesture, event.velocity);
@@ -474,7 +489,7 @@ wss.on('connection', (ws) => {
           broadcastToPlayers(relay.formatGestureEventMessage(
             info.slot, 'matched', matchResult.gestureId, matchResult.action
           ));
-          const flickGroup = groupForSlot(info.slot);
+          const flickGroup = info.group;
           if (musicAgents.size > 0 && flickGroup !== null) {
             voiceGate.add(flickGroup, 'flick', FLICK_VELOCITY);
           }
@@ -484,7 +499,7 @@ wss.on('connection', (ws) => {
         const action = GESTURE_ACTIONS[msg.gesture];
         if (action) {
           broadcastToPlayers(relay.formatGestureEventMessage(info.slot, 'matched', null, action));
-          const declaredGroup = groupForSlot(info.slot);
+          const declaredGroup = info.group;
           if (musicAgents.size > 0 && declaredGroup !== null) {
             voiceGate.add(declaredGroup, 'flick', FLICK_VELOCITY);
           }
@@ -543,9 +558,8 @@ wss.on('connection', (ws) => {
           const oldSlot = info.slot;
           info.slot = targetSlot;
 
-          // The phone moved: its old slot must stop feeding the old group.
-          groupAggregator.drop(oldSlot);
-          seedTouchLanes(targetSlot);
+          // Keep the phone's group and pad values while its cell changes.
+          groupAggregator.move(oldSlot, targetSlot);
 
           // Broadcast disconnect for the old slot
           broadcastToPlayers(relay.formatDisconnectMessage(oldSlot));
