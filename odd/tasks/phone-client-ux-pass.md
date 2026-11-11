@@ -46,15 +46,7 @@ Usamos el acelerómetro y el giroscopio para mover tu fragmento en vivo. No reco
 7. Revisá la pestaña gestos para más información
 ```
 
-The `La hoja de abajo ajusta opacidad, rotación y escala` step is gone; step 6 covers it.
-
-Above the list, one preamble says what the piece is, so the two primaries have something to mean. Verbatim:
-
-```
-Un collage se arma con pedazos. Este reparte el lienzo en 30 celdas: en cada una vive un fragmento, y podés saltar entre todas. Las fotos salen de una librería: cada una que entra deja el collage distinto.
-```
-
-It is a preamble, not an eighth step: the numbered list stays at seven. It also settles the vocabulary without renaming anything — **fragmento** is the thing that lives in a **celda**, the place — which is the model the client already used in the header and in step 3.
+The `La hoja de abajo ajusta opacidad, rotación y escala` step is gone; step 6 covers it. **No preamble above the list**: an explanatory paragraph was tried and rejected (see L21). The seven steps stand alone.
 
 **S6 — `?` opens the guide, and only collapses it when the guide is already there.** Pressing the header's `?` always selects the Guía tab and opens the sheet. If Guía was already the selected tab and the sheet was already open, the same press collapses the sheet instead.
 
@@ -123,3 +115,5 @@ It is a preamble, not an eighth step: the numbered list stays at seven. It also 
 **L19 (cambio de requisito) —** "puedes agregar un poco mas de info a la guia. un texto que explique el proyecto. que es un collage y que hay 30 celdas disponibles en las cuales se puede ir saltando, y tambien hay una libreria de imagenes que puede ir cambiando las imagenes que estan actualmente en el collage. eso pero resumido. preciso y conciso". Afecta solo S5: se agrega un preámbulo de tres oraciones arriba de la lista numerada, que sigue en 7 pasos. Resuelve L18 sin renombrar nada: *fragmento* es la cosa, *celda* es el lugar. Deja sin efecto la propuesta de reescribir el paso 6 (L18), porque el preámbulo ya ancla los dos nombres de los primarios.
 
 **L20 (decisión) —** "si procede con el concepto celda. asi no se confunde." Desambiguado: se adopta el **modelo de dos niveles** (S12), no un renombre masivo. *fragmento* = la cosa, *celda* = el lugar. Único cambio de código: el `alt` de la imagen pasa de `Tu celda` a `Tu fragmento`, para que un lector de pantalla reciba un solo nombre. Todo el copy visible queda igual. Se descartó la alternativa de eliminar «fragmento» y usar «celda» en todo el cliente: habría costado seis textos visibles, el preámbulo de L19 habría perdido su segunda idea, y «celda» es más frío que «fragmento» para nombrar una obra.
+
+**L21 (reversión) —** "ok saca el mensaje que agregamos explicando en guia. no funciona. no me gusta. lo dejaremos asi sin mensaje creo que igual se entiende." Se revierte L19 por completo: se va el `<p class="guide-intro">`, su regla CSS y su test. La guía vuelve a ser solo los 7 pasos, sin preámbulo. **No reintentar**: un párrafo explicativo arriba de la lista ya se probó y no funcionó. El modelo de vocabulario de S12 sobrevive igual, porque no dependía del preámbulo.

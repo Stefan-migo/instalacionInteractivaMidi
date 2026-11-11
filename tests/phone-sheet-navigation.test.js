@@ -35,22 +35,6 @@ describe('phone sheet navigation', () => {
     expect(html).not.toMatch(/data-panel="forma"/);
   });
 
-  // The guide opens with what the piece is, before how to drive it: the two
-  // primaries (otra foto / otra celda) are only obvious once the 30-cell canvas
-  // and the image library are named.
-  test('the guide opens by saying what the piece is, without adding a step', () => {
-    const html = read('phone-client/index.html');
-    const intro = html.match(/<p class="guide-intro">([\s\S]*?)<\/p>/);
-    expect(intro).not.toBeNull();
-    expect(intro[1]).toMatch(/collage/);
-    expect(intro[1]).toMatch(/30 celdas/);
-    expect(intro[1]).toMatch(/fragmento/);
-    expect(intro[1]).toMatch(/librería/);
-    expect(html.indexOf('guide-intro')).toBeLessThan(html.indexOf('help-list'));
-    // A preamble, not a step: the numbered list keeps its seven items.
-    expect(helpSteps(html)).toHaveLength(7);
-  });
-
   // Regression: openHelp() opened the guide and the document-level "tap outside"
   // listener collapsed it again in the same click, so ? looked broken.
   test('? opens the guide, and collapses it only when the guide is already open', () => {

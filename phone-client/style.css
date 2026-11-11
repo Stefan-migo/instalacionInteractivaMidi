@@ -167,9 +167,6 @@ body {
 @keyframes phone-whip { 0%, 100% { transform: translateX(0); } 10% { transform: translateX(-6px) rotate(-8deg); } 22% { transform: translateX(5px) rotate(6deg); } }
 @keyframes phone-twist { 0%, 100% { transform: perspective(40px) rotateY(0); } 25% { transform: perspective(40px) rotateY(-30deg); } 75% { transform: perspective(40px) rotateY(30deg); } }
 
-/* Guide tab: what the piece is, then how to drive it */
-.guide-intro { color: var(--quiet); font-size: var(--font-size-xs); line-height: 1.6; padding-bottom: var(--space-sm); border-bottom: var(--hair) solid var(--rule-soft); }
-
 /* Guide tab: the numbered help list */
 .help-list { display: flex; flex-direction: column; gap: var(--space-2xs); padding-left: var(--space-lg); }
 .help-list li { font-size: var(--font-size-sm); line-height: 1.5; }
