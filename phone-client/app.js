@@ -15,7 +15,6 @@
 
   var ws = null;
   var slot = -1;
-  var recording = false;
   var sendInterval = null;
   var lastSensor = {
     accel: { x: 0, y: 0, z: 0 },
@@ -39,10 +38,8 @@
   var permScreen = $('permission-screen');
   var dashboard = $('dashboard');
   var permBtn = $('permission-btn');
-  var recIndicator = $('rec-indicator');
   var cellImage = $('cell-image');
   var cellPlaceholder = $('thumbnail-placeholder');
-  var gestureStatus = $('gesture-status');
   var sheetToggle = $('sheet-toggle');
   var toolsPanel = $('tools-panel');
   var helpBtn = $('help-btn');
@@ -148,16 +145,6 @@
     });
   });
 
-  function showGestureStatus(text, type) {
-    gestureStatus.textContent = text;
-    gestureStatus.className = 'gesture-status ' + type;
-    gestureStatus.classList.remove('hidden');
-  }
-
-  function hideGestureStatus() {
-    gestureStatus.className = 'gesture-status hidden';
-  }
-
   function setStatus(connected) {
     statusDot.className = 'connection-status ' + (connected ? 'connected' : 'disconnected');
     statusText.textContent = connected ? 'Conectado' : 'Desconectado';
@@ -221,33 +208,6 @@
             if (cellPlaceholder) cellPlaceholder.style.display = 'none';
           }
           resetTransform();
-        }
-        if (msg.type === 'gesture-status') {
-          if (msg.recording) {
-            recording = true;
-            recIndicator.classList.remove('hidden');
-            if (wiz.step === 'recording') {
-              // Wizard already showing recording step — keep it
-            } else {
-              $('wizard-trigger')?.classList.add('recording');
-              showGestureStatus('Grabando — mové el teléfono', 'recording');
-            }
-          } else {
-            recording = false;
-            recIndicator.classList.add('hidden');
-            $('wizard-trigger')?.classList.remove('recording');
-            if (msg.gestureId) {
-              if (wiz.step === 'recording') {
-                wizClearTimers();
-                wizGoTo('confirmed');
-                wiz.autoReturnTimer = setTimeout(wizClose, 4000);
-              } else {
-                showGestureStatus('Gesto grabado. Repetilo para activarlo', 'recorded');
-              }
-            } else {
-              hideGestureStatus();
-            }
-          }
         }
       } catch (err) { /* ignore parse errors */ }
     };
@@ -324,19 +284,6 @@
     twist: 'Girá el teléfono como una perilla → cambia filtro'
   };
 
-  function openGallery() {
-    if (galleryState !== null) closeGallery();
-    galleryState = 'gallery';
-    selectSheetTab('gestos');
-  }
-
-  function closeGallery() {
-    if (galleryState === 'practice' || galleryState === 'practice-done') {
-      endPractice();
-    }
-    galleryState = null;
-  }
-
   function startPractice(gesture) {
     // 'latigo' has no detector — it uses the existing flick detection
     if (gesture !== 'latigo' && (!gestureDetectors || !gestureDetectors[gesture])) return;
@@ -374,95 +321,6 @@
       }, 2000);
     }
   }
-
-  // --- Gesture Wizard State Machine ---
-  var wiz = {
-    step: null,
-    chosenDuration: 3000,
-    practiceStartTs: 0,
-    practiceSamples: 0,
-    practiceTimer: null,
-    countdownTimer: null,
-    countdownValue: 3,
-    autoReturnTimer: null,
-  };
-
-  function wizOpen() {
-    wizClose();
-    wiz.step = 'practice';
-    wiz.chosenDuration = 3000;
-    $('wizard-overlay').classList.remove('hidden');
-    document.querySelectorAll('.wizard-step').forEach(function (el) { el.classList.add('hidden'); });
-    $('wizard-step-practice').classList.remove('hidden');
-  }
-
-  function wizClose() {
-    if (wiz.step === 'recording' && recording) {
-      sendAction('record-stop');
-    }
-    wizClearTimers();
-    wiz.step = null;
-    wiz.practiceSamples = 0;
-    $('wizard-overlay').classList.add('hidden');
-  }
-
-  function wizClearTimers() {
-    if (wiz.practiceTimer) { clearTimeout(wiz.practiceTimer); wiz.practiceTimer = null; }
-    if (wiz.countdownTimer) { clearInterval(wiz.countdownTimer); wiz.countdownTimer = null; }
-    if (wiz.autoReturnTimer) { clearTimeout(wiz.autoReturnTimer); wiz.autoReturnTimer = null; }
-  }
-
-  function wizGoTo(step) {
-    wiz.step = step;
-    document.querySelectorAll('.wizard-step').forEach(function (el) { el.classList.add('hidden'); });
-    var el = $('wizard-step-' + step);
-    if (el) el.classList.remove('hidden');
-  }
-
-  $('wizard-cancel').addEventListener('click', wizClose);
-
-  $('wizard-practice-btn').addEventListener('click', function () {
-    if (wiz.step !== 'practice') return;
-    wiz.practiceStartTs = Date.now();
-    wiz.practiceSamples = 0;
-    this.textContent = 'Grabando práctica…';
-
-    var collector = setInterval(function () {
-      wiz.practiceSamples++;
-    }, 33);
-
-    wiz.practiceTimer = setTimeout(function () {
-      clearInterval(collector);
-      var elapsed = Date.now() - wiz.practiceStartTs;
-      var rounded = Math.min(Math.round(elapsed / 1000), 5);
-      $('wizard-practice-duration').textContent = rounded;
-      wizGoTo('duration');
-    }, 3000);
-  });
-
-  document.querySelectorAll('.duration-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      if (wiz.step !== 'duration') return;
-      wiz.chosenDuration = parseInt(this.dataset.duration, 10);
-      wiz.countdownValue = 3;
-      $('wizard-countdown-number').textContent = '3';
-      wizGoTo('countdown');
-
-      wiz.countdownTimer = setInterval(function () {
-        wiz.countdownValue--;
-        if (wiz.countdownValue > 0) {
-          $('wizard-countdown-number').textContent = wiz.countdownValue;
-        } else {
-          clearInterval(wiz.countdownTimer);
-          wiz.countdownTimer = null;
-          wizGoTo('recording');
-          recording = true;
-          recIndicator.classList.remove('hidden');
-          sendActionWithPayload('record-start', { duration: wiz.chosenDuration });
-        }
-      }, 1000);
-    });
-  });
 
   // --- Permission flow ---
   permBtn.addEventListener('click', async function () {
@@ -1030,7 +888,6 @@
 
   // --- Gestures tab wiring ---
   (function initGallery() {
-    var createBtn = $('create-gesture-btn');
     var practiceBackBtn = $('practice-back-btn');
 
     // [Practicar] buttons
@@ -1044,13 +901,6 @@
     // [Volver] from practice
     if (practiceBackBtn) {
       practiceBackBtn.addEventListener('click', endPractice);
-    }
-
-    // [+ Crear mi gesto] → wizard overlays on top of gallery
-    if (createBtn) {
-      createBtn.addEventListener('click', function () {
-        wizOpen();
-      });
     }
   })();
 
