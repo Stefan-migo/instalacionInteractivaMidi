@@ -148,8 +148,7 @@ body {
 .range::-moz-range-thumb { width: 14px; height: 14px; background: var(--ink); border: 0; border-radius: 0; }
 
 /* Gestos tab: the pad the visitor already holds in their hand */
-.pad-note { display: flex; flex-direction: column; gap: var(--space-2xs); padding: var(--space-sm); border: var(--hair) solid var(--rule-soft); }
-.pad-note-title { font-family: var(--font-display); font-size: var(--font-size-xs); letter-spacing: var(--tracking); text-transform: uppercase; }
+.pad-note { padding: var(--space-sm); border: var(--hair) solid var(--rule-soft); }
 .pad-note-text { color: var(--quiet); font-size: var(--font-size-xs); line-height: 1.6; }
 
 /* Gestures tab: a ruled list, one row per gesture */

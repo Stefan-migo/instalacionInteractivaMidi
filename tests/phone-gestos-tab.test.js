@@ -38,6 +38,16 @@ describe('phone Gestos tab', () => {
     expect(css).toMatch(/\.pad-note\s*\{/);
   });
 
+  // The sheet is short on vertical room; a label above the sentence repeated
+  // what the sentence already says.
+  test('the pad note is one sentence, with no heading above it', () => {
+    const html = read('phone-client/index.html');
+    const css = read('phone-client/style.css');
+    expect(html).not.toContain('pad-note-title');
+    expect(html).not.toContain('Pad táctil');
+    expect(css).not.toMatch(/\.pad-note-title/);
+  });
+
   test('the three gestures keep their card and their practice button', () => {
     const html = read('phone-client/index.html');
     for (const gesture of ['inclinar', 'latigo', 'twist']) {
