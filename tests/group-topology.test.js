@@ -39,7 +39,8 @@ describe('group topology', () => {
     for (let channel = 1; channel <= 10; channel += 1) {
       expect(section).toMatch(new RegExp(`\\| ${channel} \\| slots `));
     }
-    expect(section).toMatch(/Forty parameters/);
+    expect(section).toMatch(/Sixty parameters/);
+    expect(section).toMatch(/CC 21 posición, 22 escala, 23 rotación/);
     expect(section).toMatch(/GROUP_COUNT/);
   });
 });

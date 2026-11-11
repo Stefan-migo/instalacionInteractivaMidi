@@ -12,6 +12,21 @@ try {
   // Will skip paper-texture tests gracefully
 }
 
+describe('phone control sheet actions', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync(require('path').join(__dirname, '../phone-client/index.html'), 'utf8');
+
+  test('shows the three requested actions and removes the previous/next button pair', () => {
+    expect(html).toMatch(/>Reubicar<\/button>/);
+    expect(html).toMatch(/>Cambiar foto<\/button>/);
+    expect(html).toMatch(/>Enviar atrás<\/button>/);
+    expect(html).not.toContain('id="cell-prev-btn"');
+    expect(html).not.toContain('id="cell-next-btn"');
+    // Látigo stays a gesture: Reubicar already changes the cell position.
+    expect(html).not.toContain('data-action="shuffle"');
+  });
+});
+
 describe('renderPaperTexture', () => {
   // Skip all tests if module couldn't load (e.g., DOM-dependent)
   beforeAll(() => {

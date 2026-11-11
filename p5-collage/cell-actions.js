@@ -55,6 +55,22 @@ function createCellActionHandler(ctx) {
           s.pos.y = Math.max(0, Math.min(1080 - s.pos.h, s.pos.y));
         }
         break;
+      case 'send-back': {
+        let lower = -Infinity;
+        const sortedSlots = typeof ctx.getSortedSlots === 'function' ? ctx.getSortedSlots() : [];
+        for (const other of sortedSlots) {
+          if (other.slot === slot) continue;
+          const otherState = ctx.getRendererCellStates()[other.slot];
+          if (otherState && otherState.pos.zIndex < s.pos.zIndex && otherState.pos.zIndex > lower) {
+            lower = otherState.pos.zIndex;
+          }
+        }
+        if (lower !== -Infinity) {
+          s.pos.zIndex = lower - 1;
+          if (typeof ctx.onZOrderChanged === 'function') ctx.onZOrderChanged();
+        }
+        break;
+      }
       case 'bring-front': {
         // Bring this cell to the front by giving it max zIndex + 1
         let maxZ = 0;

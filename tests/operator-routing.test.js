@@ -52,6 +52,19 @@ describe('Operator MIDI routing section', () => {
     expect(js).not.toMatch(/' \+ s\.symptom/);
   });
 
+  test('renders three live lanes per group and a 60-step mapping walk', () => {
+    expect(js).toContain("['position', 'scale', 'rotation']");
+    expect(js).toContain('live.lanes[lane]');
+    expect(js).toContain('Posición');
+    expect(js).toContain('Escala');
+    expect(js).toContain('Rotación');
+    expect(js).toMatch(/de ' \+ voices\.length/);
+    expect(js).toContain("controller: controllers.position");
+    expect(js).toContain("controller: controllers.scale");
+    expect(js).toContain("controller: controllers.rotation");
+    expect(js).toContain("'Mapa paso ' + (stepIndex + 1) + ' de ' + voices.length");
+  });
+
   test('reads music state without writing to the endpoint', () => {
     expect(js).toMatch(/fetch\(['"]\/api\/music['"]/);
     expect(js).not.toMatch(/fetch\(['"]\/api\/music['"][\s\S]{0,300}method:\s*['"](?:POST|PUT|PATCH|DELETE)/i);

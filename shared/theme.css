@@ -35,9 +35,9 @@
 }
 
 :root {
-  /* Canvas shader stays near-black in every UI theme; keep the watermark visible.
-     The identity's light tone, not pure white: #ffffff would be a third colour. */
-  --mark-on-canvas: #f4f4f4;
+  /* The canvas is the identity paper tone, so the watermark has to be the ink
+     tone to stay visible on it. Not pure black: #111111 is the identity ink. */
+  --mark-on-canvas: #111111;
   color-scheme: dark;
   --ink: #f4f4f4;
   --paper: #111111;

@@ -11,6 +11,12 @@
 const SHAPES = ['linear', 'exponential', 'logarithmic'];
 const AGGREGATIONS = ['average', 'max', 'last'];
 
+// The pad drives three continuous lanes per group, one MIDI controller each
+// (odd/tasks/touch-faders.md, S3). Order matters: a v2 score that declares a
+// single `ccController` derives the rest as the next two controllers.
+const LANE_NAMES = ['position', 'scale', 'rotation'];
+const DEFAULT_CC_CONTROLLERS = { position: 21, scale: 22, rotation: 23 };
+
 function clamp7(value) {
   if (typeof value !== 'number' || !Number.isFinite(value)) return 0;
   const rounded = Math.round(value);
@@ -53,6 +59,7 @@ const DEFAULT_MAPPING = {
     channel: index + 1,
     aggregation: 'average',
     ccController: 21,
+    ccControllers: { ...DEFAULT_CC_CONTROLLERS },
     curve: { shape: 'linear', gamma: 1 },
     ema: 0.5,
     deadband: 2,
@@ -150,15 +157,42 @@ function normalizeGroup(raw, index, errors) {
     maxPerSecond = fallback.maxPerSecond;
   }
 
-  let ccController = integerOr(source.ccController, fallback.ccController);
-  if (ccController < 0 || ccController > 127) {
-    if (source.ccController !== undefined) errors.push('group ' + (index + 1) + ': ccController must be 0..127');
-    ccController = fallback.ccController;
-  }
+  let ccControllers = normalizeControllers(source, fallback, index, errors);
 
   const notes = normalizeNotes(source.notes, fallback.notes);
 
-  return { group: index + 1, channel, aggregation, ccController, curve: normalizeCurve(source.curve, fallback.curve), ema, deadband, maxPerSecond, notes };
+  return { group: index + 1, channel, aggregation, ccControllers, ccController: ccControllers.position, curve: normalizeCurve(source.curve, fallback.curve), ema, deadband, maxPerSecond, notes };
+}
+
+// One controller per lane. An explicit `ccControllers` wins; a legacy
+// `ccController` derives the three consecutive controllers from itself; a value
+// that cannot be a MIDI controller falls back to its default and is reported.
+function normalizeControllers(source, fallback, index, errors) {
+  const fallbackLanes = fallback.ccControllers || DEFAULT_CC_CONTROLLERS;
+  const declared = source.ccControllers && typeof source.ccControllers === 'object' ? source.ccControllers : null;
+  const legacy = integerOr(source.ccController, null);
+  const lanes = {};
+
+  for (const [offset, lane] of LANE_NAMES.entries()) {
+    let candidate;
+    if (declared) candidate = integerOr(declared[lane], null);
+    else if (legacy !== null) candidate = legacy + offset;
+    else candidate = null;
+
+    if (candidate === null || candidate < 0 || candidate > 127) {
+      const origin = declared && declared[lane] !== undefined
+        ? 'ccControllers.' + lane
+        : legacy !== null ? 'ccController' : 'controller';
+      if (declared || legacy !== null) {
+        errors.push('group ' + (index + 1) + ': ' + origin + ' for ' + lane + ' must be 0..127, using ' + fallbackLanes[lane]);
+      }
+      candidate = fallbackLanes[lane];
+    }
+
+    lanes[lane] = candidate;
+  }
+
+  return lanes;
 }
 
 // Never throws and never returns something unusable: a broken score must not
@@ -284,6 +318,8 @@ module.exports = {
   DEFAULT_DERIVATION,
   normalizeDerivation,
   normalizeNotes,
+  LANE_NAMES,
+  DEFAULT_CC_CONTROLLERS,
   clamp7,
   normalizeMapping,
   applyCurve,

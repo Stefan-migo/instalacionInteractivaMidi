@@ -21,8 +21,11 @@ const CONFIG = {
     vintage: 'sepia(0.35) saturate(0.7) contrast(0.95) brightness(1.03)',
     none: '',
   },
-  noiseIntensity: 0.8,
-  canvasBgStyle: 'shader-paper',
+  // The projector canvas is the identity paper tone, flat: fragments read the
+  // way they do on the phone client. 'shader-paper' + a non-zero noiseIntensity
+  // restores the paper texture if the installation wants it back.
+  noiseIntensity: 0,
+  canvasBgStyle: 'solid',
 };
 
 if (typeof module !== 'undefined' && module.exports) {

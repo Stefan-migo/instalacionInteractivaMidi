@@ -3,14 +3,15 @@
 // Local music agent (see odd/tasks/ableton-music.md, T4).
 //
 // Runs on the show machine, next to Ableton. It registers with the bridge as an
-// `agent`, receives one aggregated value per group, and writes MIDI through
-// loopMIDI. It must survive a flaky network: reconnect with backoff, and never
-// leave a parameter frozen wherever the crowd left it when the link dies.
+// `agent`, receives the three continuous lanes per group (position, scale,
+// rotation), and writes MIDI through loopMIDI. It must survive a flaky network:
+// reconnect with backoff, and never leave a parameter frozen wherever the crowd
+// left it when the link dies.
 //
 // Everything is injectable (socket, MIDI output, scheduler, clock) so the whole
 // behaviour is testable without a network, a port or a timer.
 
-const { normalizeMapping, createGroupShaper, DEFAULT_MAPPING } = require('./mapping');
+const { normalizeMapping, createGroupShaper, DEFAULT_MAPPING, LANE_NAMES } = require('./mapping');
 
 const DEFAULT_GROUP_MODES = ['average', 'average', 'average'];
 const DEFAULT_BRIDGE_URL = 'ws://localhost:8080';
@@ -28,8 +29,8 @@ function buildMusicConfig(rawMapping) {
     version: mapping.version,
     safeValue: mapping.safeValue,
     derivation: mapping.derivation,
-    groups: mapping.groups.map(({ group, channel, ccController, aggregation, curve, ema, deadband, maxPerSecond, notes }) => ({
-      group, channel, ccController, aggregation, curve, ema, deadband, maxPerSecond, notes,
+    groups: mapping.groups.map(({ group, channel, ccController, ccControllers, aggregation, curve, ema, deadband, maxPerSecond, notes }) => ({
+      group, channel, ccController, ccControllers, aggregation, curve, ema, deadband, maxPerSecond, notes,
     })),
   };
 }
@@ -107,8 +108,10 @@ function createMusicAgent(options = {}) {
     return config && Number.isInteger(config.channel) ? config.channel : group;
   }
 
-  function controllerFor(group) {
+  function controllerFor(group, lane = 'position') {
     const config = configFor(group);
+    const lanes = config && config.ccControllers;
+    if (lanes && Number.isInteger(lanes[lane])) return lanes[lane];
     return config && Number.isInteger(config.ccController) ? config.ccController : ccController;
   }
 
@@ -116,8 +119,11 @@ function createMusicAgent(options = {}) {
     return { ...(notesByGroup.get(group) || {}), ...(globalNotes || {}) };
   }
 
-  function shaperFor(group) {
-    let shaper = shapers.get(group);
+  // One shaper per lane, not per group: position fades, scale and rotation
+  // hold, so they must not share an EMA or a rate limit.
+  function shaperFor(group, lane = 'position') {
+    const key = group + ':' + lane;
+    let shaper = shapers.get(key);
     if (!shaper) {
       const config = configFor(group) || {};
       shaper = createGroupShaper({
@@ -128,14 +134,14 @@ function createMusicAgent(options = {}) {
         safeValue,
         now,
       });
-      shapers.set(group, shaper);
+      shapers.set(key, shaper);
     }
     return shaper;
   }
 
-  function emitCC(group, value) {
+  function emitCC(group, lane, value) {
     if (!midiOut || typeof midiOut.sendCC !== 'function') return false;
-    midiOut.sendCC(channelFor(group), controllerFor(group), value);
+    midiOut.sendCC(channelFor(group), controllerFor(group, lane), value);
     return true;
   }
 
@@ -143,9 +149,11 @@ function createMusicAgent(options = {}) {
   // point is to leave a known position, not to save three messages.
   function parkAllGroups() {
     for (let group = 1; group <= groupCount; group += 1) {
-      const shaper = shapers.get(group);
-      if (shaper) shaper.reset();
-      emitCC(group, safeValue);
+      for (const lane of LANE_NAMES) {
+        const shaper = shapers.get(group + ':' + lane);
+        if (shaper) shaper.reset();
+        emitCC(group, lane, safeValue);
+      }
     }
   }
 
@@ -210,11 +218,15 @@ function createMusicAgent(options = {}) {
       if (!entry || typeof entry !== 'object') continue;
       const group = entry.group;
       if (!Number.isInteger(group) || group < 1 || group > groupCount) continue;
-      // curve -> EMA -> deadband -> rate limit, then to the wire.
-      const value = shaperFor(group).push(to7Bit(entry.value));
-      if (value !== null) {
-        emitCC(group, value);
-        sendToBridge({ type: 'music-output', output: 'cc', group, channel: channelFor(group), controller: controllerFor(group), value });
+      // curve -> EMA -> deadband -> rate limit, once per lane, then to the wire.
+      const lanes = entry.lanes && typeof entry.lanes === 'object'
+        ? entry.lanes
+        : { position: entry.value };
+      for (const lane of LANE_NAMES) {
+        const value = shaperFor(group, lane).push(to7Bit(lanes[lane]));
+        if (value === null) continue;
+        emitCC(group, lane, value);
+        sendToBridge({ type: 'music-output', output: 'cc', group, channel: channelFor(group), controller: controllerFor(group, lane), lane, value });
       }
     }
   }

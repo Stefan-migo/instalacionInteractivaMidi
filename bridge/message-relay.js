@@ -4,7 +4,7 @@ const VALID_ACTIONS = [
   'opacity', 'rotation', 'filter', 'move',
   'scale', 'filter-next',
   'cell-next', 'cell-prev',
-  'bring-front',
+  'cycle-next', 'bring-front', 'send-back',
 ];
 
 const FILTER_NAMES = ['sepia', 'grayscale', 'cyanotype', 'polaroid', 'vintage', 'none'];
@@ -23,6 +23,18 @@ const VALID_GESTURES = [
 
 const SENSOR_KEYS = ['accel', 'gyro', 'orientation'];
 
+// The continuous lane now carries three controllers per group: position,
+// scale and rotation (odd/tasks/touch-faders.md, S3). A v2 score that declares
+// only `ccController` stays valid so an older agent is never refused mid-show.
+const SCORE_LANES = ['position', 'scale', 'rotation'];
+
+function validControllers(group) {
+  if (Number.isInteger(group.ccController) && group.ccController >= 0 && group.ccController <= 127) return true;
+  const lanes = group.ccControllers;
+  if (!lanes || typeof lanes !== 'object') return false;
+  return SCORE_LANES.every(lane => Number.isInteger(lanes[lane]) && lanes[lane] >= 0 && lanes[lane] <= 127);
+}
+
 function validateMusicScore(message) {
   if (!message || !Number.isInteger(message.version) || !Number.isInteger(message.safeValue) || message.safeValue < 0 || message.safeValue > 127 || !message.derivation || typeof message.derivation !== 'object' || !Array.isArray(message.groups) || message.groups.length < 1 || message.groups.length > 16) return false;
   const seen = new Set();
@@ -30,7 +42,7 @@ function validateMusicScore(message) {
     if (!group || typeof group !== 'object' || !Number.isInteger(group.group) || group.group < 1 || group.group > 16 || seen.has(group.group)) return false;
     seen.add(group.group);
     return Number.isInteger(group.channel) && group.channel >= 1 && group.channel <= 16 &&
-      Number.isInteger(group.ccController) && group.ccController >= 0 && group.ccController <= 127 &&
+      validControllers(group) &&
       ['average', 'max', 'last'].includes(group.aggregation) && group.curve && typeof group.curve === 'object' &&
       typeof group.ema === 'number' && group.ema > 0 && group.ema <= 1 && Number.isInteger(group.deadband) && group.deadband >= 0 &&
       typeof group.maxPerSecond === 'number' && group.maxPerSecond > 0 && group.notes && ['tilt', 'flick', 'rotation'].every(name => Number.isInteger(group.notes[name]) && group.notes[name] >= 0 && group.notes[name] <= 127);

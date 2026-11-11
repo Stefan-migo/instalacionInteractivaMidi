@@ -6,7 +6,7 @@ const { SlotAllocator } = require('./slot-allocator');
 const { MessageRelay, parseRecordingDuration } = require('./message-relay');
 const { GestureStore } = require('./gesture-store');
 const { DTWMatcher } = require('./dtw-matcher');
-const { createGroupAggregator, sensorIntensity, groupForSlot } = require('./group-state');
+const { createGroupAggregator, groupForSlot, touchPositionToCc, touchScaleToCc, touchRotationToCc } = require('./group-state');
 const { createGestureTriggers } = require('./gesture-triggers');
 const { createVoiceGate } = require('./voice-gate');
 const { startHeartbeat } = require('./heartbeat');
@@ -115,6 +115,35 @@ const groupAggregator = createGroupAggregator({ groupCount: topology.groupCount,
 const gestureTriggers = createGestureTriggers();
 const voiceGate = createVoiceGate();
 const musicState = createMusicState();
+
+// The continuous lanes are driven by the pad, not by the gyroscope (see
+// odd/tasks/touch-faders.md, S1). A phone joins the music with its resting
+// values so the group average never jumps when the second phone touches.
+const RESTING_SCALE = 100;
+const RESTING_ROTATION = 0;
+
+function seedTouchLanes(slot) {
+  groupAggregator.pushLane(slot, 'position', 0);
+  groupAggregator.pushLane(slot, 'scale', touchScaleToCc(RESTING_SCALE));
+  groupAggregator.pushLane(slot, 'rotation', touchRotationToCc(RESTING_ROTATION));
+}
+
+// Move carries a delta (speed), scale and rotation carry their absolute slider
+// value. A frame the mapper cannot read leaves its lane untouched.
+function feedTouchLanes(msg, slot) {
+  if (!msg || !Number.isInteger(slot)) return;
+  if (msg.action === 'move') {
+    groupAggregator.pushLane(slot, 'position', touchPositionToCc(msg.dx, msg.dy));
+    return;
+  }
+  if (msg.action === 'scale') {
+    groupAggregator.pushLane(slot, 'scale', touchScaleToCc(msg.value));
+    return;
+  }
+  if (msg.action === 'rotation') {
+    groupAggregator.pushLane(slot, 'rotation', touchRotationToCc(msg.value));
+  }
+}
 // Flick comes from the DTW matcher as an already-discrete event, so it has no
 // derived velocity. 100 reads as a firm hit without pretending to measure it.
 const FLICK_VELOCITY = 100;
@@ -412,6 +441,7 @@ wss.on('connection', (ws) => {
           )));
         }
         broadcastToPlayers(relay.formatAssignMessage(slot, ''));
+        seedTouchLanes(slot);
         return;
       }
       ws.send(JSON.stringify({ type: 'error', message: 'Send { type: "register", role: "phone"|"player"|"agent" }' }));
@@ -424,8 +454,6 @@ wss.on('connection', (ws) => {
       if (msg.type === 'sensor') {
         broadcastToPlayers(relay.formatSensorBatchMessage(info.slot, msg.accel, msg.gyro, msg.orientation));
         traceSensor(info.slot, msg);
-        // Same frame, reduced once: the agents never see 30 phones, only 3 groups.
-        groupAggregator.push(info.slot, sensorIntensity(msg));
 
         // Continuous signals become discrete gestures only when someone wants them.
         if (musicAgents.size > 0) {
@@ -463,6 +491,7 @@ wss.on('connection', (ws) => {
           gestureTriggers.suppress(info.slot, FLICK_SUPPRESS_MS);
         }
       } else if (msg.type === 'action') {
+        feedTouchLanes(msg, info.slot);
         if (msg.action === 'record-start') {
           const duration = parseRecordingDuration(msg);
           gestureStore.startRecording(info.slot);
@@ -513,6 +542,10 @@ wss.on('connection', (ws) => {
           // Update phone's slot tracking
           const oldSlot = info.slot;
           info.slot = targetSlot;
+
+          // The phone moved: its old slot must stop feeding the old group.
+          groupAggregator.drop(oldSlot);
+          seedTouchLanes(targetSlot);
 
           // Broadcast disconnect for the old slot
           broadcastToPlayers(relay.formatDisconnectMessage(oldSlot));

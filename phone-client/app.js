@@ -693,7 +693,8 @@
     });
   })();
 
-  // Scale slider
+  // Scale slider — the pad's pinch writes the same control, so the value the
+  // pad reads must come from the slider itself, never from a stale constant.
   (function initScaleSlider() {
     var slider = $('scale-slider');
     var display = $('scale-value');
@@ -706,7 +707,7 @@
     });
   })();
 
-  // --- Touch Overlay + Pinch-to-Zoom ---
+  // --- Touch Overlay: one finger moves, two fingers transform (pinch / twist) ---
   (function initTouchOverlay() {
     var overlay = $('touch-overlay');
     if (!overlay) return;
@@ -726,28 +727,73 @@
     var SENSITIVITY = 3;
     var dragHintFired = false;
 
-    // Pinch-to-zoom state
-    var isPinching = false;
-    var zoomScale = 1;
-    var initialPinchDist = 0;
-    var cellImg = $('cell-image');
+    // Two-finger transform: pinch drives the scale slider, twist the rotation one.
+    // The math lives in pad-transform.js so it stays testable outside the DOM.
+    var transform = window.PadTransform || null;
+    var twoFinger = false;
+    var startDist = 0;
+    var startAngle = 0;
+    var startScale = 100;
+    var startRotation = 0;
 
-    function getPinchDist(e) {
-      if (e.touches.length < 2) return 0;
-      var dx = e.touches[0].clientX - e.touches[1].clientX;
-      var dy = e.touches[0].clientY - e.touches[1].clientY;
-      return Math.sqrt(dx * dx + dy * dy);
+    var scaleSlider = $('scale-slider');
+    var scaleDisplay = $('scale-value');
+    var rotationSlider = $('rotation-slider');
+    var rotationDisplay = $('rotation-value');
+
+    // The slider itself is the single source of truth: it holds the pad's writes
+    // and the user's manual drags alike, so nothing can go stale between them.
+    function sliderScale() {
+      return scaleSlider ? parseInt(scaleSlider.value, 10) : 100;
     }
 
-    function applyZoom(scale) {
-      zoomScale = Math.max(1, Math.min(scale, 3));
-      if (cellImg) cellImg.style.transform = 'scale(' + zoomScale + ')';
+    function sliderRotation() {
+      return rotationSlider ? parseInt(rotationSlider.value, 10) : 0;
     }
 
-    function resetZoom() {
-      zoomScale = 1;
-      isPinching = false;
-      if (cellImg) cellImg.style.transform = '';
+    function applyScale(value) {
+      if (!scaleSlider || value === sliderScale()) return;
+      scaleSlider.value = String(value);
+      if (scaleDisplay) scaleDisplay.textContent = value + '%';
+      sendActionWithPayload('scale', { value: value });
+    }
+
+    function applyRotation(value) {
+      var rounded = Math.round(value);
+      if (!rotationSlider || rounded === sliderRotation()) return;
+      rotationSlider.value = String(rounded);
+      if (rotationDisplay) rotationDisplay.textContent = (rounded > 0 ? '+' : '') + rounded + '°';
+      sendActionWithPayload('rotation', { value: rounded });
+    }
+
+    function pointOf(touch) {
+      return { x: touch.clientX, y: touch.clientY };
+    }
+
+    function beginTwoFinger(e) {
+      if (!transform) return;
+      var a = pointOf(e.touches[0]);
+      var b = pointOf(e.touches[1]);
+      twoFinger = true;
+      startDist = transform.distance(a, b);
+      startAngle = transform.angleDeg(a, b);
+      startScale = sliderScale();
+      startRotation = sliderRotation();
+      // A second finger takes over from the one-finger drag.
+      active = false;
+    }
+
+    // Relative to the start of the gesture, so rounding never accumulates.
+    function updateTwoFinger(e) {
+      if (!transform || e.touches.length < 2) return;
+      var a = pointOf(e.touches[0]);
+      var b = pointOf(e.touches[1]);
+      var dist = transform.distance(a, b);
+      var angle = transform.angleDeg(a, b);
+      applyScale(transform.scaleFromPinch(startScale, startDist, dist));
+      applyRotation(
+        transform.rotationFromTwist(startRotation, transform.deltaAngle(startAngle, angle))
+      );
     }
 
     function getScale() {
@@ -785,7 +831,7 @@
     }
 
     function handleEnd() {
-      if (active && !moved && !isPinching) {
+      if (active && !moved) {
         var now = Date.now();
         if (now - lastTapTime < TAP_TIMEOUT) {
           sendAction('bring-front');
@@ -794,7 +840,7 @@
           lastTapTime = now;
         }
       }
-      if (active && moved && !dragEndFired && !isPinching) {
+      if (active && moved && !dragEndFired) {
         dragEndFired = true;
         markAction('dragged');
       }
@@ -803,40 +849,36 @@
 
     overlay.addEventListener('touchstart', function (e) {
       if (e.touches.length >= 2) {
-        isPinching = true;
-        initialPinchDist = getPinchDist(e);
+        beginTwoFinger(e);
         return;
       }
-      if (!isPinching) {
+      if (!twoFinger) {
         var t = e.touches[0];
         handleStart(t.clientX, t.clientY);
       }
     }, { passive: true });
 
     overlay.addEventListener('touchmove', function (e) {
-      if (isPinching && e.touches.length >= 2) {
-        var dist = getPinchDist(e);
-        if (initialPinchDist > 0) {
-          applyZoom(zoomScale * (dist / initialPinchDist));
-        }
-        initialPinchDist = dist;
+      if (twoFinger) {
+        updateTwoFinger(e);
         return;
       }
-      if (!isPinching) {
-        var t = e.touches[0];
-        handleMove(t.clientX, t.clientY);
-      }
+      var t = e.touches[0];
+      handleMove(t.clientX, t.clientY);
     }, { passive: true });
 
     overlay.addEventListener('touchend', function (e) {
-      if (isPinching && e.touches.length < 2) {
-        resetZoom();
+      if (twoFinger) {
+        // Lifting one finger ends the transform; the finger left behind does not
+        // resume the drag, so the fragment never jumps.
+        if (e.touches.length < 2) twoFinger = false;
         return;
       }
-      if (!isPinching) handleEnd();
+      handleEnd();
     }, { passive: true });
 
     overlay.addEventListener('touchcancel', function () {
+      twoFinger = false;
       handleEnd();
     }, { passive: true });
 
@@ -866,7 +908,7 @@
 
   var hintTexts = {
     connected: 'arrastrá sobre la imagen para mover tu fragmento en el collage',
-    dragged: 'tocá + para ajustar opacidad, rotación y escala'
+    dragged: 'con dos dedos: pellizcá para escalar y girá para rotar'
   };
 
   function markAction(flag) {
@@ -978,22 +1020,25 @@
   })();
 
   // Shuffle button
-  document.querySelector('[data-action="shuffle"]')?.addEventListener('click', function () {
-    sendAction('shuffle');
-  });
+  // Látigo is a gesture-only action now; the button was removed because
+  // Reubicar covers the same cell change.
 
-  // Tránsito
-  document.getElementById('cell-prev-btn')?.addEventListener('click', function () {
-    sendAction('cell-prev');
-  });
-
-  document.getElementById('cell-next-btn')?.addEventListener('click', function () {
+  // Tránsito — move to the next available fragment.
+  document.getElementById('reubicar-btn')?.addEventListener('click', function () {
     sendAction('cell-next');
   });
 
-  // Ascender
+  document.getElementById('change-photo-btn')?.addEventListener('click', function () {
+    sendAction('cycle-next');
+  });
+
+  // Ascender / enviar atrás
   document.getElementById('bring-front-btn')?.addEventListener('click', function () {
     sendAction('bring-front');
+  });
+
+  document.getElementById('send-back-btn')?.addEventListener('click', function () {
+    sendAction('send-back');
   });
 
   // NOTE: connect() is NO LONGER called on page load.

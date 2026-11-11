@@ -379,6 +379,18 @@ describe('MessageRelay', () => {
       });
     });
 
+    test('accepts cycle-next and send-back while rejecting bogus actions', () => {
+      const relay = new MessageRelay();
+      for (const action of ['cycle-next', 'send-back']) {
+        expect(VALID_ACTIONS).toContain(action);
+        expect(relay.validateSensorMessage({ type: 'action', action })).toEqual({ valid: true });
+      }
+      expect(relay.validateSensorMessage({ type: 'action', action: 'bogus-action' })).toEqual({
+        valid: false,
+        error: 'invalid action: bogus-action',
+      });
+    });
+
     test('contains shuffle', () => {
       expect(VALID_ACTIONS).toContain('shuffle');
     });

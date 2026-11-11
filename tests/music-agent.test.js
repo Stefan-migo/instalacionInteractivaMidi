@@ -149,17 +149,47 @@ describe('music agent', () => {
     });
   });
 
-  test('sends one CC per group on its own channel, rounding to 7 bits', () => {
+  test('sends one CC per lane per group on its own channel, rounding to 7 bits', () => {
     const { agent, sockets, midiOut } = buildAgent();
     agent.start();
     sockets.last().open();
 
     sockets.last().emit(STATE);
 
+    // A frame without lanes only carries position: the other two park at the
+    // safe value once, which is what a group with nobody touching it should do.
     expect(midiOut.sent).toEqual([
       [1, 21, 57],
+      [1, 22, 64],
+      [1, 23, 64],
       [2, 21, 64],
+      [2, 22, 64],
+      [2, 23, 64],
       [3, 21, 120],
+      [3, 22, 64],
+      [3, 23, 64],
+    ]);
+  });
+
+  test('each lane drives its own controller on the group channel', () => {
+    const { agent, sockets, midiOut } = buildAgent();
+    agent.start();
+    sockets.last().open();
+
+    sockets.last().emit({
+      type: 'music-state',
+      groups: [{ group: 1, lanes: { position: 10, scale: 90, rotation: 127 }, phones: 3 }],
+    });
+
+    expect(midiOut.sent).toEqual([
+      [1, 21, 10],
+      [1, 22, 90],
+      [1, 23, 127],
+    ]);
+    expect(sockets.last().sent.filter(m => m.type === 'music-output')).toEqual([
+      expect.objectContaining({ output: 'cc', group: 1, controller: 21, lane: 'position', value: 10 }),
+      expect.objectContaining({ output: 'cc', group: 1, controller: 22, lane: 'scale', value: 90 }),
+      expect.objectContaining({ output: 'cc', group: 1, controller: 23, lane: 'rotation', value: 127 }),
     ]);
   });
 
@@ -239,7 +269,11 @@ describe('music agent', () => {
 
     sockets.last().serverClose();
 
-    expect(midiOut.sent).toEqual(Array.from({ length: 10 }, (_, index) => [index + 1, 21, 64]));
+    const parked = [];
+    for (let group = 1; group <= 10; group += 1) {
+      for (const controller of [21, 22, 23]) parked.push([group, controller, 64]);
+    }
+    expect(midiOut.sent).toEqual(parked);
   });
 
   test('garbage from the wire is ignored without throwing', () => {
@@ -351,7 +385,7 @@ describe('music agent', () => {
 
     sockets.last().emit({ type: 'music-state', groups: [{ group: 1, value: 64, phones: 4 }] });
 
-    expect(midiOut.sent).toEqual([[1, 21, 32]]);
+    expect(midiOut.sent).toEqual([[1, 21, 32], [1, 22, 64], [1, 23, 64]]);
   });
 
   test('a group can be moved to another channel from the score', () => {
@@ -364,6 +398,6 @@ describe('music agent', () => {
 
     sockets.last().emit({ type: 'music-state', groups: [{ group: 2, value: 100, phones: 4 }] });
 
-    expect(midiOut.sent).toEqual([[5, 21, 100]]);
+    expect(midiOut.sent).toEqual([[5, 21, 100], [5, 22, 64], [5, 23, 64]]);
   });
 });
