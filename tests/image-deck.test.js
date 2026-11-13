@@ -80,18 +80,20 @@ describe('ImageDeck', () => {
     expect(deck.swap('a', 'a')).toBe(false);
   });
 
-  test('degradation reuses library files and warns once per instance', () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    try {
-      const deck = new ImageDeck(files(5), { rng: () => 0 });
-      const assigned = Array.from({ length: 10 }, (_, slot) => deck.claim(slot));
-      for (let slot = 0; slot < 10; slot += 1) deck.claim(slot);
-      expect(assigned.every(Boolean)).toBe(true);
-      expect(new Set(assigned).size).toBeLessThan(10);
-      expect(warn).toHaveBeenCalledTimes(1);
-    } finally {
-      warn.mockRestore();
-    }
+  test('surplus slots remain empty rather than repeating a library image', () => {
+    const deck = new ImageDeck(files(5), { rng: () => 0 });
+    const assigned = Array.from({ length: 10 }, (_, slot) => deck.claim(slot));
+    expect(assigned.filter(Boolean)).toHaveLength(5);
+    expect(new Set(assigned.filter(Boolean)).size).toBe(5);
+    expect(assigned.slice(5)).toEqual([null, null, null, null, null]);
+  });
+
+  test('excluded keys are removed before mapping usable entries to filenames', () => {
+    const source = require('../p5-collage/deck-list');
+    const manifest = { a: { file: 'a.webp' }, b: { file: 'b.webp' }, c: { file: 'c.webp' } };
+    const usable = source.resolveDeckList({ version: 1, excluded: ['b'] }, manifest).map(key => manifest[key].file);
+    const deck = new ImageDeck(usable, { rng: () => 0 });
+    expect(Array.from({ length: 3 }, (_, slot) => deck.claim(slot))).toEqual(['a.webp', 'c.webp', null]);
   });
 
   test('empty library methods return clean empty values', () => {

@@ -3,6 +3,7 @@
   var PRESETS = ['scatter', 'spiral', 'polaroid-stack', 'neat-grid', 'vignette', 'random'];
   // Source of truth: p5-collage/config.js. Classic scripts cannot import its CONFIG.
   var FILTERS = ['none', 'sepia', 'grayscale', 'cyanotype', 'polaroid', 'vintage'];
+  var Curation = root.DeckCuration;
   var COMMAND_TYPES = ['setPreset', 'setScatterScale', 'setNoiseIntensity', 'selectCell', 'setFilter', 'setRotation', 'setScale', 'setOpacity', 'toggleVisibility', 'rotateSelected', 'bringToFront', 'hideCell', 'esparcirTodo', 'requestState'];
 
   function visibilityCommand(slot) { return { type: 'toggleVisibility', slot: slot }; }
@@ -72,16 +73,19 @@
     }
     receive.addEventListener('message', function (event) { latest = event.data; gotState = true; update(); });
     if (themeApi) bindThemeToggle(doc.getElementById('theme-toggle'), themeApi);
-    presets.addEventListener('click', function (event) { var preset = event.target.dataset.preset; if (preset) command('setPreset', { preset: preset }); });
+    presets.addEventListener('click', function (event) { var preset = event.target.dataset.preset; if (preset) { command('setPreset', { preset: preset }); showToast(doc, 'Distribución: ' + preset, 'preset'); } });
     doc.getElementById('catalog').addEventListener('click', function (event) { var row = event.target.closest('[data-slot]'); if (row) command('selectCell', { slot: Number(row.dataset.slot) }); });
     doc.getElementById('scatter').addEventListener('input', function (event) { command('setScatterScale', { value: Number(event.target.value) }); });
+    doc.getElementById('scatter').addEventListener('change', function (event) { showToast(doc, 'Escala de dispersión: ' + Math.round(Number(event.target.value) * 100) + '%', 'scatter'); });
     doc.getElementById('noise').addEventListener('input', function (event) { command('setNoiseIntensity', { value: Number(event.target.value) }); });
-    ['filter', 'rotation', 'scale', 'opacity'].forEach(function (key) { doc.getElementById(key).addEventListener(key === 'filter' ? 'change' : 'input', function (event) { if (!latest || latest.selectedSlot == null) return; var type = { filter: 'setFilter', rotation: 'setRotation', scale: 'setScale', opacity: 'setOpacity' }[key]; command(type, { slot: latest.selectedSlot, value: key === 'filter' ? event.target.value : Number(event.target.value) }); }); });
+    ['filter', 'rotation', 'scale', 'opacity'].forEach(function (key) { doc.getElementById(key).addEventListener(key === 'filter' ? 'change' : 'input', function (event) { if (!latest || latest.selectedSlot == null) return; var type = { filter: 'setFilter', rotation: 'setRotation', scale: 'setScale', opacity: 'setOpacity' }[key]; command(type, { slot: latest.selectedSlot, value: key === 'filter' ? event.target.value : Number(event.target.value) }); if (key === 'filter') showToast(doc, 'Filtro: ' + event.target.value, 'filter'); }); });
     doc.getElementById('visibility-toggle').addEventListener('click', function () {
-      if (latest && latest.selectedSlot != null) command(visibilityCommand(latest.selectedSlot).type, { slot: latest.selectedSlot });
+      if (latest && latest.selectedSlot != null) { command(visibilityCommand(latest.selectedSlot).type, { slot: latest.selectedSlot }); showToast(doc, 'Visibilidad actualizada para la celda ' + latest.selectedSlot, 'visibility'); }
     });
-    doc.getElementById('scatter-all').addEventListener('click', function () { command('esparcirTodo'); });
-    doc.querySelector('.actions').addEventListener('click', function (event) { var action = event.target.dataset.action; if (!action || !latest || latest.selectedSlot == null) return; if (action === 'left') command('rotateSelected', { delta: -15 }); else if (action === 'right') command('rotateSelected', { delta: 15 }); else if (action === 'front') command('bringToFront', { slot: latest.selectedSlot }); else command('hideCell', { slot: latest.selectedSlot }); });
+    doc.getElementById('reset-transform').addEventListener('click', function () { if (!latest || latest.selectedSlot == null) return; command('setScale', { slot: latest.selectedSlot, value: 1 }); command('setRotation', { slot: latest.selectedSlot, value: 0 }); showToast(doc, 'Transformación restablecida para la celda ' + latest.selectedSlot, 'transform'); });
+    doc.getElementById('design-mode-entry').addEventListener('click', function () { doc.getElementById('dimensions').scrollIntoView(); showToast(doc, 'Modo Dimensiones abierto', 'design-mode'); });
+    doc.getElementById('scatter-all').addEventListener('click', function () { command('esparcirTodo'); showToast(doc, 'Todas las celdas dispersadas', 'scatter-all'); });
+    doc.querySelector('.actions').addEventListener('click', function (event) { var action = event.target.dataset.action; if (!action || !latest || latest.selectedSlot == null) return; if (action === 'left') { command('rotateSelected', { delta: -15 }); showToast(doc, 'Rotación aplicada: −15°', 'rotation'); } else if (action === 'right') { command('rotateSelected', { delta: 15 }); showToast(doc, 'Rotación aplicada: +15°', 'rotation'); } else if (action === 'front') { command('bringToFront', { slot: latest.selectedSlot }); showToast(doc, 'Celda ' + latest.selectedSlot + ' al frente', 'front'); } else { command('hideCell', { slot: latest.selectedSlot }); showToast(doc, 'Celda ' + latest.selectedSlot + ' oculta', 'hide'); } });
     request();
     setTimeout(function () { if (!gotState) request(); }, 500);
     return { command: command, renderModel: renderModel, getState: function () { return latest; } };
@@ -299,6 +303,60 @@
     });
     return { render: render, poll: poll };
   }
+  // Discrete confirmations only: continuous slider drags stay silent to avoid a toast storm; scatter confirms on change/commit.
+  var toastMessages = [];
+  function showToast(doc, message, key) {
+    var toast = doc.getElementById('operator-toast');
+    if (!toast) return;
+    key = key || 'operator';
+    toastMessages = Curation.replaceToast(toastMessages, key, message);
+    toast.dataset.key = key;
+    toast.querySelector('span').textContent = message;
+    toast.hidden = false;
+  }
+  function initDeckGrid(doc) {
+    var grid = doc.getElementById('deck-grid');
+    if (!grid || !root.fetch) return;
+    var manifest, sizes, deck, selected = new Set(), lastSelected = null;
+    var warning = doc.getElementById('deck-warning');
+    function refreshWarning() {
+      var usable = Object.keys(manifest || {}).filter(function (key) { return !(deck.excluded || []).includes(key); }).length;
+      warning.textContent = Curation.warningMessage(usable, 30);
+    }
+    function render() {
+      grid.innerHTML = '';
+      Object.keys(manifest || {}).forEach(function (key) {
+        var entry = manifest[key]; if (!entry || !entry.file) return;
+        var label = doc.createElement('label'); label.className = 'deck-item';
+        var checkbox = doc.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = selected.has(key); checkbox.dataset.key = key;
+        var image = doc.createElement('img'); image.loading = 'lazy'; image.src = '/images/thumbs/' + encodeURIComponent(key) + '.webp'; image.alt = entry.file;
+        var caption = doc.createElement('span'); caption.textContent = entry.file;
+        var state = doc.createElement('small'); state.textContent = (sizes.assignments[key] || 'Sin clase') + (deck.excluded.includes(key) ? ' · Excluida' : '');
+        label.appendChild(checkbox); label.appendChild(image); label.appendChild(caption); label.appendChild(state); grid.appendChild(label);
+      });
+      refreshWarning();
+    }
+    function save(url, value, name, count, key, confirmation) {
+      return root.fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(value) }).then(function (response) {
+        return response.json().then(function (payload) { if (!response.ok) throw new Error(payload.error || ('HTTP ' + response.status)); return payload; });
+      }).then(function () { showToast(doc, confirmation || (count + ' imágenes ' + name), key); render(); return true; }).catch(function (error) { showToast(doc, 'Error al guardar: ' + error.message, key); return false; });
+    }
+    Promise.all([root.fetch('/api/manifest').then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }), root.fetch('/api/sizes').then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }), root.fetch('/api/deck').then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })]).then(function (values) { manifest = values[0]; sizes = values[1]; deck = values[2]; render(); }).catch(function (error) { warning.textContent = 'No se pudo cargar el mazo: ' + error.message; showToast(doc, 'Error al cargar imágenes: ' + error.message, 'load'); });
+    grid.addEventListener('change', function (event) {
+      var box = event.target; if (box.type !== 'checkbox') return;
+      var key = box.dataset.key, keys = Array.prototype.map.call(grid.querySelectorAll('input[type=checkbox]'), function (item) { return item.dataset.key; });
+      if (event.shiftKey && lastSelected !== null) selected = Curation.toggleSelection(selected, key, keys, lastSelected);
+      else selected = Curation.toggleSelection(selected, key, keys);
+      lastSelected = key; render();
+    });
+    doc.getElementById('deck-all').addEventListener('click', function () { selected = Curation.selectAll(Object.keys(manifest || {})); render(); });
+    doc.getElementById('deck-none').addEventListener('click', function () { selected = Curation.selectNone(); render(); });
+    doc.querySelectorAll('[data-bulk-size]').forEach(function (button) { button.addEventListener('click', function () { var count = selected.size; if (!count) return showToast(doc, 'Error: selecciona imágenes primero', 'sizes'); selected.forEach(function (key) { sizes.assignments[key] = button.dataset.bulkSize; }); save('/api/sizes', sizes, 'en ' + button.dataset.bulkSize, count, 'sizes', Curation.bulkActionMessage(count, button.dataset.bulkSize)); }); });
+    function changeExcluded(exclude) { var keys = Array.from(selected); if (!keys.length) return showToast(doc, 'Error: selecciona imágenes primero', 'deck'); var set = new Set(deck.excluded); keys.forEach(function (key) { if (exclude) set.add(key); else set.delete(key); }); var updated = { version: 1, excluded: Array.from(set) }; save('/api/deck', updated, exclude ? 'fuera del mazo' : 'incluidas en el mazo', keys.length, 'deck').then(function (saved) { if (saved) { deck = updated; render(); } }); }
+    doc.getElementById('deck-exclude').addEventListener('click', function () { changeExcluded(true); });
+    doc.getElementById('deck-include').addEventListener('click', function () { changeExcluded(false); });
+    return { render: render };
+  }
   function initDimensions(doc) {
     var canvas = doc.getElementById('dimension-canvas');
     if (!canvas || !root.fetch || !root.SizeClasses) return null;
@@ -325,18 +383,20 @@
       manifest = results[0]; data = results[1]; files = Object.keys(manifest).filter(function (id) { return manifest[id] && manifest[id].file; }).map(function (id) { return manifest[id].file; });
       files = Array.from(new Set(files));
       render();
-    }).catch(function (error) { doc.getElementById('dimension-status').textContent = error.message; });
+    }).catch(function (error) { showToast(doc, 'Error al cargar dimensiones: ' + error.message, 'dimensions-load'); });
     doc.querySelectorAll('[data-size]').forEach(function (button) { button.addEventListener('click', function () { var file=files[current], key=Object.keys(manifest).find(function(id){return manifest[id].file===file;}); if (!key) return; data.assignments[key]=button.dataset.size; render(); }); });
     function step(delta) { current = Math.max(0, Math.min(files.length-1, current+delta)); render(); }
     doc.getElementById('dimension-prev').addEventListener('click', function(){step(-1);});
     doc.getElementById('dimension-next').addEventListener('click', function(){step(1);});
-    doc.getElementById('dimension-save').addEventListener('click', function(){root.fetch('/api/sizes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){doc.getElementById('dimension-status').textContent=r.ok?'Guardado':'No se pudo guardar';});});
+    doc.getElementById('dimension-save').addEventListener('click', function(){root.fetch('/api/sizes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){return r.json().then(function(payload){if(!r.ok)throw new Error(payload.error||('HTTP '+r.status));showToast(doc,Object.keys(data.assignments).length+' imágenes guardadas','dimensions');});}).catch(function(error){showToast(doc,'Error al guardar: '+error.message,'dimensions');});});
     doc.addEventListener('keydown', function(event){ if (['s','m','l','x'].includes(event.key.toLowerCase())) { var name={s:'S',m:'M',l:'L',x:'XL'}[event.key.toLowerCase()]; var button=doc.querySelector('[data-size="'+name+'"]'); if(button) button.click(); } else if(event.key==='ArrowLeft')step(-1); else if(event.key==='ArrowRight')step(1); });
   }
-  var api = { init: init, initRouting: initRouting, initDimensions: initDimensions, renderModel: renderModel, formatCell: formatCell, visibilityCommand: visibilityCommand, isVisible: isVisible, bindThemeToggle: bindThemeToggle, COMMAND_TYPES: COMMAND_TYPES, PRESETS: PRESETS, FILTERS: FILTERS };
+  var api = { init: init, initRouting: initRouting, initDimensions: initDimensions, initDeckGrid: initDeckGrid, showToast: showToast, renderModel: renderModel, formatCell: formatCell, visibilityCommand: visibilityCommand, isVisible: isVisible, bindThemeToggle: bindThemeToggle, COMMAND_TYPES: COMMAND_TYPES, PRESETS: PRESETS, FILTERS: FILTERS };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.OperatorPage = api;
   if (root.document) initRouting(root.document);
   if (root.document) initDimensions(root.document);
+  if (root.document) initDeckGrid(root.document);
+  if (root.document) root.document.getElementById('operator-toast').querySelector('button').addEventListener('click', function () { root.document.getElementById('operator-toast').hidden = true; });
   if (root.document && typeof BroadcastChannel !== 'undefined') init(root.document, function (name) { return new BroadcastChannel(name); }, root.MidiTheme);
 })(typeof window !== 'undefined' ? window : globalThis);

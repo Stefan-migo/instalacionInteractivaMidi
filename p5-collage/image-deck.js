@@ -7,7 +7,6 @@ class ImageDeck {
     this._deck = [...this._files];
     this._slots = new Map();
     this._rng = typeof options.rng === 'function' ? options.rng : Math.random;
-    this._warned = false;
     this._metadata = options.metadata || {};
     this._cellAspects = new Map();
   }
@@ -40,13 +39,7 @@ class ImageDeck {
       file = candidates[index];
       this._deck.splice(this._deck.indexOf(file), 1);
     } else {
-      if (!this._warned) {
-        console.warn('ImageDeck exhausted; reusing images from the library.');
-        this._warned = true;
-      }
-      const random = Number(this._rng());
-      const index = Math.min(this._files.length - 1, Math.max(0, Math.floor(random * this._files.length)));
-      file = this._files[index];
+      return null;
     }
     this._slots.set(slot, file);
     return file;
