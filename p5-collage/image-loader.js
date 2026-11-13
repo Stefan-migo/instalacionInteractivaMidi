@@ -10,6 +10,7 @@ class ImageLoader {
     this.pinnedFiles = new Set();
     this.failedFiles = new Set();
     this.evicted = 0;
+    this.inkMetadata = new Map();
   }
 
   _url(path) { return this.base + path; }
@@ -36,6 +37,21 @@ class ImageLoader {
       files.push(entry.file);
     }
     return files;
+  }
+
+  metadataFrom(manifestData) {
+    this.inkMetadata.clear();
+    if (manifestData && typeof manifestData === 'object') {
+      for (const entry of Object.values(manifestData)) {
+        if (entry && typeof entry.file === 'string') this.inkMetadata.set(entry.file, entry);
+      }
+    }
+    return Object.fromEntries(this.inkMetadata);
+  }
+
+  getInkRatio(file) {
+    const entry = this.inkMetadata.get(file);
+    return entry && Number.isFinite(entry.inkRatio) ? entry.inkRatio : 1;
   }
 
   get(file) {
@@ -76,6 +92,7 @@ class ImageLoader {
       settled = true;
       this.pending.delete(file);
       if (image) {
+        image.inkRatio = this.getInkRatio(file);
         this.images.set(file, image);
         this._evict();
       } else {

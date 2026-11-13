@@ -51,6 +51,15 @@ describe('drawImg', () => {
     expect(global.pop).toHaveBeenCalled();
   });
 
+  test('scales low ink coverage to the floor without cropping', () => {
+    const mockImg = makeImg(100, 100);
+    drawImg(mockImg, false, false, 0, 0, 100, 100, 1, 'none', 0.1);
+    const callArgs = global.drawingContext.drawImage.mock.calls[0];
+    expect(callArgs.slice(1, 5)).toEqual([0, 0, 100, 100]);
+    expect(callArgs[7]).toBeCloseTo(100 * Math.sqrt(3.5));
+    expect(callArgs[8]).toBeCloseTo(100 * Math.sqrt(3.5));
+  });
+
   test('applies flipH scale', () => {
     const mockImg = makeImg(800, 600);
     drawImg(mockImg, true, false, 0, 0, 100, 100, 1);

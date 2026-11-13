@@ -18,7 +18,7 @@ function getCombinedFilters(filterType) {
  * If the cell aspect ratio matches the image (via adaptCellToImage),
  * there is no letterboxing.
  */
-function drawImg(img, flipH, flipV, x, y, w, h, opacity, filterType) {
+function drawImg(img, flipH, flipV, x, y, w, h, opacity, filterType, inkRatio) {
   if (!img) return;
   push();
   translate(x + w / 2, y + h / 2);
@@ -33,7 +33,16 @@ function drawImg(img, flipH, flipV, x, y, w, h, opacity, filterType) {
   const ih = img.naturalHeight || img.height;
   if (iw > 0 && ih > 0) {
     const fitScale = Math.min(w / iw, h / ih);
-    const dw = iw * fitScale, dh = ih * fitScale;
+    let dw = iw * fitScale, dh = ih * fitScale;
+    const config = typeof CONFIG !== 'undefined' ? CONFIG : require('./config').CONFIG;
+    const cellArea = w * h;
+    const drawnArea = dw * dh;
+    if (Number.isFinite(inkRatio) && inkRatio > 0 && cellArea > 0 && drawnArea > 0) {
+      const needed = Math.sqrt((config.minInkCoverage * cellArea) / (inkRatio * drawnArea));
+      const multiplier = Math.min(config.maxInkOverflow, Math.max(1, needed));
+      dw *= multiplier;
+      dh *= multiplier;
+    }
     const dx = (w - dw) / 2, dy = (h - dh) / 2;
     drawingContext.drawImage(img, 0, 0, iw, ih, -w / 2 + dx, -h / 2 + dy, dw, dh);
   } else {

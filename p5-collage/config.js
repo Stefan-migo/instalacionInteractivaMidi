@@ -7,6 +7,8 @@ const CONFIG = {
   dtwDownsampleHz: 10,
   gestureDebounceMs: 1000,
   imageCacheSize: 48,
+  minInkCoverage: 0.35,
+  maxInkOverflow: 4.25,
   bridgePort: 8080,
   sensorSendInterval: 33,
   fullscreenBg: '#000000',
