@@ -14,6 +14,7 @@ const { createMusicState } = require('./music-state');
 const { SLOT_COUNT, DEFAULT_GROUP_COUNT, deriveTopology } = require('./topology');
 const { parseEmitRequest } = require('./message-relay');
 const { validateSizes } = require('../p5-collage/size-classes');
+const { validateDeckList } = require('../p5-collage/deck-list');
 
 function sendJson(res, status, payload) {
   res.writeHead(status, { 'Content-Type': 'application/json' });
@@ -52,6 +53,8 @@ const LAYOUT_PATH = path.join(ROOT_DIR, 'images', 'layout.json');
 const MANIFEST_PATH = path.join(ROOT_DIR, 'images', 'manifest.json');
 const SIZES_PATH = process.env.SIZES_PATH ? path.resolve(process.env.SIZES_PATH) : path.join(ROOT_DIR, 'images', 'sizes.json');
 const SIZE_WRITE_LIMIT = 16 * 1024;
+const DECK_PATH = process.env.DECK_PATH ? path.resolve(process.env.DECK_PATH) : path.join(ROOT_DIR, 'images', 'deck.json');
+const DECK_WRITE_LIMIT = 16 * 1024;
 const PHONE_CLIENT_DIR = path.join(ROOT_DIR, 'phone-client');
 const P5_COLLAGE_DIR = path.join(ROOT_DIR, 'p5-collage');
 const OPERATOR_DIR = path.join(ROOT_DIR, 'operator');
@@ -300,8 +303,44 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (pathname === '/api/deck' && req.method === 'GET') {
+    fs.readFile(DECK_PATH, 'utf8', (error, text) => {
+      try {
+        if (error) throw error;
+        const deck = JSON.parse(text);
+        const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+        validateDeckList(deck, Object.keys(manifest));
+        return sendJson(res, 200, deck);
+      } catch {
+        return sendJson(res, 200, { version: 1, excluded: [] });
+      }
+    });
+    return;
+  }
+
+  if (pathname === '/api/deck' && req.method === 'POST') {
+    if (process.env.AUTHORING_WRITES_ENABLED !== 'true') return sendJson(res, 403, { ok: false, error: 'Deck assignments are disabled' });
+    readJsonBody(req, DECK_WRITE_LIMIT, async (error, submitted) => {
+      if (error) return sendJson(res, error.message === 'body too large' ? 413 : 400, { ok: false, error: error.message });
+      try {
+        const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+        validateDeckList(submitted, Object.keys(manifest));
+      } catch (validationError) { return sendJson(res, 400, { ok: false, error: validationError.message }); }
+      const tempPath = `${DECK_PATH}.${process.pid}.${Date.now()}.tmp`;
+      try {
+        await fs.promises.writeFile(tempPath, `${JSON.stringify(submitted, null, 2)}\n`, { flag: 'wx' });
+        await fs.promises.rename(tempPath, DECK_PATH);
+        return sendJson(res, 200, { ok: true });
+      } catch {
+        try { await fs.promises.unlink(tempPath); } catch {}
+        return sendJson(res, 500, { ok: false, error: 'Failed to save deck' });
+      }
+    });
+    return;
+  }
+
   if (pathname === '/api/sizes' && req.method === 'POST') {
-    if (process.env.SIZE_WRITES_ENABLED !== 'true') {
+    if (process.env.AUTHORING_WRITES_ENABLED !== 'true') {
       return sendJson(res, 403, { ok: false, error: 'Size assignments are disabled' });
     }
     let size = 0;

@@ -12,8 +12,11 @@ describe('size class data', () => {
   test('loads calibrated target ink fractions from data and resolves unassigned images to no authored size', () => {
     const data = loadSizeClasses(JSON.parse(fs.readFileSync(path.join(BASE_DIR, 'images/sizes.json'), 'utf8')));
     expect(data.classes).toEqual(SAMPLE_CLASSES);
-    expect(Object.keys(data.assignments)).toHaveLength(0);
-    expect(getAuthoredSize(data, '001')).toBeNull();
+    // images/sizes.json is mutable authored data: the owner assigns classes through
+    // the operator and the bridge writes them here. Asserting on its contents would
+    // rot on the next save, so the rule is checked behaviourally instead.
+    expect(getAuthoredSize({ ...data, assignments: {} }, '__unassigned__')).toBeNull();
+    expect(getAuthoredSize(data, '__unassigned__')).toBeNull();
   });
 
   test('shared draw size maps target ink fraction to aspect-preserving frame dimensions', () => {
@@ -78,7 +81,7 @@ describe('POST /api/sizes', () => {
     fs.writeFileSync(sizesPath, JSON.stringify({ version: 1, classes: SAMPLE_CLASSES, assignments: {} }));
     process.env.SIZES_PATH = sizesPath;
     process.env.IMAGES_DIR = path.join(__dirname, 'fixtures', 'images');
-    process.env.SIZE_WRITES_ENABLED = 'true';
+    process.env.AUTHORING_WRITES_ENABLED = 'true';
     jest.resetModules();
     server = require('../bridge/index');
     await new Promise(resolve => server.listen(port, resolve));
@@ -87,7 +90,7 @@ describe('POST /api/sizes', () => {
   afterAll(async () => {
     await new Promise(resolve => server.close(resolve));
     delete process.env.SIZES_PATH;
-    delete process.env.SIZE_WRITES_ENABLED;
+    delete process.env.AUTHORING_WRITES_ENABLED;
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
 
@@ -136,7 +139,7 @@ describe('GET /api/sizes missing file', () => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fragment-sizes-missing-'));
     process.env.SIZES_PATH = path.join(tempDir, 'absent.json');
     process.env.IMAGES_DIR = path.join(__dirname, 'fixtures', 'images');
-    delete process.env.SIZE_WRITES_ENABLED;
+    delete process.env.AUTHORING_WRITES_ENABLED;
     jest.resetModules();
     server = require('../bridge/index');
     await new Promise(resolve => server.listen(port, resolve));
@@ -168,7 +171,7 @@ describe('POST /api/sizes production guard', () => {
     fs.writeFileSync(sizesPath, '{"original":true}\n');
     process.env.SIZES_PATH = sizesPath;
     process.env.IMAGES_DIR = path.join(__dirname, 'fixtures', 'images');
-    delete process.env.SIZE_WRITES_ENABLED;
+    delete process.env.AUTHORING_WRITES_ENABLED;
     jest.resetModules();
     server = require('../bridge/index');
     await new Promise(resolve => server.listen(port, resolve));

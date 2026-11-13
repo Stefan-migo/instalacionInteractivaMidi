@@ -27,12 +27,18 @@ function setup() {
     imageLoader.loadLayout(),
     imageLoader.loadManifest(),
     imageLoader.loadSizes(),
-  ]).then(([layoutData, manifestData, sizesData]) => {
+    fetch(`${bridgeUrl}/api/deck`).then(response => response.ok ? response.json() : null).catch(() => null),
+  ]).then(([layoutData, manifestData, sizesData, deckData]) => {
     sizeClassesData = sizesData;
     collageLayout = new CollageLayout(layoutData);
     // The deck is the single authority for which image each cell shows.
     const inkMetadata = imageLoader.metadataFrom(manifestData);
-    imageDeck = new ImageDeck(imageLoader.filesFrom(manifestData), { metadata: inkMetadata });
+    let usableKeys = Object.keys(manifestData || {});
+    try {
+      if (deckData && window.DeckList) usableKeys = DeckList.resolveDeckList(deckData, manifestData);
+    } catch (error) { /* corrupt/unexpected deck data means nothing excluded */ }
+    const usableFiles = usableKeys.map(key => manifestData[key] && manifestData[key].file).filter(Boolean);
+    imageDeck = new ImageDeck(usableFiles, { metadata: inkMetadata });
 
     const fileToKey = Object.fromEntries(Object.entries(manifestData).map(([key, entry]) => [entry.file, key]));
     imageLoader.fileToKey = fileToKey;

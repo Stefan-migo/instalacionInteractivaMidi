@@ -75,3 +75,13 @@ body.routing-window main { max-width: 1500px; }
 }
 /* MIDI ROUTING END */
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+.deck-warning { position: sticky; top: 0; z-index: 5; padding: 1rem; border: 3px solid #8b1e1e; background: #fff0d8; color: #5b120d; font-weight: 700; font-size: 1rem; }
+.deck-tools { display: flex; flex-wrap: wrap; gap: .4rem; margin: .75rem 0; }
+.deck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr)); gap: .5rem; max-height: 70vh; overflow: auto; }
+.deck-item { display: grid; gap: .25rem; padding: .4rem; border: 1px solid var(--rule-color); font-size: .65rem; overflow-wrap: anywhere; }
+.deck-item img { width: 100%; height: 7rem; object-fit: contain; background: var(--paper); }
+.deck-item input { justify-self: start; }
+.operator-toast { position: fixed; right: 1rem; bottom: 1rem; z-index: 1000; display: flex; align-items: center; gap: 1rem; max-width: min(30rem, calc(100vw - 2rem)); padding: .8rem 1rem; border: 2px solid var(--ink); background: var(--paper); color: var(--ink); }
+.operator-toast[hidden] { display: none; }
+.operator-toast button { min-height: 1.5rem; padding: .1rem .4rem; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
