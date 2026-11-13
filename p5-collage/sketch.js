@@ -47,6 +47,8 @@ function setup() {
     renderer.fileToKey = fileToKey;
     const layoutEngine = new LayoutPresetEngine(1920, 1080);
     layoutEngine.scatterScale = CONFIG.scatterScale || 1.0;
+    if (typeof CONFIG.presetEdgeBleed === 'number') layoutEngine.edgeBleed = CONFIG.presetEdgeBleed;
+    if (typeof CONFIG.presetMinVisible === 'number') layoutEngine.minVisible = CONFIG.presetMinVisible;
 
     const imageLoaderGet = { get: (id) => imageLoader.get(id) };
     deviceManager = new DeviceManager(collageLayout, renderer, sm, imageLoaderGet, layoutEngine);
