@@ -19,6 +19,11 @@ class LayoutPresetEngine {
     // A fragment may hang off the canvas, but never so far that it vanishes:
     // this fraction of its width and height always stays visible.
     this.minVisible = 0.25;
+    // The composition percentage where a fragment starts to hang over an edge.
+    // Measured in the fragment's own units, so the same percentage bleeds the same
+    // relative amount whatever the fragment's size: below this band (mirrored on
+    // the other side) fragments stay inside the canvas.
+    this.bleedBand = 0.75;
   }
 
   getPresets() {
@@ -167,6 +172,16 @@ class LayoutPresetEngine {
         zIndex: i + 1, // position-based, same as tempExample
         filterType,
         blendMode,
+        // The renderer owns the drawn fragment's real size, so it resolves where
+        // the fragment sits; the percentages travel with the rule that reads them.
+        anchor: {
+          xPct: xPct / 100,
+          yPct: yPct / 100,
+          band: this.bleedBand,
+          minVisible: this.minVisible,
+          canvasW: this.canvasW,
+          canvasH: this.canvasH,
+        },
       };
     });
   }

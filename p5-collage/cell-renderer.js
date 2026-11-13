@@ -62,6 +62,54 @@ function drawImg(img, flipH, flipV, x, y, w, h, opacity, filterType, inkRatio, a
 }
 
 /**
+ * The operator's general scale, so an authored class never disables the
+ * scatter slider: the class sets the base ink mass and this multiplies it.
+ */
+function generalScale() {
+  const raw = typeof CONFIG !== 'undefined' && CONFIG ? Number(CONFIG.scatterScale) : NaN;
+  return Number.isFinite(raw) && raw > 0 ? raw : 1;
+}
+
+/**
+ * Place one axis of a fragment from the composition percentage.
+ *
+ * The percentage is measured in the fragment's own units, so the point where a
+ * fragment starts to hang over the canvas is the same for every size: inside the
+ * band it stays contained (flush at the band edge), outside it the overhang grows
+ * as a fraction of the fragment until half of it is over the canvas. The old rule
+ * centred the layout box and let the fragment's own half-width decide, which is
+ * why only big fragments ever reached the edge.
+ */
+function axisAnchor(u, size, extent, band, minVisible) {
+  const maxOverhang = Math.max(0, 1 - minVisible) * size;
+  let position;
+  if (u >= band) {
+    const t = (u - band) / (1 - band);
+    position = extent - size + Math.min(maxOverhang, t * size / 2);
+  } else if (u <= 1 - band) {
+    const t = (1 - band - u) / (1 - band);
+    position = -Math.min(maxOverhang, t * size / 2);
+  } else {
+    const t = (u - (1 - band)) / (2 * band - 1);
+    position = t * (extent - size);
+  }
+  const keep = size * minVisible;
+  return Math.max(keep - size, Math.min(extent - keep, position));
+}
+
+/** Resolve the engine's composition percentage onto a drawn fragment's rect. */
+function resolveAnchor(anchor, width, height) {
+  if (!anchor || !(width > 0) || !(height > 0)) return null;
+  const band = Number.isFinite(anchor.band) ? anchor.band : 0.75;
+  const minVisible = Number.isFinite(anchor.minVisible) ? anchor.minVisible : 0.25;
+  if (!(anchor.canvasW > 0) || !(anchor.canvasH > 0)) return null;
+  return {
+    x: axisAnchor(anchor.xPct, width, anchor.canvasW, band, minVisible),
+    y: axisAnchor(anchor.yPct, height, anchor.canvasH, band, minVisible),
+  };
+}
+
+/**
  * Adapt a cell's dimensions to match the displayed image's aspect ratio.
  *
  * Fits the image INSIDE the original layout bounds (contain mode),
@@ -97,11 +145,27 @@ function adaptCellToImage(cellState, centerAt) {
     const authored = SizeClasses.getAuthoredDrawSize(sizeClassesData, key, iw, ih, 1920, 1080, imageLoader.getInkRatio(cellState.currentImageFile));
     if (authored) {
       const jitter = 0.98 + Math.random() * 0.04;
-      newW = Math.round(authored.width * jitter); newH = Math.round(authored.height * jitter);
+      const composed = jitter * generalScale();
+      newW = Math.round(authored.width * composed); newH = Math.round(authored.height * composed);
       cellState._authoredSize = true;
     }
   } else cellState._authoredSize = false;
   if (newW <= 0 || newH <= 0) return false;
+
+  // The composition percentage places the drawn fragment, not the layout box, so
+  // a fragment that shrank (a smaller class, or the general scale down) still
+  // hangs over the edge its percentage asked for. A fragment the operator dragged
+  // keeps its own centre.
+  const anchored = cellState._anchor && !cellState._userMoved
+    ? resolveAnchor(cellState._anchor, newW, newH)
+    : null;
+  if (anchored) {
+    cellState.pos.x = Math.round(anchored.x);
+    cellState.pos.y = Math.round(anchored.y);
+    cellState.pos.w = newW;
+    cellState.pos.h = newH;
+    return true;
+  }
 
   // Center at the right position:
   //  'layout'  → center within the layout budget (for preset changes)
@@ -124,5 +188,5 @@ function adaptCellToImage(cellState, centerAt) {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { drawImg, getCombinedFilters, adaptCellToImage };
+  module.exports = { drawImg, getCombinedFilters, adaptCellToImage, resolveAnchor };
 }

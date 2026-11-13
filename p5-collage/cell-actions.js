@@ -49,6 +49,7 @@ function createCellActionHandler(ctx) {
         break;
       case 'move':
         if (payload) {
+          s._userMoved = true;
           s.pos.x += payload.dx || 0;
           s.pos.y += payload.dy || 0;
           s.pos.x = Math.max(0, Math.min(1920 - s.pos.w, s.pos.x));
