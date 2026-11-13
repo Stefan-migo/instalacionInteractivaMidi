@@ -4,7 +4,12 @@
   // Source of truth: p5-collage/config.js. Classic scripts cannot import its CONFIG.
   var FILTERS = ['none', 'sepia', 'grayscale', 'cyanotype', 'polaroid', 'vintage'];
   var Curation = root.DeckCuration;
-  var COMMAND_TYPES = ['setPreset', 'setScatterScale', 'setNoiseIntensity', 'selectCell', 'setFilter', 'setRotation', 'setScale', 'setOpacity', 'toggleVisibility', 'rotateSelected', 'bringToFront', 'hideCell', 'esparcirTodo', 'requestState'];
+  var COMMAND_TYPES = ['setPreset', 'setScatterScale', 'setCycle', 'setNoiseIntensity', 'selectCell', 'setFilter', 'setRotation', 'setScale', 'setOpacity', 'toggleVisibility', 'rotateSelected', 'bringToFront', 'hideCell', 'esparcirTodo', 'requestState'];
+
+  // The cycle lives in the projector, so the panel only starts and stops it and
+  // reads its state back: the button must never claim a state the wall is not in.
+  function cycleCommand(running) { return { type: 'setCycle', running: running === true }; }
+  function cycleLabel(running) { return running ? 'Ciclo: andando' : 'Ciclo: detenido'; }
 
   function visibilityCommand(slot) { return { type: 'toggleVisibility', slot: slot }; }
   function isVisible(opacity) { return opacity > 0; }
@@ -23,7 +28,7 @@
     return { slot: cell.slot, imageFile: cell.imageFile || null, filterType: cell.filterType || 'none', rotation: cell.rotation || 0, scale: cell.scale || 1, opacity: cell.opacity == null ? 1 : cell.opacity };
   }
   function renderModel(state) {
-    return { preset: state.preset, scatterScale: state.scatterScale, noiseIntensity: state.noiseIntensity, selectedSlot: state.selectedSlot, connected: state.connected, total: state.total, cells: (state.cells || []).map(formatCell) };
+    return { preset: state.preset, scatterScale: state.scatterScale, noiseIntensity: state.noiseIntensity, selectedSlot: state.selectedSlot, connected: state.connected, total: state.total, cycle: state.cycle || null, cells: (state.cells || []).map(formatCell) };
   }
   function init(doc, channelFactory, themeApi) {
     if (!doc || !channelFactory) return null;
@@ -71,12 +76,26 @@
       doc.getElementById('scale-value').textContent = Math.round(cell.scale * 100) + '%';
       doc.getElementById('opacity-value').textContent = Math.round(cell.opacity * 100) + '%';
     }
-    receive.addEventListener('message', function (event) { latest = event.data; gotState = true; update(); });
+    receive.addEventListener('message', function (event) { latest = event.data; gotState = true; if (latest && latest.cycle) { cycleRunning = !!latest.cycle.running; renderCycle(); } update(); });
     if (themeApi) bindThemeToggle(doc.getElementById('theme-toggle'), themeApi);
     presets.addEventListener('click', function (event) { var preset = event.target.dataset.preset; if (preset) { command('setPreset', { preset: preset }); showToast(doc, 'Distribución: ' + preset, 'preset'); } });
     doc.getElementById('catalog').addEventListener('click', function (event) { var row = event.target.closest('[data-slot]'); if (row) command('selectCell', { slot: Number(row.dataset.slot) }); });
     doc.getElementById('scatter').addEventListener('input', function (event) { command('setScatterScale', { value: Number(event.target.value) }); });
     doc.getElementById('scatter').addEventListener('change', function (event) { showToast(doc, 'Escala de dispersión: ' + Math.round(Number(event.target.value) * 100) + '%', 'scatter'); });
+    var cycleToggle = doc.getElementById('cycle-toggle');
+    var cycleRunning = false;
+    function renderCycle() {
+      if (!cycleToggle) return;
+      cycleToggle.setAttribute('aria-pressed', String(cycleRunning));
+      cycleToggle.textContent = cycleLabel(cycleRunning);
+    }
+    if (cycleToggle) cycleToggle.addEventListener('click', function () {
+      cycleRunning = !cycleRunning;
+      command('setCycle', { running: cycleRunning });
+      renderCycle();
+      showToast(doc, cycleRunning ? 'Ciclo automático andando' : 'Ciclo automático detenido', 'cycle');
+    });
+    renderCycle();
     doc.getElementById('noise').addEventListener('input', function (event) { command('setNoiseIntensity', { value: Number(event.target.value) }); });
     ['filter', 'rotation', 'scale', 'opacity'].forEach(function (key) { doc.getElementById(key).addEventListener(key === 'filter' ? 'change' : 'input', function (event) { if (!latest || latest.selectedSlot == null) return; var type = { filter: 'setFilter', rotation: 'setRotation', scale: 'setScale', opacity: 'setOpacity' }[key]; command(type, { slot: latest.selectedSlot, value: key === 'filter' ? event.target.value : Number(event.target.value) }); if (key === 'filter') showToast(doc, 'Filtro: ' + event.target.value, 'filter'); }); });
     doc.getElementById('visibility-toggle').addEventListener('click', function () {
@@ -473,7 +492,7 @@
     doc.getElementById('dimension-save').addEventListener('click', function(){ postAuthoring(doc,'/api/sizes',data).then(function(){showToast(doc,Object.keys(data.assignments).length+' imágenes guardadas','dimensions');}).catch(function(error){showToast(doc,error.message,'dimensions');}); });
     doc.addEventListener('keydown', function(event){ if (['s','m','l','x'].includes(event.key.toLowerCase())) { var name={s:'S',m:'M',l:'L',x:'XL'}[event.key.toLowerCase()]; var button=doc.querySelector('[data-size="'+name+'"]'); if(button) button.click(); } else if(event.key==='ArrowLeft')step(-1); else if(event.key==='ArrowRight')step(1); });
   }
-  var api = { init: init, initRouting: initRouting, initDimensions: initDimensions, initDeckGrid: initDeckGrid, showToast: showToast, postAuthoring: postAuthoring, askToken: askToken, authoringHeaders: authoringHeaders, authoringMessage: authoringMessage, renderModel: renderModel, formatCell: formatCell, visibilityCommand: visibilityCommand, isVisible: isVisible, bindThemeToggle: bindThemeToggle, COMMAND_TYPES: COMMAND_TYPES, PRESETS: PRESETS, FILTERS: FILTERS };
+  var api = { init: init, initRouting: initRouting, initDimensions: initDimensions, initDeckGrid: initDeckGrid, showToast: showToast, postAuthoring: postAuthoring, askToken: askToken, authoringHeaders: authoringHeaders, authoringMessage: authoringMessage, cycleCommand: cycleCommand, cycleLabel: cycleLabel, renderModel: renderModel, formatCell: formatCell, visibilityCommand: visibilityCommand, isVisible: isVisible, bindThemeToggle: bindThemeToggle, COMMAND_TYPES: COMMAND_TYPES, PRESETS: PRESETS, FILTERS: FILTERS };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.OperatorPage = api;
   if (root.document) initAuthoringToken(root.document);

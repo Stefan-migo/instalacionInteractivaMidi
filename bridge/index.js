@@ -15,6 +15,7 @@ const { checkAuthoring } = require('./authoring-guard');
 const { SLOT_COUNT, DEFAULT_GROUP_COUNT, deriveTopology } = require('./topology');
 const { parseEmitRequest } = require('./message-relay');
 const { validateSizes } = require('../p5-collage/size-classes');
+const { DEFAULT_CYCLE, validateCycle } = require('../p5-collage/cycle-steps');
 const { validateDeckList } = require('../p5-collage/deck-list');
 
 function sendJson(res, status, payload) {
@@ -55,6 +56,9 @@ const MANIFEST_PATH = path.join(ROOT_DIR, 'images', 'manifest.json');
 const SIZES_PATH = process.env.SIZES_PATH ? path.resolve(process.env.SIZES_PATH) : path.join(ROOT_DIR, 'images', 'sizes.json');
 const SIZE_WRITE_LIMIT = 16 * 1024;
 const DECK_PATH = process.env.DECK_PATH ? path.resolve(process.env.DECK_PATH) : path.join(ROOT_DIR, 'images', 'deck.json');
+// The rearrangement cycle is read-only data the projector drives itself; it is
+// served here so the step list lives beside sizes and deck, not in the sketch.
+const CYCLE_PATH = process.env.CYCLE_PATH ? path.resolve(process.env.CYCLE_PATH) : path.join(ROOT_DIR, 'images', 'cycle.json');
 const DECK_WRITE_LIMIT = 16 * 1024;
 const PHONE_CLIENT_DIR = path.join(ROOT_DIR, 'phone-client');
 const P5_COLLAGE_DIR = path.join(ROOT_DIR, 'p5-collage');
@@ -316,6 +320,18 @@ const server = http.createServer((req, res) => {
         return sendJson(res, 200, deck);
       } catch {
         return sendJson(res, 200, { version: 1, excluded: [] });
+      }
+    });
+    return;
+  }
+
+  if (pathname === '/api/cycle' && req.method === 'GET') {
+    fs.readFile(CYCLE_PATH, 'utf8', (error, text) => {
+      try {
+        if (error) throw error;
+        return sendJson(res, 200, validateCycle(JSON.parse(text)));
+      } catch {
+        return sendJson(res, 200, DEFAULT_CYCLE);
       }
     });
     return;

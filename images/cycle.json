@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "dwell": 30,
+  "autoStart": true,
+  "steps": [0.7, 1, 1.3, 1]
+}

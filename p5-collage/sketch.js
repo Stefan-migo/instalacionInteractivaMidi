@@ -7,6 +7,12 @@ function updateLoadCount() {
   if (el) el.textContent = `${_cellsReady} / ${_cellsTotal}`;
 }
 let activeSlots = [];
+// Rearrangement cycle: the step list is data (images/cycle.json, served as
+// /api/cycle) and the clock lives here, so the wall keeps changing with the
+// operator tab closed and resumes after a projector reload.
+let cycleSpec = null;
+let cycleIndex = -1;
+let cycleTimer = null;
 let lastFrameTime = 0;
 let selectedSlot = null;
 
@@ -64,6 +70,7 @@ function setup() {
   }).then(() => {
     document.getElementById('loading').style.display = 'none';
     connectWebSocket();
+    loadCycleSpec();
     setInterval(() => { try { redraw(); } catch (e) {} }, 33);
   }).catch(err => {
     document.querySelector('#loading p').textContent = 'Error: ' + err.message;
@@ -180,6 +187,69 @@ function getSortedSlots() {
       return { slot: c.slot, zIndex: s?.pos?.zIndex ?? c.slot };
     })
     .sort((a, b) => a.zIndex - b.zIndex);
+}
+
+// The one path that changes the scatter scale: the operator slider, the preset
+// buttons and the automatic cycle all end up here, so they cannot disagree.
+function applyScatterScale(value) {
+  if (!Number.isFinite(value) || value <= 0) return false;
+  CONFIG.scatterScale = value;
+  if (deviceManager && deviceManager.layoutEngine) deviceManager.layoutEngine.scatterScale = value;
+  if (deviceManager) deviceManager._recalculateLayout();
+  activeSlots = getSortedSlots();
+  redraw();
+  return true;
+}
+
+function cycleStep() {
+  if (!cycleSpec || typeof CycleSteps === 'undefined') return null;
+  const next = CycleSteps.advanceCycle(cycleSpec, cycleIndex);
+  cycleIndex = next.index;
+  applyScatterScale(next.scale);
+  return next.scale;
+}
+
+function startCycle() {
+  if (!cycleSpec || cycleTimer) return false;
+  cycleIndex = -1;
+  cycleStep();
+  cycleTimer = setInterval(cycleStep, cycleSpec.dwell * 1000);
+  return true;
+}
+
+function stopCycle() {
+  if (cycleTimer) clearInterval(cycleTimer);
+  cycleTimer = null;
+  return false;
+}
+
+function setCycleRunning(running) {
+  return running ? startCycle() : stopCycle();
+}
+
+function cycleState() {
+  return {
+    running: !!cycleTimer,
+    dwell: cycleSpec ? cycleSpec.dwell : null,
+    steps: cycleSpec ? cycleSpec.steps.slice() : [],
+    scale: CONFIG.scatterScale,
+  };
+}
+
+function loadCycleSpec() {
+  return fetch('/api/cycle')
+    .then(response => response.ok ? response.json() : null)
+    .catch(() => null)
+    .then(data => {
+      const fallback = typeof CycleSteps !== 'undefined' ? CycleSteps.DEFAULT_CYCLE : null;
+      try {
+        cycleSpec = CycleSteps.loadCycle(data);
+      } catch (error) {
+        cycleSpec = fallback ? CycleSteps.loadCycle(fallback) : null;
+      }
+      if (cycleSpec && cycleSpec.autoStart) startCycle();
+      return cycleSpec;
+    });
 }
 
 function connectWebSocket() {

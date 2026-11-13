@@ -9,7 +9,8 @@
     switch (message.type) {
       case 'requestState': api.publish(); return true;
       case 'setPreset': manager.layoutEngine.setPreset(message.preset); manager._recalculateLayout(); api.activeSlots = api.getSortedSlots(); api.redraw(); break;
-      case 'setScatterScale': api.CONFIG.scatterScale = message.value; manager.layoutEngine.scatterScale = message.value; manager._recalculateLayout(); api.redraw(); break;
+      case 'setScatterScale': api.setScatterScale(message.value); break;
+      case 'setCycle': api.setCycle(message.running === true); break;
       case 'setNoiseIntensity': api.CONFIG.noiseIntensity = message.value / 100; api.setBackgroundTexture(null); api.redraw(); break;
       case 'selectCell': api.selectCell(message.slot); api.redraw(); break;
       case 'setFilter': if (!cell) return false; cell.filterType = message.value; api.redraw(); break;
@@ -38,7 +39,7 @@
       var state = manager.renderer.cellStates[item.slot] || {};
       return { slot: item.slot, imageFile: state.currentImageFile || item.imageFile || null, filterType: state.filterType || 'none', rotation: state.pos ? state.pos.rotation || 0 : 0, scale: state._editorScale || 1, opacity: state.opacity == null ? 1 : state.opacity };
     });
-    return { state: cells, preset: manager.layoutEngine.getCurrentPreset(), scatterScale: api.CONFIG.scatterScale, noiseIntensity: Math.round(api.CONFIG.noiseIntensity * 100), selectedSlot: api.selectedSlot, connected: manager.count || 0, total: cells.length, cells: cells };
+    return { state: cells, preset: manager.layoutEngine.getCurrentPreset(), scatterScale: api.CONFIG.scatterScale, noiseIntensity: Math.round(api.CONFIG.noiseIntensity * 100), selectedSlot: api.selectedSlot, connected: manager.count || 0, total: cells.length, cells: cells, cycle: typeof api.cycleState === 'function' ? api.cycleState() : null };
   }
   function start(api, factory) {
     var commands = factory('midi-operator-cmd');
@@ -53,6 +54,6 @@
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.OperatorLink = api;
   if (root.document && typeof BroadcastChannel !== 'undefined') {
-    start({ get deviceManager() { return deviceManager; }, get collageLayout() { return collageLayout; }, get CONFIG() { return CONFIG; }, get selectedSlot() { return selectedSlot; }, set activeSlots(value) { activeSlots = value; }, getSortedSlots: function () { return getSortedSlots(); }, redraw: function () { redraw(); }, selectCell: function (slot) { selectCell(slot); }, setBackgroundTexture: function (value) { _bgTexture = value; } }, function (name) { return new BroadcastChannel(name); });
+    start({ get deviceManager() { return deviceManager; }, get collageLayout() { return collageLayout; }, get CONFIG() { return CONFIG; }, get selectedSlot() { return selectedSlot; }, set activeSlots(value) { activeSlots = value; }, getSortedSlots: function () { return getSortedSlots(); }, redraw: function () { redraw(); }, selectCell: function (slot) { selectCell(slot); }, setBackgroundTexture: function (value) { _bgTexture = value; }, setScatterScale: function (value) { return applyScatterScale(value); }, setCycle: function (running) { return setCycleRunning(running); }, cycleState: function () { return cycleState(); } }, function (name) { return new BroadcastChannel(name); });
   }
 })(typeof window !== 'undefined' ? window : globalThis);
