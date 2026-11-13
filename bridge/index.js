@@ -411,10 +411,15 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (pathname.startsWith('/images/content/')) {
+  const thumbsDir = process.env.THUMBS_DIR
+    ? path.resolve(process.env.THUMBS_DIR)
+    : path.join(ROOT_DIR, 'images', 'thumbs');
+
+  for (const [prefix, dir] of [['/images/content/', IMAGE_DIR], ['/images/thumbs/', thumbsDir]]) {
+    if (!pathname.startsWith(prefix)) continue;
     let imageName;
     try {
-      imageName = decodeURIComponent(pathname.slice('/images/content/'.length));
+      imageName = decodeURIComponent(pathname.slice(prefix.length));
     } catch (e) {
       res.writeHead(400);
       res.end('Bad Request');
@@ -425,7 +430,7 @@ const server = http.createServer((req, res) => {
       res.end('Bad Request');
       return;
     }
-    const filePath = path.join(IMAGE_DIR, path.basename(imageName));
+    const filePath = path.join(dir, path.basename(imageName));
     serveFile(filePath, res);
     return;
   }
