@@ -82,3 +82,42 @@ describe('cycle wiring', () => {
     expect(read('bridge/index.js')).toContain("pathname === '/api/cycle'");
   });
 });
+
+/**
+ * The cycle only runs if the page actually loads `cycle-steps.js`: without it the
+ * sketch's try/catch swallows a ReferenceError, cycleSpec stays null and the wall
+ * silently never rearranges. This loads exactly the scripts `index.html` declares
+ * into a sandbox, so a forgotten <script> tag fails here instead of on the wall.
+ */
+describe('the projector page really loads the cycle module', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const vm = require('vm');
+  const read = file => fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
+  const listed = () => [...read('p5-collage/index.html').matchAll(/<script src="\/p5-collage\/([\w.-]+\.js)"><\/script>/g)].map(match => match[1]);
+
+  test('every projector module that exposes a browser global is declared by the page', () => {
+    const dir = path.join(__dirname, '..', 'p5-collage');
+    const withGlobal = fs.readdirSync(dir)
+      .filter(file => file.endsWith('.js'))
+      .filter(file => /(?:window|root)\.[A-Z]\w*\s*=/.test(read(`p5-collage/${file}`)));
+    expect(withGlobal.length).toBeGreaterThan(3);
+    const declared = listed();
+    for (const file of withGlobal) expect({ file, declared: declared.includes(file) }).toEqual({ file, declared: true });
+  });
+
+  test('loading only what the page declares produces a working cycle spec', async () => {
+    const context = { console, deviceManager: null, redraw: () => {}, setInterval: () => 1, clearInterval: () => {} };
+    context.window = context;
+    context.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve(JSON.parse(read('images/cycle.json'))) });
+    vm.createContext(context);
+    for (const file of ['config.js', 'cycle-steps.js', 'sketch.js']) {
+      expect({ file, declared: listed().includes(file) }).toEqual({ file, declared: true });
+      vm.runInContext(read(`p5-collage/${file}`), context, { filename: file });
+    }
+    await vm.runInContext('loadCycleSpec()', context);
+    expect(vm.runInContext('typeof CycleSteps', context)).toBe('object');
+    expect(vm.runInContext('cycleSpec && cycleSpec.steps.length', context)).toBe(4);
+    vm.runInContext('stopCycle()', context);
+  });
+});
