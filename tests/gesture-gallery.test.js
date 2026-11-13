@@ -1,169 +1,40 @@
 /**
- * Tests for gesture-gallery feature.
- * Tests gesture detector heuristics (T-8, T-9, T-10) and gallery state machine (T-4).
- * Pure logic — no DOM environment needed.
+ * Tests for the gesture gallery: the state machine the phone runs, and the fact
+ * that the detectors it drives are the shipped module instead of a copy that
+ * used to live in this file. Their behavior is pinned in
+ * tests/gesture-detector.test.js.
  */
 
-var lastJerkTime = 0;
+const fs = require('fs');
+const path = require('path');
 
-describe('gestureDetectors', () => {
-  /**
-   * Factory matching the gestureDetectors structure from design.md.
-   * Each detector: activate/deactivate toggle, check() with threshold + cooldown.
-   */
-  function createDetectors() {
-    return {
-      inclinar: {
-        lastTrigger: 0,
-        cooldown: 1200,
-        canFire: true,
-        pendingSince: 0,
-        check: function (orientation) {
-          var now = Date.now();
-          if (Math.abs(orientation.b) < 10) this.canFire = true;
-          if (!this.canFire) { this.pendingSince = 0; return false; }
-          if (now - this.lastTrigger < this.cooldown) return false;
-           var absB = Math.abs(orientation.b);
-          if (absB > 30) {
-            if (this.pendingSince === 0) { this.pendingSince = now; return false; }
-            if (now - this.pendingSince > 400 && now - lastJerkTime > 800) {
-              this.pendingSince = 0;
-              this.lastTrigger = now;
-              this.canFire = false;
-              return true;
-            }
-            return false;
-          }
-          this.pendingSince = 0;
-          return false;
-        }
-      },
-      twist: {
-        lastTrigger: 0,
-        cooldown: 1200,
-        canFire: true,
-        refAlpha: null,
-        check: function (alpha) {
-          var now = Date.now();
-          if (this.refAlpha === null) { this.refAlpha = alpha; return false; }
-          if (this.lastTrigger > 0 && now - this.lastTrigger > 5000) { this.refAlpha = alpha; this.canFire = true; return false; }
-          var raw = alpha - this.refAlpha;
-          var delta = Math.abs(raw) > 180 ? 360 - Math.abs(raw) : Math.abs(raw);
-          if (delta <= 5) this.canFire = true;
-          if (delta > 20 && this.canFire && now - this.lastTrigger >= this.cooldown) {
-            this.lastTrigger = now;
-            this.canFire = false;
-            this.refAlpha = alpha;
-            return true;
-          }
-          return false;
-        }
-      }
-    };
-  }
+const root = path.join(__dirname, '..');
+const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 
-  // --- Inclinar — beta (nod) threshold with hysteresis + deferred fire ---
-  describe('inclinar', () => {
-    test('detects beta > 30° after 400ms defer (happy path)', () => {
-      var d = createDetectors();
-      var _now = Date.now;
-      Date.now = function () { return 10000; };
-      lastJerkTime = 0;
-      expect(d.inclinar.check({ b: 40 })).toBe(false); // pending
-      Date.now = function () { return 10450; };
-      expect(d.inclinar.check({ b: 40 })).toBe(true); // fires
-      Date.now = _now;
-    });
-
-    test('does NOT fire if jerk happens during deferred window', () => {
-      var d = createDetectors();
-      var _now = Date.now;
-      lastJerkTime = 0;
-      Date.now = function () { return 10000; };
-      expect(d.inclinar.check({ b: 40 })).toBe(false); // pending starts
-      lastJerkTime = 10100; // jerk
-      d.inclinar.pendingSince = 0; // cancelled
-      Date.now = function () { return 12000; };
-      expect(d.inclinar.check({ b: 40 })).toBe(false); // pending restarts
-      Date.now = function () { return 12450; };
-      expect(d.inclinar.check({ b: 40 })).toBe(true); // fires
-      Date.now = _now;
-    });
-
-    test('boundary: exactly 30° beta is NOT detected', () => {
-      var d = createDetectors();
-      expect(d.inclinar.check({ b: 30 })).toBe(false);
-    });
-
-    test('negative beta beyond -30° is detected after defer', () => {
-      var d = createDetectors();
-      var _now = Date.now;
-      Date.now = function () { return 10000; };
-      lastJerkTime = 0;
-      expect(d.inclinar.check({ b: -35 })).toBe(false);
-      Date.now = function () { return 10450; };
-      expect(d.inclinar.check({ b: -35 })).toBe(true);
-      Date.now = _now;
-    });
-
-    test('hysteresis does NOT re-fire until returning near center', () => {
-      var d = createDetectors();
-      var _now = Date.now;
-      Date.now = function () { return 10000; };
-      lastJerkTime = 0;
-      expect(d.inclinar.check({ b: 40 })).toBe(false);
-      Date.now = function () { return 10450; };
-      expect(d.inclinar.check({ b: 40 })).toBe(true);
-      Date.now = function () { return 12000; };
-      expect(d.inclinar.check({ b: 50 })).toBe(false); // canFire false
-      Date.now = function () { return 14000; };
-      expect(d.inclinar.check({ b: 5 })).toBe(false);  // resets canFire
-      Date.now = function () { return 16000; };
-      expect(d.inclinar.check({ b: 40 })).toBe(false); // pending
-      Date.now = function () { return 16450; };
-      expect(d.inclinar.check({ b: 40 })).toBe(true);  // fires again
-      Date.now = _now;
-    });
+describe('the phone runs the shipped gesture detector', () => {
+  test('the module is served before the client that uses it', () => {
+    const html = read('phone-client/index.html');
+    const moduleAt = html.indexOf('/phone-client/gesture-detector.js');
+    const appAt = html.indexOf('/phone-client/app.js');
+    expect(moduleAt).toBeGreaterThan(-1);
+    expect(appAt).toBeGreaterThan(moduleAt);
   });
 
-  // --- Twist — alpha delta threshold with hysteresis ---
-  describe('twist', () => {
-    test('detects alpha delta > 20° (happy path)', () => {
-      var d = createDetectors();
-      d.twist.refAlpha = 0;
-      expect(d.twist.check(25)).toBe(true);
-    });
+  test('the client builds its detector from the module', () => {
+    const app = read('phone-client/app.js');
+    expect(app).toContain('gestureDetector = GestureDetector.create()');
+    expect(app).toContain('gestureDetector.feedMotion(');
+    expect(app).toContain('gestureDetector.feedOrientation(');
+  });
 
-    test('does NOT fire on small delta (< 20°)', () => {
-      var d = createDetectors();
-      d.twist.refAlpha = 0;
-      expect(d.twist.check(15)).toBe(false);
-    });
-
-    test('boundary: exactly 20° delta is NOT detected', () => {
-      var d = createDetectors();
-      d.twist.refAlpha = 0;
-      expect(d.twist.check(20)).toBe(false);
-    });
-
-    test('handles wrap-around at 0/360 boundary', () => {
-      var d = createDetectors();
-      d.twist.refAlpha = 350;
-      expect(d.twist.check(11)).toBe(true); // 21° delta across 0 boundary
-    });
-
-    test('fire → near ref → canFire resets → cooldown → fires again', () => {
-      var d = createDetectors();
-      var _now = Date.now;
-      Date.now = function () { return 10000; };
-      d.twist.refAlpha = 0;
-      expect(d.twist.check(25)).toBe(true);   // fires, refAlpha=25, canFire=false
-      Date.now = function () { return 10100; };
-      expect(d.twist.check(30)).toBe(false);  // near ref (delta 5), canFire resets, but cooldown < 1200
-      Date.now = function () { return 11300; };
-      expect(d.twist.check(4)).toBe(true);    // delta=21 > 20, canFire=true, cooldown 1300>1200 → fires!
-      Date.now = _now;
-    });
+  // Regression: the client carried its own copy of the detectors, so the suite
+  // stayed green while the phone shipped different thresholds — and a knob read
+  // the compass heading (alpha) instead of the device z axis.
+  test('the client carries no detector of its own', () => {
+    const app = read('phone-client/app.js');
+    expect(app).not.toContain('refAlpha');
+    expect(app).not.toContain('jerkMag');
+    expect(app).not.toContain('processMotion');
   });
 });
 
