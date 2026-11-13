@@ -31,7 +31,7 @@ describe('operator page controls', () => {
   });
 
   test('operator command vocabulary exposes the frozen contract types without borders', () => {
-    expect(operatorPage.COMMAND_TYPES).toEqual(['setPreset', 'setScatterScale', 'setNoiseIntensity', 'selectCell', 'setFilter', 'setRotation', 'setScale', 'setOpacity', 'toggleVisibility', 'rotateSelected', 'bringToFront', 'hideCell', 'esparcirTodo', 'requestState']);
+    expect(operatorPage.COMMAND_TYPES).toEqual(['setPreset', 'setScatterScale', 'setCycle', 'setNoiseIntensity', 'selectCell', 'setFilter', 'setRotation', 'setScale', 'setOpacity', 'toggleVisibility', 'rotateSelected', 'bringToFront', 'hideCell', 'esparcirTodo', 'requestState']);
     expect(operatorPage.COMMAND_TYPES).not.toContain('setBorder');
     expect(operatorPage.BORDERS).toBeUndefined();
   });

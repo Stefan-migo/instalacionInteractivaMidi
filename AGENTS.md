@@ -32,6 +32,7 @@ The bridge serves both clients and the assets, so a single origin covers HTTP an
 | `p5-collage/collage-layout.js` | Parsed layout model: canvas size and the 30 cells |
 | `p5-collage/transition-renderer.js` | Crossfade state machine for image cycling (IDLE → FADING → IDLE) |
 | `p5-collage/size-classes.js` | Validates the authored size classes and resolves class → ink area → drawn size, shared by the operator preview and the collage |
+| `p5-collage/cycle-steps.js` | Validates the rearrangement cycle and advances its step list |
 | `operator/operator.js` | Operator page: presets, scatter scale, background, per-cell editor and the Dimensiones size authoring |
 | `operator/deck-curation.js` | Selection, empty-cell warning and toast text for the operator's grid and bulk actions |
 | `p5-collage/deck-list.js` | Validates the deck exclusions and resolves the usable image pool in manifest order |
@@ -95,7 +96,7 @@ Valid gestures: `flick`. The bridge resolves it to `shuffle`, the action the gal
 
 ## HTTP endpoints
 
-`/health`, `/api/layout`, `/api/manifest`, `/api/sizes`, `/api/deck`, `/images/content/<file>`, `/images/thumbs/<file>`, `/phone-client/…`, `/p5-collage/…`, `/operator/…`.
+`/health`, `/api/layout`, `/api/manifest`, `/api/sizes`, `/api/deck`, `/api/cycle`, `/images/content/<file>`, `/images/thumbs/<file>`, `/phone-client/…`, `/p5-collage/…`, `/operator/…`.
 
 `IMAGES_DIR` overrides the served image directory (default `images/content`), which is how tests avoid depending on repository data.
 
@@ -128,8 +129,11 @@ Sizes can also be authored per image, in `images/sizes.json`. Each entry maps an
 
 Images can also be taken out of the deck, in `images/deck.json` (`version` plus an `excluded` list, shipped empty). An excluded image is never dealt and returns when it is re-included; nothing deletes files. Because the deck deals one distinct image per visible cell and never repeats, **below 30 available images the surplus cells render nothing**, so the operator's grid states how many cells would be left empty before saving. The grid lists `images/thumbs/<key>.webp` thumbnails and both bulk actions — size class and exclusion — go through the same guarded write endpoints as the Dimensiones mode. Operator confirmations are toasts; continuous slider drags stay silent on purpose, because one toast per tick would say nothing.
 
-## Running
+## Rearrangement cycle
 
+The wall can rearrange itself: `images/cycle.json` holds `dwell` (seconds, shipped 30), `autoStart` and the `steps` list of scatter scales (shipped `0.7, 1, 1.3, 1`), served as `GET /api/cycle` with that default when the file is missing or corrupt. The clock lives in the projector (`p5-collage/sketch.js`), so the wall keeps changing with the operator tab closed and resumes after a projector reload; `autoStart` decides whether it starts on its own. Every step calls the same `applyScatterScale` the slider and the preset buttons use, which means each step is a **full rearrangement at that scale** — new positions, rotations, opacities and filters, not a zoom — and the operator slider follows because the projector publishes its state. The operator's **Ciclo** button starts and stops it and shows the projector's real state, never its own guess. Validation and stepping live in `p5-collage/cycle-steps.js`.
+
+## Running
 ```bash
 npm install
 npm test                    # Jest, 59 suites
