@@ -58,6 +58,18 @@
       <textarea id="routing-copy-text" class="routing-copy-text" aria-label="Texto de la hoja MIDI" readonly></textarea>
     </section>
   </main>
+  <dialog id="operator-token" class="operator-token" aria-labelledby="operator-token-title">
+    <form method="dialog">
+      <h2 id="operator-token-title">Token de operador</h2>
+      <p>El bridge exige un token para guardar tamaños y exclusiones. Se guarda solo en esta pestaña.</p>
+      <label for="operator-token-input">Token</label>
+      <input id="operator-token-input" name="token" type="password" autocomplete="off" spellcheck="false" required>
+      <div class="operator-token-actions">
+        <button type="submit" value="save">Guardar token</button>
+        <button type="button" id="operator-token-cancel">Cancelar</button>
+      </div>
+    </form>
+  </dialog>
   <div id="operator-toast" class="operator-toast" role="status" aria-live="polite" hidden><span></span><button type="button" aria-label="Cerrar notificación">×</button></div>
 </body>
 </html>

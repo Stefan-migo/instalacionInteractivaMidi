@@ -145,7 +145,7 @@ node scripts/simulate-phones.js   # 30 virtual phones
 
 Sensors require a secure context: `localhost` works, a plain LAN IP does not. Serving the phone client over HTTPS (tunnel or TLS) is a deployment concern, not a code one.
 
-Authoring writes — `POST /api/sizes` and `POST /api/deck` — stay disabled unless `AUTHORING_WRITES_ENABLED=true` is set for the bridge process. Both are off in production on purpose: they rewrite tracked files, and the same bridge is publicly reachable.
+Authoring writes — `POST /api/sizes` and `POST /api/deck` — stay disabled unless `AUTHORING_WRITES_ENABLED=true` is set for the bridge process. Both are off in production on purpose: they rewrite tracked files, and the same bridge is publicly reachable. When `AUTHORING_TOKEN` is also set, every authoring write must carry it as the `X-Operator-Token` header, compared in constant time; the operator page asks for it the first time a save is refused with `401` and keeps it in `sessionStorage` for that tab. Without the token the endpoint stays as permissive as before, which is what the local workflow relies on. A token-protected production bridge still writes on the server's disk, so bring `images/sizes.json` / `images/deck.json` back into git rather than letting the next deploy trip over a modified file.
 
 ## Testing
 

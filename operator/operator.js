@@ -314,6 +314,74 @@
     toast.querySelector('span').textContent = message;
     toast.hidden = false;
   }
+  // Authoring writes rewrite tracked files on the bridge's machine, so the bridge
+  // can demand a token. It lives in this tab only: nothing is written to disk and
+  // nothing is committed.
+  var TOKEN_KEY = 'operator-token';
+  function storedToken() {
+    try { return (root.sessionStorage && root.sessionStorage.getItem(TOKEN_KEY)) || ''; } catch (error) { return ''; }
+  }
+  function rememberToken(value) {
+    try { if (root.sessionStorage) root.sessionStorage.setItem(TOKEN_KEY, value); } catch (error) { /* private mode: the operator retypes it */ }
+  }
+  function authoringHeaders(token) {
+    var headers = { 'Content-Type': 'application/json' };
+    if (token) headers['X-Operator-Token'] = token;
+    return headers;
+  }
+  // The bridge answers with a code; the panel owes the operator the sentence.
+  function authoringMessage(status, message) {
+    if (status === 401) return 'Falta el token del operador: el bridge lo pide para guardar.';
+    if (status === 403) return 'Las escrituras están apagadas en el bridge (AUTHORING_WRITES_ENABLED).';
+    return 'Error al guardar: ' + (message || 'el bridge no respondió');
+  }
+  function askToken(doc) {
+    var dialog = doc.getElementById('operator-token');
+    var input = doc.getElementById('operator-token-input');
+    if (!dialog || typeof dialog.showModal !== 'function' || !input) {
+      var typed = root.prompt ? root.prompt('Token de operador') : '';
+      return Promise.resolve(typed || '');
+    }
+    return new Promise(function (resolve) {
+      function finish() {
+        dialog.removeEventListener('close', finish);
+        resolve(dialog.returnValue === 'save' ? input.value.trim() : '');
+      }
+      dialog.returnValue = '';
+      input.value = '';
+      dialog.addEventListener('close', finish);
+      dialog.showModal();
+      input.focus();
+      return null;
+    });
+  }
+  function writeOnce(url, value, token) {
+    return root.fetch(url, { method: 'POST', headers: authoringHeaders(token), body: JSON.stringify(value) }).then(function (response) {
+      return response.json().catch(function () { return {}; }).then(function (payload) { return { ok: response.ok, status: response.status, payload: payload || {} }; });
+    });
+  }
+  // One place owns the ask-once-then-retry dance, so every authoring write behaves the same.
+  function postAuthoring(doc, url, value) {
+    return writeOnce(url, value, storedToken()).then(function (result) {
+      if (result.ok) return result.payload;
+      if (result.status !== 401) throw new Error(authoringMessage(result.status, result.payload.error));
+      return askToken(doc).then(function (token) {
+        if (!token) throw new Error('Sin token no se guardó nada.');
+        rememberToken(token);
+        return writeOnce(url, value, token).then(function (retry) {
+          if (!retry.ok) throw new Error(authoringMessage(retry.status, retry.payload.error));
+          return retry.payload;
+        });
+      });
+    });
+  }
+  function initAuthoringToken(doc) {
+    var dialog = doc.getElementById('operator-token');
+    if (!dialog) return null;
+    var cancel = doc.getElementById('operator-token-cancel');
+    if (cancel) cancel.addEventListener('click', function () { dialog.returnValue = 'cancel'; dialog.close(); });
+    return dialog;
+  }
   function initDeckGrid(doc) {
     var grid = doc.getElementById('deck-grid');
     if (!grid || !root.fetch) return;
@@ -345,9 +413,7 @@
       refreshWarning();
     }
     function save(url, value, name, count, key, confirmation) {
-      return root.fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(value) }).then(function (response) {
-        return response.json().then(function (payload) { if (!response.ok) throw new Error(payload.error || ('HTTP ' + response.status)); return payload; });
-      }).then(function () { showToast(doc, confirmation || (count + ' imágenes ' + name), key); render(); return true; }).catch(function (error) { showToast(doc, 'Error al guardar: ' + error.message, key); return false; });
+      return postAuthoring(doc, url, value).then(function () { showToast(doc, confirmation || (count + ' imágenes ' + name), key); render(); return true; }).catch(function (error) { showToast(doc, error.message, key); return false; });
     }
     Promise.all([root.fetch('/api/manifest').then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }), root.fetch('/api/sizes').then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }), root.fetch('/api/deck').then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })]).then(function (values) { manifest = values[0]; sizes = values[1]; deck = values[2]; render(); }).catch(function (error) { warning.textContent = 'No se pudo cargar el mazo: ' + error.message; showToast(doc, 'Error al cargar imágenes: ' + error.message, 'load'); });
     grid.addEventListener('change', function (event) {
@@ -404,12 +470,13 @@
     function step(delta) { current = Math.max(0, Math.min(files.length-1, current+delta)); render(); }
     doc.getElementById('dimension-prev').addEventListener('click', function(){step(-1);});
     doc.getElementById('dimension-next').addEventListener('click', function(){step(1);});
-    doc.getElementById('dimension-save').addEventListener('click', function(){root.fetch('/api/sizes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){return r.json().then(function(payload){if(!r.ok)throw new Error(payload.error||('HTTP '+r.status));showToast(doc,Object.keys(data.assignments).length+' imágenes guardadas','dimensions');});}).catch(function(error){showToast(doc,'Error al guardar: '+error.message,'dimensions');});});
+    doc.getElementById('dimension-save').addEventListener('click', function(){ postAuthoring(doc,'/api/sizes',data).then(function(){showToast(doc,Object.keys(data.assignments).length+' imágenes guardadas','dimensions');}).catch(function(error){showToast(doc,error.message,'dimensions');}); });
     doc.addEventListener('keydown', function(event){ if (['s','m','l','x'].includes(event.key.toLowerCase())) { var name={s:'S',m:'M',l:'L',x:'XL'}[event.key.toLowerCase()]; var button=doc.querySelector('[data-size="'+name+'"]'); if(button) button.click(); } else if(event.key==='ArrowLeft')step(-1); else if(event.key==='ArrowRight')step(1); });
   }
-  var api = { init: init, initRouting: initRouting, initDimensions: initDimensions, initDeckGrid: initDeckGrid, showToast: showToast, renderModel: renderModel, formatCell: formatCell, visibilityCommand: visibilityCommand, isVisible: isVisible, bindThemeToggle: bindThemeToggle, COMMAND_TYPES: COMMAND_TYPES, PRESETS: PRESETS, FILTERS: FILTERS };
+  var api = { init: init, initRouting: initRouting, initDimensions: initDimensions, initDeckGrid: initDeckGrid, showToast: showToast, postAuthoring: postAuthoring, askToken: askToken, authoringHeaders: authoringHeaders, authoringMessage: authoringMessage, renderModel: renderModel, formatCell: formatCell, visibilityCommand: visibilityCommand, isVisible: isVisible, bindThemeToggle: bindThemeToggle, COMMAND_TYPES: COMMAND_TYPES, PRESETS: PRESETS, FILTERS: FILTERS };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.OperatorPage = api;
+  if (root.document) initAuthoringToken(root.document);
   if (root.document) initRouting(root.document);
   if (root.document) initDimensions(root.document);
   if (root.document) initDeckGrid(root.document);
