@@ -13,6 +13,7 @@ const { startHeartbeat } = require('./heartbeat');
 const { createMusicState } = require('./music-state');
 const { SLOT_COUNT, DEFAULT_GROUP_COUNT, deriveTopology } = require('./topology');
 const { parseEmitRequest } = require('./message-relay');
+const { validateSizes } = require('../p5-collage/size-classes');
 
 function sendJson(res, status, payload) {
   res.writeHead(status, { 'Content-Type': 'application/json' });
@@ -49,6 +50,8 @@ const IMAGE_DIR = process.env.IMAGES_DIR
   : path.join(ROOT_DIR, 'images', 'content');
 const LAYOUT_PATH = path.join(ROOT_DIR, 'images', 'layout.json');
 const MANIFEST_PATH = path.join(ROOT_DIR, 'images', 'manifest.json');
+const SIZES_PATH = process.env.SIZES_PATH ? path.resolve(process.env.SIZES_PATH) : path.join(ROOT_DIR, 'images', 'sizes.json');
+const SIZE_WRITE_LIMIT = 16 * 1024;
 const PHONE_CLIENT_DIR = path.join(ROOT_DIR, 'phone-client');
 const P5_COLLAGE_DIR = path.join(ROOT_DIR, 'p5-collage');
 const OPERATOR_DIR = path.join(ROOT_DIR, 'operator');
@@ -278,6 +281,75 @@ const server = http.createServer((req, res) => {
         if (client.readyState === 1) client.send(payload);
       }
       return sendJson(res, 200, { ok: true });
+    });
+    return;
+  }
+
+  if (pathname === '/api/sizes' && req.method === 'GET') {
+    fs.readFile(SIZES_PATH, 'utf8', (error, text) => {
+      try {
+        if (error) throw error;
+        const sizes = JSON.parse(text);
+        const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+        validateSizes(sizes, Object.keys(manifest));
+        return sendJson(res, 200, sizes);
+      } catch (readError) {
+        return sendJson(res, 200, { version: 1, classes: { S: 0.015, M: 0.03, L: 0.06, XL: 0.1 }, assignments: {} });
+      }
+    });
+    return;
+  }
+
+  if (pathname === '/api/sizes' && req.method === 'POST') {
+    if (process.env.SIZE_WRITES_ENABLED !== 'true') {
+      return sendJson(res, 403, { ok: false, error: 'Size assignments are disabled' });
+    }
+    let size = 0;
+    const chunks = [];
+    let rejected = false;
+    req.on('data', chunk => {
+      if (rejected) return;
+      size += chunk.length;
+      if (size > SIZE_WRITE_LIMIT) {
+        rejected = true;
+        chunks.length = 0;
+        sendJson(res, 413, { ok: false, error: 'Sizes payload too large' });
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on('end', async () => {
+      if (rejected) return;
+      let submitted;
+      try {
+        submitted = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+        const current = JSON.parse(fs.readFileSync(SIZES_PATH, 'utf8'));
+        const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+        if (!submitted || Object.keys(submitted).sort().join(',') !== 'assignments,classes,version') {
+          throw new Error('Invalid sizes: expected version, classes, and assignments only');
+        }
+        validateSizes(submitted, Object.keys(manifest));
+        const submittedClasses = Object.keys(submitted.classes).sort();
+        const configuredClasses = Object.keys(current.classes).sort();
+        if (submittedClasses.length !== configuredClasses.length || submittedClasses.some((name, index) =>
+          name !== configuredClasses[index] || submitted.classes[name] !== current.classes[name])) {
+          throw new Error('Invalid sizes: class areas must match the configured classes');
+        }
+      } catch (error) {
+        return sendJson(res, 400, { ok: false, error: error.message || 'Invalid sizes JSON' });
+      }
+      const tempPath = `${SIZES_PATH}.${process.pid}.${Date.now()}.tmp`;
+      try {
+        await fs.promises.writeFile(tempPath, `${JSON.stringify(submitted, null, 2)}\n`, { flag: 'wx' });
+        await fs.promises.rename(tempPath, SIZES_PATH);
+        return sendJson(res, 200, { ok: true });
+      } catch (error) {
+        try { await fs.promises.unlink(tempPath); } catch {}
+        return sendJson(res, 500, { ok: false, error: 'Failed to save sizes' });
+      }
+    });
+    req.on('error', () => {
+      if (!res.headersSent) sendJson(res, 400, { ok: false, error: 'Invalid sizes request' });
     });
     return;
   }
