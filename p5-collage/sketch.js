@@ -1,5 +1,6 @@
 let collageLayout, deviceManager, imageLoader, imageDeck, ws;
 let _cellsReady = 0, _cellsTotal = 0;
+let sizeClassesData = null;
 
 function updateLoadCount() {
   const el = document.getElementById('load-count');
@@ -25,14 +26,19 @@ function setup() {
   Promise.all([
     imageLoader.loadLayout(),
     imageLoader.loadManifest(),
-  ]).then(([layoutData, manifestData]) => {
+    imageLoader.loadSizes(),
+  ]).then(([layoutData, manifestData, sizesData]) => {
+    sizeClassesData = sizesData;
     collageLayout = new CollageLayout(layoutData);
     // The deck is the single authority for which image each cell shows.
     const inkMetadata = imageLoader.metadataFrom(manifestData);
     imageDeck = new ImageDeck(imageLoader.filesFrom(manifestData), { metadata: inkMetadata });
 
+    const fileToKey = Object.fromEntries(Object.entries(manifestData).map(([key, entry]) => [entry.file, key]));
+    imageLoader.fileToKey = fileToKey;
     const sm = new SensorMapper(CONFIG);
     const renderer = createRenderer();
+    renderer.fileToKey = fileToKey;
     const layoutEngine = new LayoutPresetEngine(1920, 1080);
     layoutEngine.scatterScale = CONFIG.scatterScale || 1.0;
 
@@ -439,10 +445,10 @@ function drawCell(s, dt) {
 
   const tState = s.transition.update(dt);
   if (tState.state === 'fading' && s._oldImg) {
-    drawImg(s._oldImg, s.flipH, s.flipV, -w / 2, -h / 2, w, h, s.opacity * tState.oldAlpha, s.filterType, s._oldImg.inkRatio);
-    drawImg(s.img, s.flipH, s.flipV, -w / 2, -h / 2, w, h, s.opacity * tState.newAlpha, s.filterType, s.img.inkRatio);
+    drawImg(s._oldImg, s.flipH, s.flipV, -w / 2, -h / 2, w, h, s.opacity * tState.oldAlpha, s.filterType, s._oldImg.inkRatio, s._authoredSize);
+    drawImg(s.img, s.flipH, s.flipV, -w / 2, -h / 2, w, h, s.opacity * tState.newAlpha, s.filterType, s.img.inkRatio, s._authoredSize);
   } else {
-    drawImg(s.img, s.flipH, s.flipV, -w / 2, -h / 2, w, h, s.opacity, s.filterType, s.img && s.img.inkRatio);
+    drawImg(s.img, s.flipH, s.flipV, -w / 2, -h / 2, w, h, s.opacity, s.filterType, s.img && s.img.inkRatio, s._authoredSize);
   }
 
   // Selection highlight — dashed golden border when cell is selected

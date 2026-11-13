@@ -299,9 +299,44 @@
     });
     return { render: render, poll: poll };
   }
-  var api = { init: init, initRouting: initRouting, renderModel: renderModel, formatCell: formatCell, visibilityCommand: visibilityCommand, isVisible: isVisible, bindThemeToggle: bindThemeToggle, COMMAND_TYPES: COMMAND_TYPES, PRESETS: PRESETS, FILTERS: FILTERS };
+  function initDimensions(doc) {
+    var canvas = doc.getElementById('dimension-canvas');
+    if (!canvas || !root.fetch || !root.SizeClasses) return null;
+    var ctx = canvas.getContext('2d');
+    var current = 0, files = [], manifest = {}, data = null, image = new Image();
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      var file = files[current];
+      if (!file) return;
+      doc.getElementById('dimension-file').textContent = file;
+      var assignedCount = Object.keys(data.assignments).length;
+      doc.getElementById('dimension-progress').textContent = (current + 1) + ' / ' + files.length + ' · ' + assignedCount + ' asignadas';
+      image.onload = function () {
+        var key = Object.keys(manifest).find(function (id) { return manifest[id].file === file; });
+        var dims = data && root.SizeClasses.getAuthoredDrawSize(data, key, image.naturalWidth, image.naturalHeight, 1920, 1080, manifest[key].inkRatio || 1);
+        var w = dims ? dims.width / 2 : image.naturalWidth * Math.min(960 / image.naturalWidth, 540 / image.naturalHeight);
+        var h = dims ? dims.height / 2 : image.naturalHeight * Math.min(960 / image.naturalWidth, 540 / image.naturalHeight);
+        ctx.drawImage(image, (960-w)/2, (540-h)/2, w, h);
+      };
+      image.src = '/images/content/' + encodeURIComponent(file);
+      ['S','M','L','XL'].forEach(function (name) { doc.querySelector('[data-size="' + name + '"]').setAttribute('aria-pressed', String(data.assignments[Object.keys(manifest).find(function (id) { return manifest[id].file === file; })] === name)); });
+    }
+    Promise.all([root.fetch('/api/manifest').then(function (r) { return r.json(); }), root.fetch('/api/sizes').then(function (r) { if (!r.ok) throw new Error('sizes unavailable'); return r.json(); })]).then(function (results) {
+      manifest = results[0]; data = results[1]; files = Object.keys(manifest).filter(function (id) { return manifest[id] && manifest[id].file; }).map(function (id) { return manifest[id].file; });
+      files = Array.from(new Set(files));
+      render();
+    }).catch(function (error) { doc.getElementById('dimension-status').textContent = error.message; });
+    doc.querySelectorAll('[data-size]').forEach(function (button) { button.addEventListener('click', function () { var file=files[current], key=Object.keys(manifest).find(function(id){return manifest[id].file===file;}); if (!key) return; data.assignments[key]=button.dataset.size; render(); }); });
+    function step(delta) { current = Math.max(0, Math.min(files.length-1, current+delta)); render(); }
+    doc.getElementById('dimension-prev').addEventListener('click', function(){step(-1);});
+    doc.getElementById('dimension-next').addEventListener('click', function(){step(1);});
+    doc.getElementById('dimension-save').addEventListener('click', function(){root.fetch('/api/sizes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){doc.getElementById('dimension-status').textContent=r.ok?'Guardado':'No se pudo guardar';});});
+    doc.addEventListener('keydown', function(event){ if (['s','m','l','x'].includes(event.key.toLowerCase())) { var name={s:'S',m:'M',l:'L',x:'XL'}[event.key.toLowerCase()]; var button=doc.querySelector('[data-size="'+name+'"]'); if(button) button.click(); } else if(event.key==='ArrowLeft')step(-1); else if(event.key==='ArrowRight')step(1); });
+  }
+  var api = { init: init, initRouting: initRouting, initDimensions: initDimensions, renderModel: renderModel, formatCell: formatCell, visibilityCommand: visibilityCommand, isVisible: isVisible, bindThemeToggle: bindThemeToggle, COMMAND_TYPES: COMMAND_TYPES, PRESETS: PRESETS, FILTERS: FILTERS };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.OperatorPage = api;
   if (root.document) initRouting(root.document);
+  if (root.document) initDimensions(root.document);
   if (root.document && typeof BroadcastChannel !== 'undefined') init(root.document, function (name) { return new BroadcastChannel(name); }, root.MidiTheme);
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -27,6 +27,14 @@ class ImageLoader {
     return await res.json();
   }
 
+  async loadSizes() {
+    try {
+      const res = await fetch(this._url('/api/sizes'));
+      if (!res.ok) return null;
+      return SizeClasses.loadSizeClasses(await res.json());
+    } catch (error) { return null; }
+  }
+
   filesFrom(manifestData) {
     if (!manifestData || typeof manifestData !== 'object') return [];
     const seen = new Set();
