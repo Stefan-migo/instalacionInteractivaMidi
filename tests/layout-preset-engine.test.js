@@ -200,3 +200,21 @@ describe('LayoutPresetEngine', () => {
     });
   });
 });
+
+describe('edge anchor contract', () => {
+  test('positions report the composition percentage and the bleed rule the renderer applies', () => {
+    const { LayoutPresetEngine } = require('../p5-collage/layout-preset-engine');
+    const engine = new LayoutPresetEngine(1920, 1080);
+    const [pos] = engine.compute([{ slot: 1, w: 400, h: 300 }], 'scatter');
+    expect(pos.anchor).toEqual({
+      xPct: expect.any(Number),
+      yPct: expect.any(Number),
+      band: 0.75,
+      minVisible: 0.25,
+      canvasW: 1920,
+      canvasH: 1080,
+    });
+    expect(pos.anchor.xPct).toBeGreaterThanOrEqual(-0.1);
+    expect(pos.anchor.xPct).toBeLessThanOrEqual(1.1);
+  });
+});

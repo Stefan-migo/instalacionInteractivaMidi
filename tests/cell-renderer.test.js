@@ -209,9 +209,178 @@ describe('getCombinedFilters', () => {
   });
 });
 
+describe('adaptCellToImage with authored sizes', () => {
+  const SizeClasses = require('../p5-collage/size-classes');
+  let adaptCellToImage;
+
+  beforeAll(() => {
+    ({ adaptCellToImage } = require('../p5-collage/cell-renderer'));
+  });
+
+  beforeEach(() => {
+    global.SizeClasses = SizeClasses;
+    global.sizeClassesData = { version: 1, classes: { S: 0.015, M: 0.03, L: 0.06, XL: 0.1 }, assignments: { '001': 'M' } };
+    global.imageLoader = { fileToKey: { '001.jpg': '001', '002.jpg': '002' }, getInkRatio: () => 0.5 };
+    global.CONFIG = { scatterScale: 1 };
+  });
+
+  afterEach(() => {
+    delete global.SizeClasses;
+    delete global.sizeClassesData;
+    delete global.imageLoader;
+    delete global.CONFIG;
+  });
+
+  function cell(imageFile) {
+    return {
+      img: { naturalWidth: 200, naturalHeight: 100 },
+      pos: { x: 0, y: 0, w: 100, h: 50 },
+      _layoutX: 0, _layoutY: 0, _layoutW: 100, _layoutH: 50,
+      currentImageFile: imageFile || '001.jpg',
+    };
+  }
+
+  function authoredWidth() {
+    return SizeClasses.getAuthoredDrawSize(global.sizeClassesData, '001', 200, 100, 1920, 1080, 0.5).width;
+  }
+
+  test('draws the authored class once at the neutral general scale', () => {
+    const state = cell();
+    expect(adaptCellToImage(state)).toBe(true);
+    expect(state._authoredSize).toBe(true);
+    expect(state.pos.w / authoredWidth()).toBeGreaterThan(0.97);
+    expect(state.pos.w / authoredWidth()).toBeLessThan(1.05);
+  });
+
+  test('the general scale multiplies the authored class instead of being ignored', () => {
+    global.CONFIG.scatterScale = 2;
+    const state = cell();
+    adaptCellToImage(state);
+    expect(state.pos.w / authoredWidth()).toBeGreaterThan(1.9);
+    expect(state.pos.w / authoredWidth()).toBeLessThan(2.2);
+    expect(state.pos.h / state.pos.w).toBeCloseTo(0.5, 2);
+  });
+
+  test('an unassigned image still fits inside its layout budget whatever the general scale is', () => {
+    global.CONFIG.scatterScale = 2;
+    const state = cell('002.jpg');
+    adaptCellToImage(state);
+    expect(state._authoredSize).toBe(false);
+    expect(state.pos.w).toBe(100);
+    expect(state.pos.h).toBe(50);
+  });
+});
+
+describe('resolveAnchor', () => {
+  let resolveAnchor;
+
+  beforeAll(() => {
+    ({ resolveAnchor } = require('../p5-collage/cell-renderer'));
+  });
+
+  const frame = (overrides) => Object.assign({
+    xPct: 0.98, yPct: 0.5, band: 0.75, minVisible: 0.25, canvasW: 1920, canvasH: 1080,
+  }, overrides);
+
+  const rightOverhangFraction = (rect, size) => (rect.x + size - 1920) / size;
+
+  test('a small fragment hangs over the edge by the same fraction of itself as a big one', () => {
+    const small = resolveAnchor(frame(), 300, 200);
+    const big = resolveAnchor(frame(), 900, 600);
+    expect(rightOverhangFraction(small, 300)).toBeCloseTo(rightOverhangFraction(big, 900), 6);
+    expect(rightOverhangFraction(small, 300)).toBeCloseTo(0.46, 6);
+  });
+
+  test('the bleed starts at the same composition point whatever the size', () => {
+    const flushSmall = resolveAnchor(frame({ xPct: 0.75 }), 300, 200);
+    const flushBig = resolveAnchor(frame({ xPct: 0.75 }), 900, 600);
+    expect(flushSmall.x).toBe(1920 - 300);
+    expect(flushBig.x).toBe(1920 - 900);
+    expect(resolveAnchor(frame({ xPct: 0.74 }), 300, 200).x + 300).toBeLessThan(1920);
+    expect(resolveAnchor(frame({ xPct: 0.74 }), 900, 600).x + 900).toBeLessThan(1920);
+  });
+
+  test('centres the fragment on either axis at the middle percentage', () => {
+    expect(resolveAnchor(frame({ xPct: 0.5 }), 300, 200).x).toBe((1920 - 300) / 2);
+    expect(resolveAnchor(frame({ xPct: 0.5 }), 900, 600).x).toBe((1920 - 900) / 2);
+    expect(resolveAnchor(frame({ yPct: 0.5 }), 300, 200).y).toBe((1080 - 200) / 2);
+  });
+
+  test('mirrors on the left edge and keeps minVisible on canvas past the bleed limit', () => {
+    expect(resolveAnchor(frame({ xPct: 0.25 }), 300, 200).x).toBeCloseTo(0, 10);
+    const left = resolveAnchor(frame({ xPct: 0.02 }), 300, 200);
+    const right = resolveAnchor(frame({ xPct: 1.1 }), 300, 200);
+    expect(-left.x).toBeCloseTo(0.46 * 300, 6);
+    expect(1920 - right.x).toBeGreaterThanOrEqual(0.25 * 300 - 1e-9);
+  });
+});
+
+describe('adaptCellToImage with an edge anchor', () => {
+  let adaptCellToImage;
+  let resolveAnchor;
+
+  beforeAll(() => {
+    ({ adaptCellToImage, resolveAnchor } = require('../p5-collage/cell-renderer'));
+  });
+
+  beforeEach(() => {
+    global.SizeClasses = require('../p5-collage/size-classes');
+    global.sizeClassesData = { version: 1, classes: { S: 0.015, M: 0.03, L: 0.06, XL: 0.1 }, assignments: { '001': 'S' } };
+    global.imageLoader = { fileToKey: { '001.jpg': '001' }, getInkRatio: () => 0.5 };
+    global.CONFIG = { scatterScale: 1 };
+  });
+
+  afterEach(() => {
+    delete global.SizeClasses;
+    delete global.sizeClassesData;
+    delete global.imageLoader;
+    delete global.CONFIG;
+  });
+
+  const anchor = { xPct: 0.98, yPct: 0.5, band: 0.75, minVisible: 0.25, canvasW: 1920, canvasH: 1080 };
+
+  function cell(extra) {
+    return Object.assign({
+      img: { naturalWidth: 200, naturalHeight: 100 },
+      pos: { x: 10, y: 20, w: 100, h: 50 },
+      _layoutX: 0, _layoutY: 0, _layoutW: 100, _layoutH: 50,
+      currentImageFile: '001.jpg',
+      _anchor: anchor,
+    }, extra);
+  }
+
+  test('places an authored fragment on its own edge anchor, not on the layout box centre', () => {
+    const state = cell();
+    adaptCellToImage(state, 'layout');
+    const expected = resolveAnchor(anchor, state.pos.w, state.pos.h);
+    expect(state.pos.x).toBe(Math.round(expected.x));
+    expect(state.pos.y).toBe(Math.round(expected.y));
+    expect(state.pos.x + state.pos.w).toBeGreaterThan(1920);
+  });
+
+  test('a cell the operator dragged keeps its own centre when its image changes', () => {
+    const state = cell({ _userMoved: true });
+    adaptCellToImage(state);
+    expect(state.pos.x).toBe(Math.round(10 + 100 / 2 - state.pos.w / 2));
+  });
+
+  test('the image cycle re-anchors an untouched cell, so a smaller class still bleeds', () => {
+    const state = cell();
+    adaptCellToImage(state);
+    const expected = resolveAnchor(anchor, state.pos.w, state.pos.h);
+    expect(state.pos.x).toBe(Math.round(expected.x));
+  });
+
+  test('without an anchor the layout box still decides', () => {
+    const state = cell({ _anchor: null });
+    adaptCellToImage(state, 'layout');
+    expect(state.pos.x).toBe(Math.round(0 + 100 / 2 - state.pos.w / 2));
+  });
+});
+
 describe('cell-renderer public surface', () => {
   test('no longer exports the retired torn-border geometry', () => {
     const renderer = require('../p5-collage/cell-renderer');
-    expect(Object.keys(renderer).sort()).toEqual(['adaptCellToImage', 'drawImg', 'getCombinedFilters']);
+    expect(Object.keys(renderer).sort()).toEqual(['adaptCellToImage', 'drawImg', 'getCombinedFilters', 'resolveAnchor']);
   });
 });

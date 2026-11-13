@@ -140,6 +140,11 @@ function createRenderer() {
       s._layoutY = pos.y;
       s._layoutW = pos.w;
       s._layoutH = pos.h;
+      // The engine reports the composition percentage; the rendered size is only
+      // known here, so the neighbour edge rule resolves against the real fragment.
+      // A re-scatter owns the layout again, so a previous drag no longer applies.
+      s._anchor = pos.anchor || null;
+      s._userMoved = false;
       // Set position anchor to the new layout, then adapt within that budget
       if (typeof adaptCellToImage === 'function') {
         s.pos.x = pos.x;
