@@ -1,2367 +1,40 @@
 {
   "100": {
     "file": "100.webp",
-    "w": 1080,
-    "h": 1080,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 175,
-      "y": 13,
-      "w": 757,
-      "h": 1061
-    },
-    "inkRatio": 0.5666015625,
-    "inkCenter": {
-      "x": 0.488986248584232,
-      "y": 0.5059724628230546
-    }
-  },
-  "101": {
-    "file": "101.webp",
-    "w": 1080,
-    "h": 1080,
-    "role": "figura",
-    "axis": "civilizacion_barbarie",
-    "pole": "barbarie",
-    "inkBox": {
-      "x": 60,
-      "y": 13,
-      "w": 906,
-      "h": 1054
-    },
-    "inkRatio": 0.5530078125,
-    "inkCenter": {
-      "x": 0.4818619869501823,
-      "y": 0.5148569702765508
-    }
-  },
-  "102": {
-    "file": "102.webp",
-    "w": 1080,
-    "h": 543,
-    "role": "figura",
-    "axis": "civilizacion_barbarie",
-    "pole": "civilizacion",
-    "inkBox": {
-      "x": 47,
-      "y": 13,
-      "w": 986,
-      "h": 517
-    },
-    "inkRatio": 0.72609375,
-    "inkCenter": {
-      "x": 0.5104832695125151,
-      "y": 0.5720102386372645
-    }
-  },
-  "103": {
-    "file": "103.webp",
-    "w": 1080,
-    "h": 543,
-    "role": "texto",
-    "axis": "civilizacion_barbarie",
-    "pole": "barbarie",
-    "inkBox": {
-      "x": 27,
-      "y": 176,
-      "w": 1026,
-      "h": 171
-    },
-    "inkRatio": 0.295546875,
-    "inkCenter": {
-      "x": 0.5001295616121987,
-      "y": 0.49941845096484255
-    }
-  },
-  "104": {
-    "file": "104.webp",
     "w": 761,
     "h": 305,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 57,
-      "y": 28,
-      "w": 647,
-      "h": 277
-    },
-    "inkRatio": 0.61357421875,
-    "inkCenter": {
-      "x": 0.5183893746898728,
-      "y": 0.42704314323818515
-    }
-  },
-  "105": {
-    "file": "105.webp",
-    "w": 650,
-    "h": 890,
-    "role": "texto",
-    "axis": "fe_herejia",
-    "pole": "herejia",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 650,
-      "h": 890
-    },
-    "inkRatio": 1,
-    "inkCenter": {
-      "x": 0.5,
-      "y": 0.5
-    }
-  },
-  "106": {
-    "file": "106.webp",
-    "w": 1080,
-    "h": 1080,
-    "role": "texto",
-    "axis": "civilizacion_barbarie",
-    "pole": "barbarie",
-    "inkBox": {
-      "x": 47,
-      "y": 0,
-      "w": 986,
-      "h": 1080
-    },
-    "inkRatio": 0.1598828125,
-    "inkCenter": {
-      "x": 0.6246807948083765,
-      "y": 0.457626588077205
-    }
-  },
-  "107": {
-    "file": "107.webp",
-    "w": 412,
-    "h": 494,
-    "role": "texto",
-    "axis": "fe_herejia",
-    "pole": "herejia",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 412,
-      "h": 494
-    },
-    "inkRatio": 1,
-    "inkCenter": {
-      "x": 0.5,
-      "y": 0.5
-    }
-  },
-  "108": {
-    "file": "108.webp",
-    "w": 736,
-    "h": 862,
-    "role": "texto",
-    "axis": "infinito_limite",
-    "pole": "infinito",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 736,
-      "h": 862
-    },
-    "inkRatio": 1,
-    "inkCenter": {
-      "x": 0.5,
-      "y": 0.5
-    }
-  },
-  "109": {
-    "file": "109.webp",
-    "w": 736,
-    "h": 1025,
-    "role": "texto",
-    "axis": "fe_herejia",
-    "pole": "herejia",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 736,
-      "h": 1025
-    },
-    "inkRatio": 1,
-    "inkCenter": {
-      "x": 0.5,
-      "y": 0.5
-    }
-  },
-  "110": {
-    "file": "110.webp",
-    "w": 736,
-    "h": 1308,
-    "role": "figura",
-    "axis": "infinito_limite",
-    "pole": "limite",
-    "inkBox": {
-      "x": 0,
-      "y": 36,
-      "w": 736,
-      "h": 1272
-    },
-    "inkRatio": 0.6476672535211268,
-    "inkCenter": {
-      "x": 0.528486875637105,
-      "y": 0.5891801720614378
-    }
-  },
-  "111": {
-    "file": "111.webp",
-    "w": 675,
-    "h": 1200,
-    "role": "papel",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 675,
-      "h": 1200
-    },
-    "inkRatio": 0.5985915492957746,
-    "inkCenter": {
-      "x": 0.50556640625,
-      "y": 0.5575130747721624
-    }
-  },
-  "112": {
-    "file": "112.webp",
-    "w": 736,
-    "h": 983,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 46,
-      "y": 55,
-      "w": 654,
-      "h": 883
-    },
-    "inkRatio": 0.30514018691588785,
-    "inkCenter": {
-      "x": 0.4696269115458447,
-      "y": 0.47123053854007146
-    }
-  },
-  "113": {
-    "file": "113.webp",
-    "w": 568,
-    "h": 720,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 3,
-      "y": 117,
-      "w": 565,
-      "h": 600
-    },
-    "inkRatio": 0.14451970443349754,
-    "inkCenter": {
-      "x": 0.49571780380681346,
-      "y": 0.4263947680912054
-    }
-  },
-  "114": {
-    "file": "114.webp",
-    "w": 667,
-    "h": 1000,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 66,
-      "y": 25,
-      "w": 535,
-      "h": 950
-    },
-    "inkRatio": 0.34403645833333335,
-    "inkCenter": {
-      "x": 0.4599898403792294,
-      "y": 0.547401520795403
-    }
-  },
-  "115": {
-    "file": "115.webp",
-    "w": 675,
-    "h": 1200,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 0,
-      "y": 266,
-      "w": 675,
-      "h": 934
-    },
-    "inkRatio": 0.43006161971830986,
-    "inkCenter": {
-      "x": 0.5321333538020674,
-      "y": 0.5819886254967257
-    }
-  },
-  "116": {
-    "file": "116.webp",
-    "w": 675,
-    "h": 1200,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 206,
-      "y": 371,
-      "w": 233,
-      "h": 610
-    },
-    "inkRatio": 0.1177156690140845,
-    "inkCenter": {
-      "x": 0.5093373442784549,
-      "y": 0.4431403325647576
-    }
-  },
-  "117": {
-    "file": "117.webp",
-    "w": 736,
-    "h": 1308,
-    "role": "figura",
-    "axis": "civilizacion_barbarie",
-    "pole": "barbarie",
-    "inkBox": {
-      "x": 59,
-      "y": 290,
-      "w": 512,
-      "h": 673
-    },
-    "inkRatio": 0.11476672535211267,
-    "inkCenter": {
-      "x": 0.5840282276523887,
-      "y": 0.46786863499651943
-    }
-  },
-  "118": {
-    "file": "118.webp",
-    "w": 736,
-    "h": 1308,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 253,
-      "y": 239,
-      "w": 230,
-      "h": 807
-    },
-    "inkRatio": 0.11965228873239436,
-    "inkCenter": {
-      "x": 0.5203991171601987,
-      "y": 0.5032349772721302
-    }
-  },
-  "119": {
-    "file": "119.webp",
-    "w": 592,
-    "h": 604,
-    "role": "papel",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 592,
-      "h": 604
-    },
-    "inkRatio": 0.23109662576687118,
-    "inkCenter": {
-      "x": 0.5325529907084785,
-      "y": 0.4665187637227568
-    }
-  },
-  "120": {
-    "file": "120.webp",
-    "w": 1600,
-    "h": 536,
-    "role": "texto",
-    "axis": "original_copia",
-    "pole": "copia",
-    "inkBox": {
-      "x": 10,
-      "y": 9,
-      "w": 1580,
-      "h": 518
-    },
-    "inkRatio": 0.6957175925925926,
-    "inkCenter": {
-      "x": 0.46999751510416554,
-      "y": 0.527768002252281
-    }
-  },
-  "121": {
-    "file": "121.webp",
-    "w": 1600,
-    "h": 616,
-    "role": "texto",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 20,
-      "y": 59,
-      "w": 1560,
-      "h": 518
-    },
-    "inkRatio": 0.5448588709677419,
-    "inkCenter": {
-      "x": 0.4930768044782846,
-      "y": 0.4382427239735288
-    }
-  },
-  "122": {
-    "file": "122.webp",
-    "w": 1600,
-    "h": 533,
-    "role": "texto",
-    "axis": "infinito_limite",
-    "pole": "infinito",
-    "inkBox": {
-      "x": 10,
-      "y": 10,
-      "w": 1580,
-      "h": 513
-    },
-    "inkRatio": 0.7268867924528302,
-    "inkCenter": {
-      "x": 0.5005893756314739,
-      "y": 0.5073958850250029
-    }
-  },
-  "123": {
-    "file": "123.webp",
-    "w": 1600,
-    "h": 533,
-    "role": "texto",
-    "axis": "original_copia",
-    "pole": "copia",
-    "inkBox": {
-      "x": 10,
-      "y": 30,
-      "w": 1580,
-      "h": 453
-    },
-    "inkRatio": 0.5744103773584905,
-    "inkCenter": {
-      "x": 0.4949955692304494,
-      "y": 0.5345126485549396
-    }
-  },
-  "124": {
-    "file": "124.webp",
-    "w": 1600,
-    "h": 533,
-    "role": "texto",
-    "axis": "civilizacion_barbarie",
-    "pole": "civilizacion",
-    "inkBox": {
-      "x": 20,
-      "y": 20,
-      "w": 1570,
-      "h": 493
-    },
-    "inkRatio": 0.7288915094339623,
-    "inkCenter": {
-      "x": 0.48818033896768087,
-      "y": 0.5103014834796562
-    }
-  },
-  "125": {
-    "file": "125.webp",
-    "w": 1600,
-    "h": 533,
-    "role": "texto",
-    "axis": "infinito_limite",
-    "pole": "infinito",
-    "inkBox": {
-      "x": 20,
-      "y": 40,
-      "w": 1550,
-      "h": 473
-    },
-    "inkRatio": 0.7021226415094339,
-    "inkCenter": {
-      "x": 0.48849133680800116,
-      "y": 0.5072863585360101
-    }
-  },
-  "126": {
-    "file": "126.webp",
-    "w": 1600,
-    "h": 533,
-    "role": "texto",
-    "axis": "original_copia",
-    "pole": "copia",
-    "inkBox": {
-      "x": 10,
-      "y": 130,
-      "w": 1580,
-      "h": 293
-    },
-    "inkRatio": 0.42877358490566037,
-    "inkCenter": {
-      "x": 0.49065776830847635,
-      "y": 0.4906869997344562
-    }
-  },
-  "127": {
-    "file": "127.webp",
-    "w": 1600,
-    "h": 533,
-    "role": "texto",
-    "axis": "infinito_limite",
-    "pole": "limite",
-    "inkBox": {
-      "x": 30,
-      "y": 70,
-      "w": 1560,
-      "h": 423
-    },
-    "inkRatio": 0.42700471698113207,
-    "inkCenter": {
-      "x": 0.4770507155552723,
-      "y": 0.46063636722294554
-    }
-  },
-  "128": {
-    "file": "128.webp",
-    "w": 1600,
-    "h": 533,
-    "role": "texto",
-    "axis": "original_copia",
-    "pole": "copia",
-    "inkBox": {
-      "x": 20,
-      "y": 30,
-      "w": 1560,
-      "h": 493
-    },
-    "inkRatio": 0.748938679245283,
-    "inkCenter": {
-      "x": 0.5020625663634639,
-      "y": 0.47211751965783955
-    }
-  },
-  "129": {
-    "file": "129.webp",
-    "w": 1600,
-    "h": 533,
-    "role": "texto",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 10,
-      "y": 221,
-      "w": 1580,
-      "h": 162
-    },
-    "inkRatio": 0.17889150943396226,
-    "inkCenter": {
-      "x": 0.48668049030815314,
-      "y": 0.554857448912327
-    }
-  },
-  "130": {
-    "file": "130.webp",
-    "w": 1080,
-    "h": 543,
-    "role": "acento",
-    "axis": "fe_herejia",
-    "pole": "herejia",
-    "inkBox": {
-      "x": 27,
-      "y": 47,
-      "w": 1040,
-      "h": 449
-    },
-    "inkRatio": 0.3475,
-    "inkCenter": {
-      "x": 0.4173260417639914,
-      "y": 0.6062138925223458
-    }
-  },
-  "001": {
-    "file": "001.webp",
-    "w": 615,
-    "h": 784,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 615,
-      "h": 784
-    },
-    "inkRatio": 0.4404105392156863,
-    "inkCenter": {
-      "x": 0.5346558695652174,
-      "y": 0.471133674339301
-    }
-  },
-  "002": {
-    "file": "002.webp",
-    "w": 735,
-    "h": 1204,
-    "role": "figura",
-    "axis": "original_copia",
-    "pole": "copia",
-    "inkBox": {
-      "x": 0,
-      "y": 252,
-      "w": 506,
-      "h": 952
-    },
-    "inkRatio": 0.30260019083969464,
-    "inkCenter": {
-      "x": 0.5436675386103845,
-      "y": 0.44883873265049246
-    }
-  },
-  "003": {
-    "file": "003.webp",
-    "w": 736,
-    "h": 736,
-    "role": "figura",
-    "axis": "civilizacion_barbarie",
-    "pole": "civilizacion",
-    "inkBox": {
-      "x": 115,
-      "y": 170,
-      "w": 534,
-      "h": 566
-    },
-    "inkRatio": 0.27859375,
-    "inkCenter": {
-      "x": 0.4900448681996635,
-      "y": 0.33160517808206685
-    }
-  },
-  "004": {
-    "file": "004.webp",
-    "w": 736,
-    "h": 611,
-    "role": "figura",
-    "axis": "fe_herejia",
-    "pole": "fe",
-    "inkBox": {
-      "x": 23,
-      "y": 13,
-      "w": 695,
-      "h": 580
-    },
-    "inkRatio": 0.6494360902255639,
-    "inkCenter": {
-      "x": 0.5005065123010131,
-      "y": 0.49943031723060666
-    }
-  },
-  "005": {
-    "file": "005.webp",
-    "w": 735,
-    "h": 577,
-    "role": "figura",
-    "axis": "fe_herejia",
-    "pole": "herejia",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 735,
-      "h": 577
-    },
-    "inkRatio": 0.3991071428571429,
-    "inkCenter": {
-      "x": 0.5253021687795177,
-      "y": 0.45656621253190977
-    }
-  },
-  "006": {
-    "file": "006.webp",
-    "w": 602,
-    "h": 812,
-    "role": "figura",
-    "axis": "infinito_limite",
-    "pole": "infinito",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 602,
-      "h": 812
-    },
-    "inkRatio": 0.5418981481481482,
-    "inkCenter": {
-      "x": 0.5305969003630927,
-      "y": 0.42499396823136676
-    }
-  },
-  "007": {
-    "file": "007.webp",
-    "w": 308,
-    "h": 474,
-    "role": "figura",
-    "axis": "civilizacion_barbarie",
-    "pole": "barbarie",
-    "inkBox": {
-      "x": 1,
-      "y": 0,
-      "w": 307,
-      "h": 474
-    },
-    "inkRatio": 0.523755081300813,
-    "inkCenter": {
-      "x": 0.5289659022785204,
-      "y": 0.48374289381991564
-    }
-  },
-  "008": {
-    "file": "008.webp",
-    "w": 388,
-    "h": 506,
-    "role": "figura",
-    "axis": "original_copia",
-    "pole": "copia",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 388,
-      "h": 506
-    },
-    "inkRatio": 0.6244318181818181,
-    "inkCenter": {
-      "x": 0.4911152782433791,
-      "y": 0.507339150607143
-    }
-  },
-  "009": {
-    "file": "009.webp",
-    "w": 360,
-    "h": 789,
-    "role": "acento",
-    "axis": "civilizacion_barbarie",
-    "pole": "barbarie",
-    "inkBox": {
-      "x": 4,
-      "y": 8,
-      "w": 352,
-      "h": 777
-    },
-    "inkRatio": 0.4915776353276353,
-    "inkCenter": {
-      "x": 0.4988625840900626,
-      "y": 0.3601545606738052
-    }
-  },
-  "010": {
-    "file": "010.webp",
-    "w": 734,
-    "h": 515,
-    "role": "acento",
-    "axis": "civilizacion_barbarie",
-    "pole": "barbarie",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 734,
-      "h": 515
-    },
-    "inkRatio": 0.5947544642857143,
-    "inkCenter": {
-      "x": 0.49255782041658847,
-      "y": 0.623397414417071
-    }
-  },
-  "011": {
-    "file": "011.webp",
-    "w": 428,
-    "h": 605,
-    "role": "figura",
-    "axis": "infinito_limite",
-    "pole": "limite",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 428,
-      "h": 603
-    },
-    "inkRatio": 0.3808628318584071,
-    "inkCenter": {
-      "x": 0.4214829000871333,
-      "y": 0.6498573595378707
-    }
-  },
-  "012": {
-    "file": "012.webp",
-    "w": 545,
-    "h": 665,
-    "role": "figura",
-    "axis": "civilizacion_barbarie",
-    "pole": "barbarie",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 545,
-      "h": 665
-    },
-    "inkRatio": 0.7137179487179487,
-    "inkCenter": {
-      "x": 0.5413384677564218,
-      "y": 0.5344956313071995
-    }
-  },
-  "013": {
-    "file": "013.webp",
-    "w": 736,
-    "h": 1104,
-    "role": "figura",
-    "axis": "civilizacion_barbarie",
-    "pole": "barbarie",
-    "inkBox": {
-      "x": 138,
-      "y": 4,
-      "w": 571,
-      "h": 1082
-    },
-    "inkRatio": 0.223046875,
-    "inkCenter": {
-      "x": 0.4548316479294955,
-      "y": 0.47701283054489446
-    }
-  },
-  "014": {
-    "file": "014.webp",
-    "w": 458,
-    "h": 618,
-    "role": "figura",
-    "axis": "fe_herejia",
-    "pole": "fe",
-    "inkBox": {
-      "x": 48,
-      "y": 0,
-      "w": 410,
-      "h": 618
-    },
-    "inkRatio": 0.5980613425925926,
-    "inkCenter": {
-      "x": 0.4971343185818971,
-      "y": 0.5651264955748724
-    }
-  },
-  "015": {
-    "file": "015.webp",
-    "w": 700,
-    "h": 906,
-    "role": "figura",
-    "axis": "fe_herejia",
-    "pole": "herejia",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 700,
-      "h": 906
-    },
-    "inkRatio": 0.5424214975845411,
-    "inkCenter": {
-      "x": 0.49501165460617863,
-      "y": 0.6549827832164259
-    }
-  },
-  "016": {
-    "file": "016.webp",
-    "w": 710,
-    "h": 469,
-    "role": "figura",
-    "axis": "original_copia",
-    "pole": "copia",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 710,
-      "h": 469
-    },
-    "inkRatio": 0.6978183962264151,
-    "inkCenter": {
-      "x": 0.5018406738487536,
-      "y": 0.49212640792022383
-    }
-  },
-  "017": {
-    "file": "017.webp",
-    "w": 675,
-    "h": 1200,
-    "role": "figura",
-    "axis": "fe_herejia",
-    "pole": "fe",
-    "inkBox": {
-      "x": 21,
-      "y": 321,
-      "w": 536,
-      "h": 723
-    },
-    "inkRatio": 0.2657130281690141,
-    "inkCenter": {
-      "x": 0.48436674627200504,
-      "y": 0.4636743008755947
-    }
-  },
-  "018": {
-    "file": "018.webp",
-    "w": 611,
-    "h": 947,
-    "role": "figura",
-    "axis": "infinito_limite",
-    "pole": "limite",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 611,
-      "h": 619
-    },
-    "inkRatio": 0.2828125,
-    "inkCenter": {
-      "x": 0.49041614685439316,
-      "y": 0.5353681371028249
-    }
-  },
-  "019": {
-    "file": "019.webp",
-    "w": 736,
-    "h": 1308,
-    "role": "figura",
-    "axis": "original_copia",
-    "pole": "copia",
-    "inkBox": {
-      "x": 27,
-      "y": 9,
-      "w": 686,
-      "h": 1299
-    },
-    "inkRatio": 0.644300176056338,
-    "inkCenter": {
-      "x": 0.5066362192370812,
-      "y": 0.4237794560491776
-    }
-  },
-  "020": {
-    "file": "020.webp",
-    "w": 735,
-    "h": 568,
-    "role": "figura",
-    "axis": "infinito_limite",
-    "pole": "infinito",
-    "inkBox": {
-      "x": 64,
-      "y": 27,
-      "w": 547,
-      "h": 514
-    },
-    "inkRatio": 0.33634072580645163,
-    "inkCenter": {
-      "x": 0.5451298157506671,
-      "y": 0.3841005063047248
-    }
-  },
-  "021": {
-    "file": "021.webp",
-    "w": 384,
-    "h": 579,
-    "role": "figura",
-    "axis": "civilizacion_barbarie",
-    "pole": "civilizacion",
-    "inkBox": {
-      "x": 4,
-      "y": 4,
-      "w": 380,
-      "h": 575
-    },
-    "inkRatio": 0.7442168049792531,
-    "inkCenter": {
-      "x": 0.52195119853308,
-      "y": 0.5393114729383607
-    }
-  },
-  "022": {
-    "file": "022.webp",
-    "w": 1600,
-    "h": 800,
-    "role": "papel",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 90,
-      "y": 60,
-      "w": 1420,
-      "h": 680
-    },
-    "inkRatio": 0.557109375,
-    "inkCenter": {
-      "x": 0.4924397739684496,
-      "y": 0.5797336814406032
-    }
-  },
-  "023": {
-    "file": "023.webp",
-    "w": 1262,
-    "h": 1246,
-    "role": "papel",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 70,
-      "y": 63,
-      "w": 1122,
-      "h": 1105
-    },
-    "inkRatio": 0.6011867088607595,
-    "inkCenter": {
-      "x": 0.49515920367579874,
-      "y": 0.5032419679281108
-    }
-  },
-  "024": {
-    "file": "024.webp",
-    "w": 1600,
-    "h": 800,
-    "role": "papel",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 80,
-      "y": 130,
-      "w": 1440,
-      "h": 540
-    },
-    "inkRatio": 0.578671875,
-    "inkCenter": {
-      "x": 0.5004073661551386,
-      "y": 0.4961410377570767
-    }
-  },
-  "025": {
-    "file": "025.webp",
-    "w": 1312,
-    "h": 1199,
-    "role": "papel",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 90,
-      "y": 106,
-      "w": 1124,
-      "h": 987
-    },
-    "inkRatio": 0.3577482876712329,
-    "inkCenter": {
-      "x": 0.49801294251333517,
-      "y": 0.6562198356667065
-    }
-  },
-  "026": {
-    "file": "026.webp",
-    "w": 1600,
-    "h": 854,
-    "role": "papel",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 70,
-      "y": 70,
-      "w": 1470,
-      "h": 714
-    },
-    "inkRatio": 0.5797794117647059,
-    "inkCenter": {
-      "x": 0.49479593993589827,
-      "y": 0.5004983611242598
-    }
-  },
-  "027": {
-    "file": "027.webp",
-    "w": 1254,
-    "h": 1254,
-    "role": "papel",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 62,
-      "y": 62,
-      "w": 1130,
-      "h": 1130
-    },
-    "inkRatio": 0.4076171875,
-    "inkCenter": {
-      "x": 0.49772234201139326,
-      "y": 0.4964898445402757
-    }
-  },
-  "028": {
-    "file": "028.webp",
-    "w": 591,
-    "h": 305,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 25,
-      "y": 40,
-      "w": 526,
-      "h": 207
-    },
-    "inkRatio": 0.30346385542168675,
-    "inkCenter": {
-      "x": 0.41994023695523014,
-      "y": 0.5566288550159518
-    }
-  },
-  "029": {
-    "file": "029.webp",
-    "w": 675,
-    "h": 1200,
-    "role": "texto",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 21,
-      "y": 21,
-      "w": 633,
-      "h": 1137
-    },
-    "inkRatio": 0.6641505281690141,
-    "inkCenter": {
-      "x": 0.49488794636446976,
-      "y": 0.5252159635857969
-    }
-  },
-  "030": {
-    "file": "030.webp",
-    "w": 736,
-    "h": 718,
-    "role": "texto",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 27,
-      "y": 23,
-      "w": 645,
-      "h": 654
-    },
-    "inkRatio": 0.6141426282051282,
-    "inkCenter": {
-      "x": 0.5400228791366505,
-      "y": 0.5210429187428045
-    }
-  },
-  "031": {
-    "file": "031.webp",
-    "w": 420,
-    "h": 548,
-    "role": "papel",
-    "axis": "infinito_limite",
-    "pole": "infinito",
-    "inkBox": {
-      "x": 23,
-      "y": 99,
-      "w": 374,
-      "h": 350
-    },
-    "inkRatio": 0.45293062200956935,
-    "inkCenter": {
-      "x": 0.5002385234422513,
-      "y": 0.5021256760017038
-    }
-  },
-  "032": {
-    "file": "032.webp",
-    "w": 663,
-    "h": 1000,
-    "role": "figura",
-    "axis": "fe_herejia",
-    "pole": "herejia",
-    "inkBox": {
-      "x": 33,
-      "y": 37,
-      "w": 597,
-      "h": 922
-    },
-    "inkRatio": 0.27984958506224067,
-    "inkCenter": {
-      "x": 0.5805445510147345,
-      "y": 0.43682193452835655
-    }
-  },
-  "033": {
-    "file": "033.webp",
-    "w": 736,
-    "h": 736,
-    "role": "figura",
-    "axis": "original_copia",
-    "pole": "copia",
-    "inkBox": {
-      "x": 82,
-      "y": 27,
-      "w": 581,
-      "h": 677
-    },
-    "inkRatio": 0.562421875,
-    "inkCenter": {
-      "x": 0.4975029600672051,
-      "y": 0.5166774863855808
-    }
-  },
-  "034": {
-    "file": "034.webp",
-    "w": 735,
-    "h": 574,
-    "role": "texto",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 18,
-      "y": 27,
-      "w": 690,
-      "h": 534
-    },
-    "inkRatio": 0.7232,
-    "inkCenter": {
-      "x": 0.5113403392330383,
-      "y": 0.4878926514342386
-    }
-  },
-  "035": {
-    "file": "035.webp",
-    "w": 666,
-    "h": 1000,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 124,
-      "y": 75,
-      "w": 459,
-      "h": 867
-    },
-    "inkRatio": 0.29130208333333335,
-    "inkCenter": {
-      "x": 0.4170757277766039,
-      "y": 0.4872600022005529
-    }
-  },
-  "036": {
-    "file": "036.webp",
-    "w": 675,
-    "h": 896,
-    "role": "papel",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 37,
-      "y": 38,
-      "w": 630,
-      "h": 829
-    },
-    "inkRatio": 0.6027417452830188,
-    "inkCenter": {
-      "x": 0.5134858459674918,
-      "y": 0.4761426874491543
-    }
-  },
-  "037": {
-    "file": "037.webp",
-    "w": 736,
-    "h": 842,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 32,
-      "y": 0,
-      "w": 704,
-      "h": 842
-    },
-    "inkRatio": 0.1778688524590164,
-    "inkCenter": {
-      "x": 0.4411563908717609,
-      "y": 0.4716493330983019
-    }
-  },
-  "038": {
-    "file": "038.webp",
-    "w": 1451,
-    "h": 1084,
-    "role": "figura",
-    "axis": "civilizacion_barbarie",
-    "pole": "civilizacion",
-    "inkBox": {
-      "x": 27,
-      "y": 27,
-      "w": 1388,
-      "h": 1039
-    },
-    "inkRatio": 0.59734375,
-    "inkCenter": {
-      "x": 0.42407552726673836,
-      "y": 0.5041260562499289
-    }
-  },
-  "039": {
-    "file": "039.webp",
-    "w": 1080,
-    "h": 1080,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 263,
-      "y": 155,
-      "w": 554,
-      "h": 770
-    },
-    "inkRatio": 0.2785546875,
-    "inkCenter": {
-      "x": 0.48472745244911425,
-      "y": 0.4991112439632246
-    }
-  },
-  "040": {
-    "file": "040.webp",
-    "w": 1080,
-    "h": 1080,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 236,
-      "y": 13,
-      "w": 601,
-      "h": 1054
-    },
-    "inkRatio": 0.3591796875,
-    "inkCenter": {
-      "x": 0.43754666373395407,
-      "y": 0.5009631070397791
-    }
-  },
-  "041": {
-    "file": "041.webp",
-    "w": 1080,
-    "h": 1080,
-    "role": "texto",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 249,
-      "y": 168,
-      "w": 575,
-      "h": 744
-    },
-    "inkRatio": 0.1468359375,
-    "inkCenter": {
-      "x": 0.4810713112060467,
-      "y": 0.4646871750223706
-    }
-  },
-  "042": {
-    "file": "042.webp",
-    "w": 247,
-    "h": 418,
-    "role": "figura",
-    "axis": "infinito_limite",
-    "pole": "limite",
-    "inkBox": {
-      "x": 3,
-      "y": 0,
-      "w": 244,
-      "h": 417
-    },
-    "inkRatio": 0.5940959409594095,
-    "inkCenter": {
-      "x": 0.43015002162119664,
-      "y": 0.5474856222682309
-    }
-  },
-  "043": {
-    "file": "043.webp",
-    "w": 720,
-    "h": 1008,
-    "role": "figura",
-    "axis": "civilizacion_barbarie",
-    "pole": "civilizacion",
-    "inkBox": {
-      "x": 9,
-      "y": 189,
-      "w": 707,
-      "h": 819
-    },
-    "inkRatio": 0.2791294642857143,
-    "inkCenter": {
-      "x": 0.44593882192345996,
-      "y": 0.49042306154461296
-    }
-  },
-  "044": {
-    "file": "044.webp",
-    "w": 736,
-    "h": 1043,
-    "role": "acento",
-    "axis": "civilizacion_barbarie",
-    "pole": "barbarie",
-    "inkBox": {
-      "x": 101,
-      "y": 197,
-      "w": 543,
-      "h": 755
-    },
-    "inkRatio": 0.09873348017621146,
-    "inkCenter": {
-      "x": 0.4795627061926324,
-      "y": 0.534162325030947
-    }
-  },
-  "045": {
-    "file": "045.webp",
-    "w": 1536,
-    "h": 1024,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 19,
-      "y": 19,
-      "w": 1479,
-      "h": 996
-    },
-    "inkRatio": 0.63428738317757,
-    "inkCenter": {
-      "x": 0.521453567152987,
-      "y": 0.5265355040483966
-    }
-  },
-  "046": {
-    "file": "046.webp",
-    "w": 1339,
-    "h": 1174,
-    "role": "figura",
-    "axis": "civilizacion_barbarie",
-    "pole": "barbarie",
-    "inkBox": {
-      "x": 16,
-      "y": 25,
-      "w": 1307,
-      "h": 1124
-    },
-    "inkRatio": 0.6154017857142857,
-    "inkCenter": {
-      "x": 0.5505536024850497,
-      "y": 0.5044556867458139
-    }
-  },
-  "047": {
-    "file": "047.webp",
-    "w": 1448,
-    "h": 1086,
-    "role": "figura",
-    "axis": "original_copia",
-    "pole": "copia",
-    "inkBox": {
-      "x": 45,
-      "y": 27,
-      "w": 1358,
-      "h": 1041
-    },
-    "inkRatio": 0.7270833333333333,
-    "inkCenter": {
-      "x": 0.501147564469914,
-      "y": 0.4579438146256385
-    }
-  },
-  "048": {
-    "file": "048.webp",
-    "w": 1312,
-    "h": 1199,
-    "role": "figura",
-    "axis": "infinito_limite",
-    "pole": "infinito",
-    "inkBox": {
-      "x": 8,
-      "y": 8,
-      "w": 1296,
-      "h": 1183
-    },
-    "inkRatio": 0.5159674657534247,
-    "inkCenter": {
-      "x": 0.4885944147525644,
-      "y": 0.5066952556763185
-    }
-  },
-  "049": {
-    "file": "049.webp",
-    "w": 736,
-    "h": 1308,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 13,
-      "y": 0,
-      "w": 723,
-      "h": 1267
-    },
-    "inkRatio": 0.414568661971831,
-    "inkCenter": {
-      "x": 0.44002466893384634,
-      "y": 0.46059396384483975
-    }
-  },
-  "050": {
-    "file": "050.webp",
-    "w": 640,
-    "h": 640,
-    "role": "texto",
-    "axis": "fe_herejia",
-    "pole": "herejia",
-    "inkBox": {
-      "x": 24,
-      "y": 112,
-      "w": 556,
-      "h": 388
-    },
-    "inkRatio": 0.5068359375,
-    "inkCenter": {
-      "x": 0.5052009259644308,
-      "y": 0.4960336094392467
-    }
-  },
-  "051": {
-    "file": "051.webp",
-    "w": 736,
-    "h": 718,
-    "role": "texto",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 78,
-      "y": 73,
-      "w": 548,
-      "h": 558
-    },
-    "inkRatio": 0.42736378205128206,
-    "inkCenter": {
-      "x": 0.5349479624980207,
-      "y": 0.5170782369662519
-    }
-  },
-  "052": {
-    "file": "052.webp",
-    "w": 735,
-    "h": 922,
-    "role": "texto",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 0,
-      "y": 4,
-      "w": 713,
-      "h": 827
-    },
-    "inkRatio": 0.40923507462686565,
-    "inkCenter": {
-      "x": 0.422935554950967,
-      "y": 0.5254183234978768
-    }
-  },
-  "053": {
-    "file": "053.webp",
-    "w": 736,
-    "h": 1308,
-    "role": "figura",
-    "axis": "original_copia",
-    "pole": "copia",
-    "inkBox": {
-      "x": 0,
-      "y": 9,
-      "w": 732,
-      "h": 1290
-    },
-    "inkRatio": 0.47037852112676054,
-    "inkCenter": {
-      "x": 0.49827539837091206,
-      "y": 0.4579064684730447
-    }
-  },
-  "054": {
-    "file": "054.webp",
-    "w": 736,
-    "h": 1104,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 170,
-      "y": 46,
-      "w": 396,
-      "h": 1022
-    },
-    "inkRatio": 0.3684895833333333,
-    "inkCenter": {
-      "x": 0.49366751581888396,
-      "y": 0.4584528698309617
-    }
-  },
-  "055": {
-    "file": "055.webp",
-    "w": 736,
-    "h": 1104,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 73,
-      "y": 59,
-      "w": 590,
-      "h": 986
-    },
-    "inkRatio": 0.4286979166666667,
-    "inkCenter": {
-      "x": 0.520319049173855,
-      "y": 0.4638538826887638
-    }
-  },
-  "056": {
-    "file": "056.webp",
-    "w": 440,
-    "h": 985,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 2,
-      "y": 0,
-      "w": 438,
-      "h": 985
-    },
-    "inkRatio": 0.48386871508379886,
-    "inkCenter": {
-      "x": 0.5032646946431505,
-      "y": 0.4659792540621515
-    }
-  },
-  "057": {
-    "file": "057.webp",
-    "w": 287,
-    "h": 580,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 287,
-      "h": 580
-    },
-    "inkRatio": 0.4674922600619195,
-    "inkCenter": {
-      "x": 0.492539579884106,
-      "y": 0.6529099091710577
-    }
-  },
-  "058": {
-    "file": "058.webp",
-    "w": 736,
-    "h": 1261,
-    "role": "texto",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 32,
-      "y": 128,
-      "w": 612,
-      "h": 1060
-    },
-    "inkRatio": 0.08487682481751825,
-    "inkCenter": {
-      "x": 0.6934438353341026,
-      "y": 0.6506146080413167
-    }
-  },
-  "059": {
-    "file": "059.webp",
-    "w": 736,
-    "h": 981,
-    "role": "texto",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 59,
-      "y": 9,
-      "w": 668,
-      "h": 954
-    },
-    "inkRatio": 0.15223004694835682,
-    "inkCenter": {
-      "x": 0.4507231542285912,
-      "y": 0.3088956678175947
-    }
-  },
-  "060": {
-    "file": "060.webp",
-    "w": 675,
-    "h": 1200,
-    "role": "acento",
-    "axis": "civilizacion_barbarie",
-    "pole": "civilizacion",
-    "inkBox": {
-      "x": 42,
-      "y": 498,
-      "w": 570,
-      "h": 466
-    },
-    "inkRatio": 0.16747359154929578,
-    "inkCenter": {
-      "x": 0.5198569134180173,
-      "y": 0.44072273324572936
-    }
-  },
-  "061": {
-    "file": "061.webp",
-    "w": 675,
-    "h": 1200,
-    "role": "acento",
-    "axis": "civilizacion_barbarie",
-    "pole": "civilizacion",
-    "inkBox": {
-      "x": 71,
-      "y": 321,
-      "w": 533,
-      "h": 546
-    },
-    "inkRatio": 0.21472271126760564,
-    "inkCenter": {
-      "x": 0.474156527425975,
-      "y": 0.4220778085779003
-    }
-  },
-  "062": {
-    "file": "062.webp",
-    "w": 621,
-    "h": 877,
-    "role": "figura",
-    "axis": "fe_herejia",
-    "pole": "fe",
-    "inkBox": {
-      "x": 3,
-      "y": 11,
-      "w": 611,
-      "h": 859
-    },
-    "inkRatio": 0.5188329646017699,
-    "inkCenter": {
-      "x": 0.3830491631745894,
-      "y": 0.554888583011692
-    }
-  },
-  "063": {
-    "file": "063.webp",
-    "w": 509,
-    "h": 709,
-    "role": "figura",
-    "axis": "civilizacion_barbarie",
-    "pole": "barbarie",
-    "inkBox": {
-      "x": 9,
-      "y": 6,
-      "w": 485,
-      "h": 681
-    },
-    "inkRatio": 0.7577634529147982,
-    "inkCenter": {
-      "x": 0.49757678561347707,
-      "y": 0.49203695939002245
-    }
-  },
-  "064": {
-    "file": "064.webp",
-    "w": 736,
-    "h": 1308,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 4,
-      "y": 0,
-      "w": 723,
-      "h": 1051
-    },
-    "inkRatio": 0.36602112676056336,
-    "inkCenter": {
-      "x": 0.42986047922353654,
-      "y": 0.5004113819903293
-    }
-  },
-  "065": {
-    "file": "065.webp",
-    "w": 675,
-    "h": 1200,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 63,
-      "y": 194,
-      "w": 579,
-      "h": 808
-    },
-    "inkRatio": 0.3345730633802817,
-    "inkCenter": {
-      "x": 0.3441788525219043,
-      "y": 0.526696301673719
-    }
-  },
-  "066": {
-    "file": "066.webp",
-    "w": 736,
-    "h": 920,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 73,
-      "y": 96,
-      "w": 590,
-      "h": 650
-    },
-    "inkRatio": 0.17778125,
-    "inkCenter": {
-      "x": 0.5842820300140622,
-      "y": 0.517916870805798
-    }
-  },
-  "067": {
-    "file": "067.webp",
-    "w": 715,
-    "h": 1000,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 35,
-      "y": 75,
-      "w": 640,
-      "h": 850
-    },
-    "inkRatio": 0.27979910714285716,
-    "inkCenter": {
-      "x": 0.5165989774087102,
-      "y": 0.5387551697352676
-    }
-  },
-  "068": {
-    "file": "068.webp",
-    "w": 736,
-    "h": 1444,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 13,
-      "y": 18,
-      "w": 710,
-      "h": 1422
-    },
-    "inkRatio": 0.4852906050955414,
-    "inkCenter": {
-      "x": 0.5268543953483046,
-      "y": 0.4470572939377033
-    }
-  },
-  "069": {
-    "file": "069.webp",
-    "w": 492,
-    "h": 720,
-    "role": "figura",
-    "axis": "civilizacion_barbarie",
-    "pole": "barbarie",
-    "inkBox": {
-      "x": 33,
-      "y": 52,
-      "w": 426,
-      "h": 668
-    },
-    "inkRatio": 0.3004273504273504,
-    "inkCenter": {
-      "x": 0.5135747160203682,
-      "y": 0.5435428151896743
-    }
-  },
-  "070": {
-    "file": "070.webp",
-    "w": 562,
-    "h": 1000,
-    "role": "figura",
-    "axis": "civilizacion_barbarie",
-    "pole": "barbarie",
-    "inkBox": {
-      "x": 147,
-      "y": 21,
-      "w": 268,
-      "h": 958
-    },
-    "inkRatio": 0.15326754385964914,
-    "inkCenter": {
-      "x": 0.5058108230226446,
-      "y": 0.5169030664094335
-    }
-  },
-  "071": {
-    "file": "071.webp",
-    "w": 694,
-    "h": 1004,
-    "role": "papel",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 694,
-      "h": 1004
-    },
-    "inkRatio": 0.3457251082251082,
-    "inkCenter": {
-      "x": 0.49459031147284394,
-      "y": 0.6477922348950679
-    }
-  },
-  "072": {
-    "file": "072.webp",
-    "w": 590,
-    "h": 885,
-    "role": "figura",
-    "axis": "original_copia",
-    "pole": "copia",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 590,
-      "h": 885
-    },
-    "inkRatio": 0.504609375,
-    "inkCenter": {
-      "x": 0.49186906512876094,
-      "y": 0.46634616211659874
-    }
-  },
-  "073": {
-    "file": "073.webp",
-    "w": 675,
-    "h": 1200,
-    "role": "figura",
-    "axis": "infinito_limite",
-    "pole": "limite",
-    "inkBox": {
-      "x": 97,
-      "y": 207,
-      "w": 486,
-      "h": 757
-    },
-    "inkRatio": 0.2237455985915493,
-    "inkCenter": {
-      "x": 0.4868397757450575,
-      "y": 0.5357163855237643
-    }
-  },
-  "074": {
-    "file": "074.webp",
-    "w": 536,
-    "h": 815,
-    "role": "figura",
-    "axis": "original_copia",
-    "pole": "copia",
-    "inkBox": {
-      "x": 257,
-      "y": 97,
-      "w": 182,
-      "h": 494
-    },
-    "inkRatio": 0.11033950617283951,
-    "inkCenter": {
-      "x": 0.5006000172666839,
-      "y": 0.5075702075702077
-    }
-  },
-  "075": {
-    "file": "075.webp",
-    "w": 339,
-    "h": 855,
-    "role": "papel",
-    "axis": "infinito_limite",
-    "pole": "infinito",
-    "inkBox": {
-      "x": 6,
-      "y": 0,
-      "w": 333,
-      "h": 855
-    },
-    "inkRatio": 0.5958384900990099,
-    "inkCenter": {
-      "x": 0.5088406287235265,
-      "y": 0.5487289573433521
-    }
-  },
-  "076": {
-    "file": "076.webp",
-    "w": 736,
-    "h": 1308,
-    "role": "figura",
-    "axis": "fe_herejia",
-    "pole": "herejia",
-    "inkBox": {
-      "x": 50,
-      "y": 594,
-      "w": 645,
-      "h": 420
-    },
-    "inkRatio": 0.20294894366197183,
-    "inkCenter": {
-      "x": 0.456802057192428,
-      "y": 0.5888224765908565
-    }
-  },
-  "077": {
-    "file": "077.webp",
-    "w": 544,
-    "h": 962,
-    "role": "figura",
-    "axis": "fe_herejia",
-    "pole": "herejia",
-    "inkBox": {
-      "x": 0,
-      "y": 0,
-      "w": 442,
-      "h": 962
-    },
-    "inkRatio": 0.36844081272084805,
-    "inkCenter": {
-      "x": 0.47286712867543657,
-      "y": 0.44688929230979085
-    }
-  },
-  "078": {
-    "file": "078.webp",
-    "w": 361,
-    "h": 589,
-    "role": "figura",
-    "axis": "infinito_limite",
-    "pole": "limite",
-    "inkBox": {
-      "x": 11,
-      "y": 4,
-      "w": 344,
-      "h": 576
-    },
-    "inkRatio": 0.5256465517241379,
-    "inkCenter": {
-      "x": 0.5282041161054886,
-      "y": 0.4273385195725595
-    }
-  },
-  "079": {
-    "file": "079.webp",
-    "w": 736,
-    "h": 1308,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 151,
-      "y": 207,
-      "w": 424,
-      "h": 807
-    },
-    "inkRatio": 0.1715448943661972,
-    "inkCenter": {
-      "x": 0.5376112056223331,
-      "y": 0.5643885274443325
-    }
-  },
-  "080": {
-    "file": "080.webp",
-    "w": 736,
-    "h": 1048,
-    "role": "acento",
-    "axis": "original_copia",
-    "pole": "copia",
-    "inkBox": {
-      "x": 220,
-      "y": 193,
-      "w": 305,
-      "h": 855
-    },
-    "inkRatio": 0.1873081140350877,
-    "inkCenter": {
-      "x": 0.4479364847065711,
-      "y": 0.3869815049986703
-    }
-  },
-  "081": {
-    "file": "081.webp",
-    "w": 736,
-    "h": 1102,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 23,
-      "y": 13,
-      "w": 700,
-      "h": 1076
-    },
-    "inkRatio": 0.5236197916666666,
-    "inkCenter": {
-      "x": 0.4720375923022357,
-      "y": 0.5027276081510925
-    }
-  },
-  "082": {
-    "file": "082.webp",
-    "w": 408,
-    "h": 612,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 0,
-      "y": 84,
-      "w": 403,
-      "h": 358
-    },
-    "inkRatio": 0.21075520833333333,
-    "inkCenter": {
-      "x": 0.4897336657558415,
-      "y": 0.5294712361652928
-    }
-  },
-  "083": {
-    "file": "083.webp",
-    "w": 1080,
-    "h": 1080,
-    "role": "texto",
-    "axis": "fe_herejia",
-    "pole": "herejia",
-    "inkBox": {
-      "x": 175,
-      "y": 13,
-      "w": 730,
-      "h": 1054
-    },
-    "inkRatio": 0.4475,
-    "inkCenter": {
-      "x": 0.49143421529070974,
-      "y": 0.5573588132072769
-    }
-  },
-  "084": {
-    "file": "084.webp",
-    "w": 736,
-    "h": 736,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 105,
-      "y": 32,
-      "w": 526,
-      "h": 695
-    },
-    "inkRatio": 0.4840234375,
-    "inkCenter": {
-      "x": 0.48926604907070353,
-      "y": 0.4663134052113235
-    }
-  },
-  "085": {
-    "file": "085.webp",
-    "w": 620,
-    "h": 573,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 50,
-      "y": 11,
-      "w": 520,
-      "h": 547
-    },
-    "inkRatio": 0.6118243243243243,
-    "inkCenter": {
-      "x": 0.4913381738463947,
-      "y": 0.5102192668131318
-    }
-  },
-  "086": {
-    "file": "086.webp",
-    "w": 1080,
-    "h": 1080,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 13,
-      "y": 6,
-      "w": 1067,
-      "h": 1054
-    },
-    "inkRatio": 0.622734375,
-    "inkCenter": {
-      "x": 0.5262438681994381,
-      "y": 0.5804008280015055
-    }
-  },
-  "087": {
-    "file": "087.webp",
-    "w": 1080,
-    "h": 543,
-    "role": "acento",
-    "axis": "civilizacion_barbarie",
-    "pole": "civilizacion",
-    "inkBox": {
-      "x": 13,
-      "y": 101,
-      "w": 1061,
-      "h": 300
-    },
-    "inkRatio": 0.332421875,
-    "inkCenter": {
-      "x": 0.5068499404971297,
-      "y": 0.5115612648221344
-    }
-  },
-  "088": {
-    "file": "088.webp",
-    "w": 1080,
-    "h": 543,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 0,
-      "y": 33,
-      "w": 1006,
-      "h": 510
-    },
-    "inkRatio": 0.350625,
-    "inkCenter": {
-      "x": 0.453513620213186,
-      "y": 0.48719251336898395
-    }
-  },
-  "089": {
-    "file": "089.webp",
-    "w": 1080,
-    "h": 543,
-    "role": "figura",
-    "axis": "fe_herejia",
-    "pole": "herejia",
-    "inkBox": {
-      "x": 74,
-      "y": 54,
-      "w": 932,
-      "h": 489
-    },
-    "inkRatio": 0.306640625,
-    "inkCenter": {
-      "x": 0.6469112895781409,
-      "y": 0.5652883934890304
-    }
-  },
-  "090": {
-    "file": "090.webp",
-    "w": 1080,
-    "h": 543,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 6,
-      "y": 122,
-      "w": 1074,
-      "h": 293
-    },
-    "inkRatio": 0.291953125,
-    "inkCenter": {
-      "x": 0.5960343867125112,
-      "y": 0.4651629524988954
-    }
-  },
-  "091": {
-    "file": "091.webp",
-    "w": 620,
-    "h": 573,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
-    "inkBox": {
-      "x": 85,
-      "y": 27,
-      "w": 423,
-      "h": 527
-    },
-    "inkRatio": 0.39552364864864864,
-    "inkCenter": {
-      "x": 0.5154188387824788,
-      "y": 0.6147069814472874
-    }
-  },
-  "092": {
-    "file": "092.webp",
-    "w": 761,
-    "h": 305,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
     "inkBox": {
       "x": 66,
       "y": 23,
       "w": 629,
       "h": 249
     },
-    "inkRatio": 0.4708984375,
+    "inkRatio": 0.47138671875,
     "inkCenter": {
-      "x": 0.4906929100209897,
-      "y": 0.5127021982579842
+      "x": 0.4909418925111902,
+      "y": 0.5130456088349189
     }
   },
-  "093": {
-    "file": "093.webp",
+  "101": {
+    "file": "101.webp",
     "w": 761,
     "h": 305,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
     "inkBox": {
       "x": 14,
       "y": 23,
       "w": 728,
       "h": 259
     },
-    "inkRatio": 0.5828125,
+    "inkRatio": 0.58291015625,
     "inkCenter": {
-      "x": 0.5106570554942264,
-      "y": 0.4886058981233244
+      "x": 0.5106716948241294,
+      "y": 0.48865279251441085
     }
   },
-  "094": {
-    "file": "094.webp",
+  "102": {
+    "file": "102.webp",
     "w": 761,
     "h": 305,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
     "inkBox": {
       "x": 19,
       "y": 0,
@@ -2374,13 +47,10 @@
       "y": 0.5123178847490012
     }
   },
-  "095": {
-    "file": "095.webp",
+  "103": {
+    "file": "103.webp",
     "w": 1080,
     "h": 1080,
-    "role": "figura",
-    "axis": "fe_herejia",
-    "pole": "herejia",
     "inkBox": {
       "x": 330,
       "y": 40,
@@ -2393,13 +63,10 @@
       "y": 0.484471555074218
     }
   },
-  "096": {
-    "file": "096.webp",
+  "104": {
+    "file": "104.webp",
     "w": 1080,
     "h": 1080,
-    "role": "figura",
-    "axis": "neutro",
-    "pole": "neutro",
     "inkBox": {
       "x": 270,
       "y": 60,
@@ -2412,13 +79,10 @@
       "y": 0.5053338701075447
     }
   },
-  "097": {
-    "file": "097.webp",
+  "105": {
+    "file": "105.webp",
     "w": 1080,
     "h": 1080,
-    "role": "figura",
-    "axis": "civilizacion_barbarie",
-    "pole": "barbarie",
     "inkBox": {
       "x": 182,
       "y": 81,
@@ -2431,13 +95,10 @@
       "y": 0.51859200748395
     }
   },
-  "098": {
-    "file": "098.webp",
+  "106": {
+    "file": "106.webp",
     "w": 1080,
     "h": 543,
-    "role": "acento",
-    "axis": "neutro",
-    "pole": "neutro",
     "inkBox": {
       "x": 33,
       "y": 115,
@@ -2450,13 +111,10 @@
       "y": 0.39355240205100606
     }
   },
-  "099": {
-    "file": "099.webp",
+  "107": {
+    "file": "107.webp",
     "w": 1080,
     "h": 543,
-    "role": "acento",
-    "axis": "original_copia",
-    "pole": "copia",
     "inkBox": {
       "x": 216,
       "y": 27,
@@ -2467,6 +125,3238 @@
     "inkCenter": {
       "x": 0.4989629656914483,
       "y": 0.4977824043340739
+    }
+  },
+  "108": {
+    "file": "108.webp",
+    "w": 1080,
+    "h": 1080,
+    "inkBox": {
+      "x": 175,
+      "y": 13,
+      "w": 757,
+      "h": 1061
+    },
+    "inkRatio": 0.5666015625,
+    "inkCenter": {
+      "x": 0.488986248584232,
+      "y": 0.5059724628230546
+    }
+  },
+  "109": {
+    "file": "109.webp",
+    "w": 1080,
+    "h": 1080,
+    "inkBox": {
+      "x": 60,
+      "y": 13,
+      "w": 906,
+      "h": 1054
+    },
+    "inkRatio": 0.5530078125,
+    "inkCenter": {
+      "x": 0.4818619869501823,
+      "y": 0.5148569702765508
+    }
+  },
+  "110": {
+    "file": "110.webp",
+    "w": 1080,
+    "h": 543,
+    "inkBox": {
+      "x": 47,
+      "y": 13,
+      "w": 986,
+      "h": 517
+    },
+    "inkRatio": 0.72609375,
+    "inkCenter": {
+      "x": 0.5104832695125151,
+      "y": 0.5720102386372645
+    }
+  },
+  "111": {
+    "file": "111.webp",
+    "w": 1080,
+    "h": 543,
+    "inkBox": {
+      "x": 27,
+      "y": 176,
+      "w": 1026,
+      "h": 171
+    },
+    "inkRatio": 0.295546875,
+    "inkCenter": {
+      "x": 0.5001295616121987,
+      "y": 0.49941845096484255
+    }
+  },
+  "112": {
+    "file": "112.webp",
+    "w": 761,
+    "h": 305,
+    "inkBox": {
+      "x": 57,
+      "y": 28,
+      "w": 647,
+      "h": 277
+    },
+    "inkRatio": 0.613671875,
+    "inkCenter": {
+      "x": 0.5183413992586213,
+      "y": 0.4271109989244716
+    }
+  },
+  "113": {
+    "file": "113.webp",
+    "w": 650,
+    "h": 890,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 650,
+      "h": 890
+    },
+    "inkRatio": 1,
+    "inkCenter": {
+      "x": 0.5,
+      "y": 0.5
+    }
+  },
+  "114": {
+    "file": "114.webp",
+    "w": 1080,
+    "h": 1080,
+    "inkBox": {
+      "x": 47,
+      "y": 0,
+      "w": 986,
+      "h": 1080
+    },
+    "inkRatio": 0.159921875,
+    "inkCenter": {
+      "x": 0.6246963481473055,
+      "y": 0.4575705300439668
+    }
+  },
+  "115": {
+    "file": "115.webp",
+    "w": 736,
+    "h": 736,
+    "inkBox": {
+      "x": 73,
+      "y": 151,
+      "w": 590,
+      "h": 489
+    },
+    "inkRatio": 0.33390625,
+    "inkCenter": {
+      "x": 0.5052762707650913,
+      "y": 0.43802588711030277
+    }
+  },
+  "116": {
+    "file": "116.webp",
+    "w": 247,
+    "h": 418,
+    "inkBox": {
+      "x": 3,
+      "y": 0,
+      "w": 244,
+      "h": 417
+    },
+    "inkRatio": 0.5952029520295203,
+    "inkCenter": {
+      "x": 0.43077016644824095,
+      "y": 0.5475238800486786
+    }
+  },
+  "117": {
+    "file": "117.webp",
+    "w": 720,
+    "h": 1008,
+    "inkBox": {
+      "x": 9,
+      "y": 189,
+      "w": 707,
+      "h": 819
+    },
+    "inkRatio": 0.27915736607142855,
+    "inkCenter": {
+      "x": 0.4459474084613744,
+      "y": 0.4904517521459051
+    }
+  },
+  "118": {
+    "file": "118.webp",
+    "w": 600,
+    "h": 600,
+    "inkBox": {
+      "x": 97,
+      "y": 52,
+      "w": 402,
+      "h": 492
+    },
+    "inkRatio": 0.4196875,
+    "inkCenter": {
+      "x": 0.4852288780175504,
+      "y": 0.4883322060102425
+    }
+  },
+  "119": {
+    "file": "119.webp",
+    "w": 736,
+    "h": 736,
+    "inkBox": {
+      "x": 50,
+      "y": 59,
+      "w": 599,
+      "h": 581
+    },
+    "inkRatio": 0.2871484375,
+    "inkCenter": {
+      "x": 0.5395691847263062,
+      "y": 0.6115154400761802
+    }
+  },
+  "120": {
+    "file": "120.webp",
+    "w": 736,
+    "h": 1043,
+    "inkBox": {
+      "x": 101,
+      "y": 197,
+      "w": 543,
+      "h": 755
+    },
+    "inkRatio": 0.09936674008810573,
+    "inkCenter": {
+      "x": 0.4796847335521836,
+      "y": 0.5333929742040563
+    }
+  },
+  "121": {
+    "file": "121.webp",
+    "w": 1536,
+    "h": 1024,
+    "inkBox": {
+      "x": 19,
+      "y": 19,
+      "w": 1479,
+      "h": 996
+    },
+    "inkRatio": 0.6344626168224299,
+    "inkCenter": {
+      "x": 0.5214736469569834,
+      "y": 0.5265268473011062
+    }
+  },
+  "122": {
+    "file": "122.webp",
+    "w": 248,
+    "h": 652,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 248,
+      "h": 652
+    },
+    "inkRatio": 0.6153355106888361,
+    "inkCenter": {
+      "x": 0.43556938949069945,
+      "y": 0.5254570923635714
+    }
+  },
+  "123": {
+    "file": "123.webp",
+    "w": 1339,
+    "h": 1174,
+    "inkBox": {
+      "x": 16,
+      "y": 25,
+      "w": 1307,
+      "h": 1124
+    },
+    "inkRatio": 0.6154017857142857,
+    "inkCenter": {
+      "x": 0.5505536024850497,
+      "y": 0.5044556867458139
+    }
+  },
+  "124": {
+    "file": "124.webp",
+    "w": 1448,
+    "h": 1086,
+    "inkBox": {
+      "x": 45,
+      "y": 27,
+      "w": 1358,
+      "h": 1041
+    },
+    "inkRatio": 0.7270833333333333,
+    "inkCenter": {
+      "x": 0.501147564469914,
+      "y": 0.4579438146256385
+    }
+  },
+  "125": {
+    "file": "125.webp",
+    "w": 1312,
+    "h": 1199,
+    "inkBox": {
+      "x": 8,
+      "y": 8,
+      "w": 1296,
+      "h": 1183
+    },
+    "inkRatio": 0.5160102739726027,
+    "inkCenter": {
+      "x": 0.48857252070324886,
+      "y": 0.5067358921888538
+    }
+  },
+  "126": {
+    "file": "126.webp",
+    "w": 736,
+    "h": 763,
+    "inkBox": {
+      "x": 216,
+      "y": 124,
+      "w": 396,
+      "h": 552
+    },
+    "inkRatio": 0.16050451807228916,
+    "inkCenter": {
+      "x": 0.3363050914030408,
+      "y": 0.47167780905465634
+    }
+  },
+  "127": {
+    "file": "127.webp",
+    "w": 497,
+    "h": 983,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 497,
+      "h": 983
+    },
+    "inkRatio": 0.4285996835443038,
+    "inkCenter": {
+      "x": 0.5233104522381172,
+      "y": 0.5234669349798181
+    }
+  },
+  "128": {
+    "file": "128.webp",
+    "w": 412,
+    "h": 494,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 412,
+      "h": 494
+    },
+    "inkRatio": 1,
+    "inkCenter": {
+      "x": 0.5,
+      "y": 0.5
+    }
+  },
+  "129": {
+    "file": "129.webp",
+    "w": 362,
+    "h": 468,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 362,
+      "h": 468
+    },
+    "inkRatio": 0.3986413043478261,
+    "inkCenter": {
+      "x": 0.4500925452548663,
+      "y": 0.5316642279733672
+    }
+  },
+  "130": {
+    "file": "130.webp",
+    "w": 735,
+    "h": 1191,
+    "inkBox": {
+      "x": 13,
+      "y": 18,
+      "w": 663,
+      "h": 1146
+    },
+    "inkRatio": 0.4319980694980695,
+    "inkCenter": {
+      "x": 0.5593722458074207,
+      "y": 0.3556379467148002
+    }
+  },
+  "131": {
+    "file": "131.webp",
+    "w": 736,
+    "h": 862,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 736,
+      "h": 862
+    },
+    "inkRatio": 1,
+    "inkCenter": {
+      "x": 0.5,
+      "y": 0.5
+    }
+  },
+  "132": {
+    "file": "132.webp",
+    "w": 663,
+    "h": 666,
+    "inkBox": {
+      "x": 12,
+      "y": 4,
+      "w": 643,
+      "h": 650
+    },
+    "inkRatio": 0.5590450310559006,
+    "inkCenter": {
+      "x": 0.3816278439445289,
+      "y": 0.43758306770097793
+    }
+  },
+  "133": {
+    "file": "133.webp",
+    "w": 567,
+    "h": 567,
+    "inkBox": {
+      "x": 17,
+      "y": 7,
+      "w": 536,
+      "h": 546
+    },
+    "inkRatio": 0.3843359375,
+    "inkCenter": {
+      "x": 0.49358277539915824,
+      "y": 0.5281113591155262
+    }
+  },
+  "134": {
+    "file": "134.webp",
+    "w": 736,
+    "h": 966,
+    "inkBox": {
+      "x": 9,
+      "y": 9,
+      "w": 723,
+      "h": 948
+    },
+    "inkRatio": 0.5998511904761905,
+    "inkCenter": {
+      "x": 0.5101225059925704,
+      "y": 0.512612086427276
+    }
+  },
+  "135": {
+    "file": "135.webp",
+    "w": 462,
+    "h": 910,
+    "inkBox": {
+      "x": 5,
+      "y": 5,
+      "w": 452,
+      "h": 897
+    },
+    "inkRatio": 0.5683531746031746,
+    "inkCenter": {
+      "x": 0.5141248304845791,
+      "y": 0.5567762768934509
+    }
+  },
+  "136": {
+    "file": "136.webp",
+    "w": 736,
+    "h": 1025,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 736,
+      "h": 1025
+    },
+    "inkRatio": 1,
+    "inkCenter": {
+      "x": 0.5,
+      "y": 0.5
+    }
+  },
+  "137": {
+    "file": "137.webp",
+    "w": 736,
+    "h": 1308,
+    "inkBox": {
+      "x": 55,
+      "y": 267,
+      "w": 626,
+      "h": 797
+    },
+    "inkRatio": 0.33411091549295774,
+    "inkCenter": {
+      "x": 0.528766166590467,
+      "y": 0.49680066826931496
+    }
+  },
+  "138": {
+    "file": "138.webp",
+    "w": 623,
+    "h": 854,
+    "inkBox": {
+      "x": 38,
+      "y": 23,
+      "w": 562,
+      "h": 831
+    },
+    "inkRatio": 0.5426940639269406,
+    "inkCenter": {
+      "x": 0.496909035665872,
+      "y": 0.5688960223266397
+    }
+  },
+  "139": {
+    "file": "139.webp",
+    "w": 735,
+    "h": 922,
+    "inkBox": {
+      "x": 0,
+      "y": 4,
+      "w": 713,
+      "h": 827
+    },
+    "inkRatio": 0.40948383084577117,
+    "inkCenter": {
+      "x": 0.42306075607671,
+      "y": 0.52547375570574
+    }
+  },
+  "140": {
+    "file": "140.webp",
+    "w": 736,
+    "h": 1104,
+    "inkBox": {
+      "x": 170,
+      "y": 46,
+      "w": 396,
+      "h": 1022
+    },
+    "inkRatio": 0.36856770833333335,
+    "inkCenter": {
+      "x": 0.49362818960233595,
+      "y": 0.45838895137630387
+    }
+  },
+  "141": {
+    "file": "141.webp",
+    "w": 736,
+    "h": 1104,
+    "inkBox": {
+      "x": 73,
+      "y": 59,
+      "w": 590,
+      "h": 986
+    },
+    "inkRatio": 0.4286979166666667,
+    "inkCenter": {
+      "x": 0.520319049173855,
+      "y": 0.4638538826887638
+    }
+  },
+  "142": {
+    "file": "142.webp",
+    "w": 440,
+    "h": 985,
+    "inkBox": {
+      "x": 2,
+      "y": 0,
+      "w": 438,
+      "h": 985
+    },
+    "inkRatio": 0.48400837988826817,
+    "inkCenter": {
+      "x": 0.503229724444638,
+      "y": 0.4659123974629408
+    }
+  },
+  "143": {
+    "file": "143.webp",
+    "w": 287,
+    "h": 580,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 287,
+      "h": 580
+    },
+    "inkRatio": 0.4675503095975232,
+    "inkCenter": {
+      "x": 0.49254399805487725,
+      "y": 0.652923853462212
+    }
+  },
+  "144": {
+    "file": "144.webp",
+    "w": 327,
+    "h": 866,
+    "inkBox": {
+      "x": 4,
+      "y": 71,
+      "w": 301,
+      "h": 795
+    },
+    "inkRatio": 0.42125589622641507,
+    "inkCenter": {
+      "x": 0.5762400838283386,
+      "y": 0.6431208611222503
+    }
+  },
+  "145": {
+    "file": "145.webp",
+    "w": 736,
+    "h": 1036,
+    "inkBox": {
+      "x": 18,
+      "y": 9,
+      "w": 700,
+      "h": 1014
+    },
+    "inkRatio": 0.5859166666666666,
+    "inkCenter": {
+      "x": 0.463384741009115,
+      "y": 0.5024365041396759
+    }
+  },
+  "146": {
+    "file": "146.webp",
+    "w": 736,
+    "h": 1041,
+    "inkBox": {
+      "x": 207,
+      "y": 0,
+      "w": 355,
+      "h": 1009
+    },
+    "inkRatio": 0.33573008849557523,
+    "inkCenter": {
+      "x": 0.5026466120370569,
+      "y": 0.544588251224301
+    }
+  },
+  "147": {
+    "file": "147.webp",
+    "w": 736,
+    "h": 1308,
+    "inkBox": {
+      "x": 27,
+      "y": 280,
+      "w": 645,
+      "h": 830
+    },
+    "inkRatio": 0.18100792253521128,
+    "inkCenter": {
+      "x": 0.5822983065566653,
+      "y": 0.47452516041877746
+    }
+  },
+  "148": {
+    "file": "148.webp",
+    "w": 736,
+    "h": 1308,
+    "inkBox": {
+      "x": 0,
+      "y": 36,
+      "w": 736,
+      "h": 1272
+    },
+    "inkRatio": 0.647843309859155,
+    "inkCenter": {
+      "x": 0.5285905971873089,
+      "y": 0.5892402455270768
+    }
+  },
+  "149": {
+    "file": "149.webp",
+    "w": 500,
+    "h": 707,
+    "inkBox": {
+      "x": 21,
+      "y": 53,
+      "w": 458,
+      "h": 654
+    },
+    "inkRatio": 0.577212389380531,
+    "inkCenter": {
+      "x": 0.49304140829688586,
+      "y": 0.5550965923991483
+    }
+  },
+  "150": {
+    "file": "150.webp",
+    "w": 736,
+    "h": 983,
+    "inkBox": {
+      "x": 46,
+      "y": 55,
+      "w": 654,
+      "h": 883
+    },
+    "inkRatio": 0.3051985981308411,
+    "inkCenter": {
+      "x": 0.46957948648830783,
+      "y": 0.47125747607655505
+    }
+  },
+  "151": {
+    "file": "151.webp",
+    "w": 736,
+    "h": 1104,
+    "inkBox": {
+      "x": 174,
+      "y": 133,
+      "w": 383,
+      "h": 856
+    },
+    "inkRatio": 0.24197916666666666,
+    "inkCenter": {
+      "x": 0.5032817451467515,
+      "y": 0.45179284758770405
+    }
+  },
+  "152": {
+    "file": "152.webp",
+    "w": 568,
+    "h": 720,
+    "inkBox": {
+      "x": 3,
+      "y": 117,
+      "w": 565,
+      "h": 600
+    },
+    "inkRatio": 0.14451970443349754,
+    "inkCenter": {
+      "x": 0.49571780380681346,
+      "y": 0.4263947680912054
+    }
+  },
+  "153": {
+    "file": "153.webp",
+    "w": 736,
+    "h": 444,
+    "inkBox": {
+      "x": 4,
+      "y": 0,
+      "w": 732,
+      "h": 444
+    },
+    "inkRatio": 0.7313144329896907,
+    "inkCenter": {
+      "x": 0.5227218574238772,
+      "y": 0.4898905490712567
+    }
+  },
+  "154": {
+    "file": "154.webp",
+    "w": 675,
+    "h": 1200,
+    "inkBox": {
+      "x": 71,
+      "y": 490,
+      "w": 554,
+      "h": 710
+    },
+    "inkRatio": 0.21454665492957747,
+    "inkCenter": {
+      "x": 0.5167502010384311,
+      "y": 0.4427282529587894
+    }
+  },
+  "155": {
+    "file": "155.webp",
+    "w": 595,
+    "h": 841,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 595,
+      "h": 841
+    },
+    "inkRatio": 1,
+    "inkCenter": {
+      "x": 0.5,
+      "y": 0.5
+    }
+  },
+  "156": {
+    "file": "156.webp",
+    "w": 736,
+    "h": 1308,
+    "inkBox": {
+      "x": 128,
+      "y": 32,
+      "w": 374,
+      "h": 1276
+    },
+    "inkRatio": 0.2649647887323944,
+    "inkCenter": {
+      "x": 0.6004152823920266,
+      "y": 0.4894143468822337
+    }
+  },
+  "157": {
+    "file": "157.webp",
+    "w": 736,
+    "h": 1308,
+    "inkBox": {
+      "x": 92,
+      "y": 405,
+      "w": 598,
+      "h": 590
+    },
+    "inkRatio": 0.23140404929577466,
+    "inkCenter": {
+      "x": 0.4998913639855152,
+      "y": 0.5798528144317641
+    }
+  },
+  "158": {
+    "file": "158.webp",
+    "w": 667,
+    "h": 1000,
+    "inkBox": {
+      "x": 66,
+      "y": 25,
+      "w": 535,
+      "h": 950
+    },
+    "inkRatio": 0.3440885416666667,
+    "inkCenter": {
+      "x": 0.4600230951525013,
+      "y": 0.5473744292237442
+    }
+  },
+  "159": {
+    "file": "159.webp",
+    "w": 602,
+    "h": 610,
+    "inkBox": {
+      "x": 131,
+      "y": 30,
+      "w": 415,
+      "h": 577
+    },
+    "inkRatio": 0.44695216049382713,
+    "inkCenter": {
+      "x": 0.4664578020167144,
+      "y": 0.5530266487259556
+    }
+  },
+  "160": {
+    "file": "160.webp",
+    "w": 736,
+    "h": 1309,
+    "inkBox": {
+      "x": 0,
+      "y": 32,
+      "w": 727,
+      "h": 1268
+    },
+    "inkRatio": 0.2920833333333333,
+    "inkCenter": {
+      "x": 0.44432646424019745,
+      "y": 0.4714898679123536
+    }
+  },
+  "161": {
+    "file": "161.webp",
+    "w": 500,
+    "h": 725,
+    "inkBox": {
+      "x": 6,
+      "y": 12,
+      "w": 482,
+      "h": 695
+    },
+    "inkRatio": 0.5853987068965517,
+    "inkCenter": {
+      "x": 0.44782962090831396,
+      "y": 0.5509346898670414
+    }
+  },
+  "162": {
+    "file": "162.webp",
+    "w": 675,
+    "h": 1200,
+    "inkBox": {
+      "x": 0,
+      "y": 266,
+      "w": 675,
+      "h": 934
+    },
+    "inkRatio": 0.4301056338028169,
+    "inkCenter": {
+      "x": 0.5321342227793696,
+      "y": 0.5820223725372891
+    }
+  },
+  "163": {
+    "file": "163.webp",
+    "w": 400,
+    "h": 617,
+    "inkBox": {
+      "x": 32,
+      "y": 177,
+      "w": 348,
+      "h": 433
+    },
+    "inkRatio": 0.41394230769230766,
+    "inkCenter": {
+      "x": 0.5135388479973403,
+      "y": 0.5581836658472631
+    }
+  },
+  "164": {
+    "file": "164.webp",
+    "w": 510,
+    "h": 685,
+    "inkBox": {
+      "x": 0,
+      "y": 12,
+      "w": 510,
+      "h": 673
+    },
+    "inkRatio": 0.5858430232558139,
+    "inkCenter": {
+      "x": 0.4861842839775716,
+      "y": 0.5663549439207127
+    }
+  },
+  "165": {
+    "file": "165.webp",
+    "w": 736,
+    "h": 981,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 736,
+      "h": 981
+    },
+    "inkRatio": 0.6174295774647888,
+    "inkCenter": {
+      "x": 0.5812577226499382,
+      "y": 0.5645779757275077
+    }
+  },
+  "166": {
+    "file": "166.webp",
+    "w": 648,
+    "h": 628,
+    "inkBox": {
+      "x": 8,
+      "y": 8,
+      "w": 628,
+      "h": 608
+    },
+    "inkRatio": 0.37112903225806454,
+    "inkCenter": {
+      "x": 0.38377143177580575,
+      "y": 0.4679704476314646
+    }
+  },
+  "167": {
+    "file": "167.webp",
+    "w": 736,
+    "h": 1056,
+    "inkBox": {
+      "x": 82,
+      "y": 101,
+      "w": 567,
+      "h": 781
+    },
+    "inkRatio": 0.17326086956521738,
+    "inkCenter": {
+      "x": 0.516709000214218,
+      "y": 0.5456011513764853
+    }
+  },
+  "168": {
+    "file": "168.webp",
+    "w": 736,
+    "h": 736,
+    "inkBox": {
+      "x": 147,
+      "y": 82,
+      "w": 442,
+      "h": 535
+    },
+    "inkRatio": 0.368046875,
+    "inkCenter": {
+      "x": 0.5001072401471732,
+      "y": 0.5143281681171726
+    }
+  },
+  "169": {
+    "file": "169.webp",
+    "w": 621,
+    "h": 877,
+    "inkBox": {
+      "x": 3,
+      "y": 11,
+      "w": 611,
+      "h": 859
+    },
+    "inkRatio": 0.5189435840707964,
+    "inkCenter": {
+      "x": 0.38306560696241304,
+      "y": 0.5549106416224486
+    }
+  },
+  "170": {
+    "file": "170.webp",
+    "w": 509,
+    "h": 709,
+    "inkBox": {
+      "x": 9,
+      "y": 6,
+      "w": 485,
+      "h": 681
+    },
+    "inkRatio": 0.7577914798206278,
+    "inkCenter": {
+      "x": 0.49756093762774417,
+      "y": 0.49202506959744435
+    }
+  },
+  "171": {
+    "file": "171.webp",
+    "w": 735,
+    "h": 922,
+    "inkBox": {
+      "x": 36,
+      "y": 27,
+      "w": 654,
+      "h": 895
+    },
+    "inkRatio": 0.5144278606965174,
+    "inkCenter": {
+      "x": 0.4416515412591604,
+      "y": 0.534310060506869
+    }
+  },
+  "172": {
+    "file": "172.webp",
+    "w": 675,
+    "h": 1200,
+    "inkBox": {
+      "x": 63,
+      "y": 194,
+      "w": 579,
+      "h": 808
+    },
+    "inkRatio": 0.33461707746478875,
+    "inkCenter": {
+      "x": 0.3441791861589902,
+      "y": 0.5267303225895311
+    }
+  },
+  "173": {
+    "file": "173.webp",
+    "w": 736,
+    "h": 920,
+    "inkBox": {
+      "x": 73,
+      "y": 96,
+      "w": 590,
+      "h": 650
+    },
+    "inkRatio": 0.177875,
+    "inkCenter": {
+      "x": 0.5841943736823612,
+      "y": 0.5179360854851652
+    }
+  },
+  "174": {
+    "file": "174.webp",
+    "w": 715,
+    "h": 1000,
+    "inkBox": {
+      "x": 35,
+      "y": 75,
+      "w": 645,
+      "h": 850
+    },
+    "inkRatio": 0.2798828125,
+    "inkCenter": {
+      "x": 0.5130453233863911,
+      "y": 0.5387905388033937
+    }
+  },
+  "175": {
+    "file": "175.webp",
+    "w": 502,
+    "h": 596,
+    "inkBox": {
+      "x": 6,
+      "y": 6,
+      "w": 493,
+      "h": 590
+    },
+    "inkRatio": 0.6643421052631578,
+    "inkCenter": {
+      "x": 0.47724749682411727,
+      "y": 0.596046246781541
+    }
+  },
+  "176": {
+    "file": "176.webp",
+    "w": 736,
+    "h": 1444,
+    "inkBox": {
+      "x": 13,
+      "y": 18,
+      "w": 710,
+      "h": 1422
+    },
+    "inkRatio": 0.48544984076433123,
+    "inkCenter": {
+      "x": 0.5269520855953264,
+      "y": 0.44712136791468277
+    }
+  },
+  "177": {
+    "file": "177.webp",
+    "w": 492,
+    "h": 720,
+    "inkBox": {
+      "x": 33,
+      "y": 52,
+      "w": 426,
+      "h": 668
+    },
+    "inkRatio": 0.3004540598290598,
+    "inkCenter": {
+      "x": 0.5135570826907642,
+      "y": 0.543576223672519
+    }
+  },
+  "178": {
+    "file": "178.webp",
+    "w": 562,
+    "h": 1000,
+    "inkBox": {
+      "x": 147,
+      "y": 21,
+      "w": 268,
+      "h": 958
+    },
+    "inkRatio": 0.15328947368421053,
+    "inkCenter": {
+      "x": 0.505743166930201,
+      "y": 0.5168770666624743
+    }
+  },
+  "179": {
+    "file": "179.webp",
+    "w": 694,
+    "h": 1004,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 694,
+      "h": 1004
+    },
+    "inkRatio": 0.3464015151515151,
+    "inkCenter": {
+      "x": 0.49510002538467546,
+      "y": 0.648152168069375
+    }
+  },
+  "180": {
+    "file": "180.webp",
+    "w": 590,
+    "h": 885,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 590,
+      "h": 885
+    },
+    "inkRatio": 0.5055208333333333,
+    "inkCenter": {
+      "x": 0.4920896223985164,
+      "y": 0.4661545264097809
+    }
+  },
+  "181": {
+    "file": "181.webp",
+    "w": 736,
+    "h": 1059,
+    "inkBox": {
+      "x": 92,
+      "y": 32,
+      "w": 617,
+      "h": 912
+    },
+    "inkRatio": 0.4232880434782609,
+    "inkCenter": {
+      "x": 0.45211726243916833,
+      "y": 0.514261021980737
+    }
+  },
+  "182": {
+    "file": "182.webp",
+    "w": 736,
+    "h": 861,
+    "inkBox": {
+      "x": 13,
+      "y": 9,
+      "w": 710,
+      "h": 839
+    },
+    "inkRatio": 0.4970588235294118,
+    "inkCenter": {
+      "x": 0.5220347833984197,
+      "y": 0.5322233240132649
+    }
+  },
+  "183": {
+    "file": "183.webp",
+    "w": 719,
+    "h": 1280,
+    "inkBox": {
+      "x": 67,
+      "y": 49,
+      "w": 652,
+      "h": 836
+    },
+    "inkRatio": 0.2661622807017544,
+    "inkCenter": {
+      "x": 0.5798720356390974,
+      "y": 0.4323824065928322
+    }
+  },
+  "184": {
+    "file": "184.webp",
+    "w": 339,
+    "h": 855,
+    "inkBox": {
+      "x": 6,
+      "y": 0,
+      "w": 333,
+      "h": 855
+    },
+    "inkRatio": 0.5970451732673268,
+    "inkCenter": {
+      "x": 0.5088631960417891,
+      "y": 0.5480950541741397
+    }
+  },
+  "185": {
+    "file": "185.webp",
+    "w": 507,
+    "h": 631,
+    "inkBox": {
+      "x": 22,
+      "y": 34,
+      "w": 473,
+      "h": 591
+    },
+    "inkRatio": 0.6478957286432161,
+    "inkCenter": {
+      "x": 0.4844533710118778,
+      "y": 0.5671026590085885
+    }
+  },
+  "186": {
+    "file": "186.webp",
+    "w": 474,
+    "h": 505,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 474,
+      "h": 505
+    },
+    "inkRatio": 0.5207720588235294,
+    "inkCenter": {
+      "x": 0.5996234115778327,
+      "y": 0.5503592118103859
+    }
+  },
+  "187": {
+    "file": "187.webp",
+    "w": 656,
+    "h": 1083,
+    "inkBox": {
+      "x": 73,
+      "y": 73,
+      "w": 571,
+      "h": 1010
+    },
+    "inkRatio": 0.3560369318181818,
+    "inkCenter": {
+      "x": 0.38158940232613425,
+      "y": 0.5018630422689625
+    }
+  },
+  "188": {
+    "file": "188.webp",
+    "w": 736,
+    "h": 1226,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 736,
+      "h": 1226
+    },
+    "inkRatio": 0.31685393258426964,
+    "inkCenter": {
+      "x": 0.5249884567080378,
+      "y": 0.5472057866496666
+    }
+  },
+  "189": {
+    "file": "189.webp",
+    "w": 524,
+    "h": 770,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 518,
+      "h": 770
+    },
+    "inkRatio": 0.384468085106383,
+    "inkCenter": {
+      "x": 0.4372596372755739,
+      "y": 0.47069198977969834
+    }
+  },
+  "190": {
+    "file": "190.webp",
+    "w": 592,
+    "h": 604,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 592,
+      "h": 604
+    },
+    "inkRatio": 0.23113496932515337,
+    "inkCenter": {
+      "x": 0.5325636612475116,
+      "y": 0.4665823294971116
+    }
+  },
+  "191": {
+    "file": "191.webp",
+    "w": 544,
+    "h": 962,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 442,
+      "h": 962
+    },
+    "inkRatio": 0.36925795053003535,
+    "inkCenter": {
+      "x": 0.47307508281192495,
+      "y": 0.4476598559521193
+    }
+  },
+  "192": {
+    "file": "192.webp",
+    "w": 422,
+    "h": 978,
+    "inkBox": {
+      "x": 7,
+      "y": 0,
+      "w": 410,
+      "h": 978
+    },
+    "inkRatio": 0.4463611859838275,
+    "inkCenter": {
+      "x": 0.6023292621162537,
+      "y": 0.46379192058283525
+    }
+  },
+  "193": {
+    "file": "193.webp",
+    "w": 361,
+    "h": 589,
+    "inkBox": {
+      "x": 11,
+      "y": 4,
+      "w": 344,
+      "h": 576
+    },
+    "inkRatio": 0.5256704980842912,
+    "inkCenter": {
+      "x": 0.5281894947828756,
+      "y": 0.42732646630080606
+    }
+  },
+  "194": {
+    "file": "194.webp",
+    "w": 736,
+    "h": 1308,
+    "inkBox": {
+      "x": 151,
+      "y": 207,
+      "w": 424,
+      "h": 807
+    },
+    "inkRatio": 0.17163292253521126,
+    "inkCenter": {
+      "x": 0.5376114273290333,
+      "y": 0.5644258421409337
+    }
+  },
+  "195": {
+    "file": "195.webp",
+    "w": 736,
+    "h": 1048,
+    "inkBox": {
+      "x": 220,
+      "y": 193,
+      "w": 305,
+      "h": 855
+    },
+    "inkRatio": 0.18736293859649122,
+    "inkCenter": {
+      "x": 0.44791181751679193,
+      "y": 0.386869842917935
+    }
+  },
+  "196": {
+    "file": "196.webp",
+    "w": 1600,
+    "h": 536,
+    "inkBox": {
+      "x": 10,
+      "y": 9,
+      "w": 1580,
+      "h": 518
+    },
+    "inkRatio": 0.6957175925925926,
+    "inkCenter": {
+      "x": 0.46999751510416554,
+      "y": 0.527768002252281
+    }
+  },
+  "197": {
+    "file": "197.webp",
+    "w": 1600,
+    "h": 616,
+    "inkBox": {
+      "x": 20,
+      "y": 59,
+      "w": 1560,
+      "h": 518
+    },
+    "inkRatio": 0.5448588709677419,
+    "inkCenter": {
+      "x": 0.4930768044782846,
+      "y": 0.4382427239735288
+    }
+  },
+  "198": {
+    "file": "198.webp",
+    "w": 1600,
+    "h": 533,
+    "inkBox": {
+      "x": 10,
+      "y": 10,
+      "w": 1580,
+      "h": 513
+    },
+    "inkRatio": 0.7268867924528302,
+    "inkCenter": {
+      "x": 0.5005893756314739,
+      "y": 0.5073958850250029
+    }
+  },
+  "199": {
+    "file": "199.webp",
+    "w": 1600,
+    "h": 533,
+    "inkBox": {
+      "x": 10,
+      "y": 30,
+      "w": 1580,
+      "h": 453
+    },
+    "inkRatio": 0.5744103773584905,
+    "inkCenter": {
+      "x": 0.4949955692304494,
+      "y": 0.5345126485549396
+    }
+  },
+  "200": {
+    "file": "200.webp",
+    "w": 1600,
+    "h": 533,
+    "inkBox": {
+      "x": 20,
+      "y": 20,
+      "w": 1570,
+      "h": 493
+    },
+    "inkRatio": 0.7288915094339623,
+    "inkCenter": {
+      "x": 0.48818033896768087,
+      "y": 0.5103014834796562
+    }
+  },
+  "201": {
+    "file": "201.webp",
+    "w": 1600,
+    "h": 533,
+    "inkBox": {
+      "x": 20,
+      "y": 40,
+      "w": 1550,
+      "h": 473
+    },
+    "inkRatio": 0.7021226415094339,
+    "inkCenter": {
+      "x": 0.48849133680800116,
+      "y": 0.5072863585360101
+    }
+  },
+  "202": {
+    "file": "202.webp",
+    "w": 1600,
+    "h": 533,
+    "inkBox": {
+      "x": 10,
+      "y": 130,
+      "w": 1580,
+      "h": 293
+    },
+    "inkRatio": 0.42877358490566037,
+    "inkCenter": {
+      "x": 0.49065776830847635,
+      "y": 0.4906869997344562
+    }
+  },
+  "203": {
+    "file": "203.webp",
+    "w": 1600,
+    "h": 533,
+    "inkBox": {
+      "x": 30,
+      "y": 70,
+      "w": 1560,
+      "h": 423
+    },
+    "inkRatio": 0.42700471698113207,
+    "inkCenter": {
+      "x": 0.4770507155552723,
+      "y": 0.46063636722294554
+    }
+  },
+  "204": {
+    "file": "204.webp",
+    "w": 1600,
+    "h": 533,
+    "inkBox": {
+      "x": 20,
+      "y": 30,
+      "w": 1560,
+      "h": 493
+    },
+    "inkRatio": 0.748938679245283,
+    "inkCenter": {
+      "x": 0.5020625663634639,
+      "y": 0.47211751965783955
+    }
+  },
+  "205": {
+    "file": "205.webp",
+    "w": 1600,
+    "h": 533,
+    "inkBox": {
+      "x": 10,
+      "y": 221,
+      "w": 1580,
+      "h": 162
+    },
+    "inkRatio": 0.17889150943396226,
+    "inkCenter": {
+      "x": 0.48668049030815314,
+      "y": 0.554857448912327
+    }
+  },
+  "206": {
+    "file": "206.webp",
+    "w": 272,
+    "h": 352,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 272,
+      "h": 352
+    },
+    "inkRatio": 0.4572463768115942,
+    "inkCenter": {
+      "x": 0.5323123019017433,
+      "y": 0.4376111710828861
+    }
+  },
+  "207": {
+    "file": "207.webp",
+    "w": 1080,
+    "h": 543,
+    "inkBox": {
+      "x": 27,
+      "y": 47,
+      "w": 1040,
+      "h": 449
+    },
+    "inkRatio": 0.347734375,
+    "inkCenter": {
+      "x": 0.4172015919376063,
+      "y": 0.6063005929889776
+    }
+  },
+  "208": {
+    "file": "208.webp",
+    "w": 736,
+    "h": 1104,
+    "inkBox": {
+      "x": 27,
+      "y": 303,
+      "w": 682,
+      "h": 622
+    },
+    "inkRatio": 0.240234375,
+    "inkCenter": {
+      "x": 0.5130626968431846,
+      "y": 0.4728563685636857
+    }
+  },
+  "209": {
+    "file": "209.webp",
+    "w": 540,
+    "h": 695,
+    "inkBox": {
+      "x": 20,
+      "y": 40,
+      "w": 500,
+      "h": 655
+    },
+    "inkRatio": 0.5882888349514563,
+    "inkCenter": {
+      "x": 0.5019691816623225,
+      "y": 0.571963707512109
+    }
+  },
+  "210": {
+    "file": "210.webp",
+    "w": 408,
+    "h": 612,
+    "inkBox": {
+      "x": 0,
+      "y": 84,
+      "w": 403,
+      "h": 358
+    },
+    "inkRatio": 0.21078125,
+    "inkCenter": {
+      "x": 0.4897658212209075,
+      "y": 0.5295059832680292
+    }
+  },
+  "001": {
+    "file": "001.webp",
+    "w": 586,
+    "h": 880,
+    "inkBox": {
+      "x": 36,
+      "y": 25,
+      "w": 477,
+      "h": 855
+    },
+    "inkRatio": 0.393046875,
+    "inkCenter": {
+      "x": 0.5080003975352813,
+      "y": 0.5215337297880466
+    }
+  },
+  "002": {
+    "file": "002.webp",
+    "w": 677,
+    "h": 571,
+    "inkBox": {
+      "x": 25,
+      "y": 21,
+      "w": 652,
+      "h": 550
+    },
+    "inkRatio": 0.4740740740740741,
+    "inkCenter": {
+      "x": 0.41963461343344155,
+      "y": 0.6231971153846154
+    }
+  },
+  "003": {
+    "file": "003.webp",
+    "w": 615,
+    "h": 784,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 615,
+      "h": 784
+    },
+    "inkRatio": 0.44053308823529413,
+    "inkCenter": {
+      "x": 0.5347001269212045,
+      "y": 0.4711076133631699
+    }
+  },
+  "004": {
+    "file": "004.webp",
+    "w": 503,
+    "h": 625,
+    "inkBox": {
+      "x": 3,
+      "y": 3,
+      "w": 500,
+      "h": 622
+    },
+    "inkRatio": 0.7170226130653267,
+    "inkCenter": {
+      "x": 0.5050859924462185,
+      "y": 0.5340474389094626
+    }
+  },
+  "005": {
+    "file": "005.webp",
+    "w": 736,
+    "h": 736,
+    "inkBox": {
+      "x": 13,
+      "y": 18,
+      "w": 723,
+      "h": 718
+    },
+    "inkRatio": 0.6491796875,
+    "inkCenter": {
+      "x": 0.5624969578599891,
+      "y": 0.5162559149938054
+    }
+  },
+  "006": {
+    "file": "006.webp",
+    "w": 735,
+    "h": 1204,
+    "inkBox": {
+      "x": 0,
+      "y": 252,
+      "w": 506,
+      "h": 952
+    },
+    "inkRatio": 0.3028387404580153,
+    "inkCenter": {
+      "x": 0.5438300691037989,
+      "y": 0.44890567057287956
+    }
+  },
+  "007": {
+    "file": "007.webp",
+    "w": 736,
+    "h": 819,
+    "inkBox": {
+      "x": 13,
+      "y": 32,
+      "w": 705,
+      "h": 787
+    },
+    "inkRatio": 0.5839536516853933,
+    "inkCenter": {
+      "x": 0.5063905384974826,
+      "y": 0.5949931098164106
+    }
+  },
+  "008": {
+    "file": "008.webp",
+    "w": 736,
+    "h": 797,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 736,
+      "h": 788
+    },
+    "inkRatio": 0.4796965317919075,
+    "inkCenter": {
+      "x": 0.5198542702214188,
+      "y": 0.49195300849402207
+    }
+  },
+  "009": {
+    "file": "009.webp",
+    "w": 736,
+    "h": 736,
+    "inkBox": {
+      "x": 115,
+      "y": 170,
+      "w": 534,
+      "h": 566
+    },
+    "inkRatio": 0.2787890625,
+    "inkCenter": {
+      "x": 0.4901418300937804,
+      "y": 0.33176302128721163
+    }
+  },
+  "010": {
+    "file": "010.webp",
+    "w": 736,
+    "h": 1041,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 736,
+      "h": 1037
+    },
+    "inkRatio": 0.6393252212389381,
+    "inkCenter": {
+      "x": 0.47359308763733887,
+      "y": 0.5436162297776624
+    }
+  },
+  "011": {
+    "file": "011.webp",
+    "w": 736,
+    "h": 611,
+    "inkBox": {
+      "x": 23,
+      "y": 13,
+      "w": 695,
+      "h": 580
+    },
+    "inkRatio": 0.6494830827067669,
+    "inkCenter": {
+      "x": 0.5005424129036772,
+      "y": 0.49943064556695993
+    }
+  },
+  "012": {
+    "file": "012.webp",
+    "w": 406,
+    "h": 595,
+    "inkBox": {
+      "x": 10,
+      "y": 7,
+      "w": 391,
+      "h": 581
+    },
+    "inkRatio": 0.49230769230769234,
+    "inkCenter": {
+      "x": 0.48591734871031744,
+      "y": 0.39059025874147174
+    }
+  },
+  "013": {
+    "file": "013.webp",
+    "w": 695,
+    "h": 971,
+    "inkBox": {
+      "x": 34,
+      "y": 125,
+      "w": 661,
+      "h": 846
+    },
+    "inkRatio": 0.4713727678571429,
+    "inkCenter": {
+      "x": 0.6531425825425409,
+      "y": 0.47728400008499455
+    }
+  },
+  "014": {
+    "file": "014.webp",
+    "w": 735,
+    "h": 577,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 735,
+      "h": 577
+    },
+    "inkRatio": 0.39915674603174606,
+    "inkCenter": {
+      "x": 0.5252869858332299,
+      "y": 0.4565898560244279
+    }
+  },
+  "015": {
+    "file": "015.webp",
+    "w": 309,
+    "h": 545,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 309,
+      "h": 545
+    },
+    "inkRatio": 0.5024601063829788,
+    "inkCenter": {
+      "x": 0.5236545311190508,
+      "y": 0.3941956809883968
+    }
+  },
+  "016": {
+    "file": "016.webp",
+    "w": 736,
+    "h": 745,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 736,
+      "h": 745
+    },
+    "inkRatio": 0.6277391975308642,
+    "inkCenter": {
+      "x": 0.4665806880339254,
+      "y": 0.580937189622376
+    }
+  },
+  "017": {
+    "file": "017.webp",
+    "w": 602,
+    "h": 812,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 602,
+      "h": 812
+    },
+    "inkRatio": 0.5420138888888889,
+    "inkCenter": {
+      "x": 0.5306127215460175,
+      "y": 0.42503296992273076
+    }
+  },
+  "018": {
+    "file": "018.webp",
+    "w": 735,
+    "h": 974,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 735,
+      "h": 974
+    },
+    "inkRatio": 0.361438679245283,
+    "inkCenter": {
+      "x": 0.46577181892332786,
+      "y": 0.44755186370771644
+    }
+  },
+  "019": {
+    "file": "019.webp",
+    "w": 308,
+    "h": 474,
+    "inkBox": {
+      "x": 1,
+      "y": 0,
+      "w": 307,
+      "h": 474
+    },
+    "inkRatio": 0.5238058943089431,
+    "inkCenter": {
+      "x": 0.5289417385603808,
+      "y": 0.48378055287076616
+    }
+  },
+  "020": {
+    "file": "020.webp",
+    "w": 735,
+    "h": 630,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 735,
+      "h": 630
+    },
+    "inkRatio": 0.5683850364963504,
+    "inkCenter": {
+      "x": 0.6183163275543784,
+      "y": 0.39553999893372893
+    }
+  },
+  "021": {
+    "file": "021.webp",
+    "w": 388,
+    "h": 506,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 388,
+      "h": 506
+    },
+    "inkRatio": 0.6244916267942584,
+    "inkCenter": {
+      "x": 0.49114994852272187,
+      "y": 0.5073441756956678
+    }
+  },
+  "022": {
+    "file": "022.webp",
+    "w": 300,
+    "h": 562,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 300,
+      "h": 562
+    },
+    "inkRatio": 0.5638125,
+    "inkCenter": {
+      "x": 0.49261018272179735,
+      "y": 0.33734280505979874
+    }
+  },
+  "023": {
+    "file": "023.webp",
+    "w": 360,
+    "h": 789,
+    "inkBox": {
+      "x": 4,
+      "y": 8,
+      "w": 352,
+      "h": 777
+    },
+    "inkRatio": 0.4916310541310541,
+    "inkCenter": {
+      "x": 0.49886839588034804,
+      "y": 0.36013416688975325
+    }
+  },
+  "024": {
+    "file": "024.webp",
+    "w": 675,
+    "h": 1033,
+    "inkBox": {
+      "x": 8,
+      "y": 4,
+      "w": 659,
+      "h": 1025
+    },
+    "inkRatio": 0.47625,
+    "inkCenter": {
+      "x": 0.49128834857181314,
+      "y": 0.5335112431933663
+    }
+  },
+  "025": {
+    "file": "025.webp",
+    "w": 734,
+    "h": 515,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 734,
+      "h": 515
+    },
+    "inkRatio": 0.5947544642857143,
+    "inkCenter": {
+      "x": 0.49255782041658847,
+      "y": 0.623397414417071
+    }
+  },
+  "026": {
+    "file": "026.webp",
+    "w": 303,
+    "h": 791,
+    "inkBox": {
+      "x": 7,
+      "y": 0,
+      "w": 283,
+      "h": 778
+    },
+    "inkRatio": 0.5029306220095694,
+    "inkCenter": {
+      "x": 0.49613688912726134,
+      "y": 0.5059800804317238
+    }
+  },
+  "027": {
+    "file": "027.webp",
+    "w": 428,
+    "h": 605,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 428,
+      "h": 603
+    },
+    "inkRatio": 0.38091814159292037,
+    "inkCenter": {
+      "x": 0.42150972847393636,
+      "y": 0.6498836777826178
+    }
+  },
+  "028": {
+    "file": "028.webp",
+    "w": 820,
+    "h": 1055,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 820,
+      "h": 1055
+    },
+    "inkRatio": 0.3999393203883495,
+    "inkCenter": {
+      "x": 0.4753247800030344,
+      "y": 0.46438472291577365
+    }
+  },
+  "029": {
+    "file": "029.webp",
+    "w": 511,
+    "h": 1167,
+    "inkBox": {
+      "x": 15,
+      "y": 15,
+      "w": 474,
+      "h": 1146
+    },
+    "inkRatio": 0.5690239726027397,
+    "inkCenter": {
+      "x": 0.472287659601463,
+      "y": 0.5543021685513072
+    }
+  },
+  "030": {
+    "file": "030.webp",
+    "w": 545,
+    "h": 665,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 545,
+      "h": 665
+    },
+    "inkRatio": 0.7138461538461538,
+    "inkCenter": {
+      "x": 0.5413198186063218,
+      "y": 0.5344986461096375
+    }
+  },
+  "031": {
+    "file": "031.webp",
+    "w": 663,
+    "h": 564,
+    "inkBox": {
+      "x": 0,
+      "y": 4,
+      "w": 663,
+      "h": 544
+    },
+    "inkRatio": 0.49214154411764705,
+    "inkCenter": {
+      "x": 0.523807953590438,
+      "y": 0.44024573751549495
+    }
+  },
+  "032": {
+    "file": "032.webp",
+    "w": 662,
+    "h": 688,
+    "inkBox": {
+      "x": 0,
+      "y": 4,
+      "w": 658,
+      "h": 680
+    },
+    "inkRatio": 0.6045557228915662,
+    "inkCenter": {
+      "x": 0.468357615930355,
+      "y": 0.4201512675119278
+    }
+  },
+  "033": {
+    "file": "033.webp",
+    "w": 1054,
+    "h": 689,
+    "inkBox": {
+      "x": 0,
+      "y": 6,
+      "w": 1054,
+      "h": 677
+    },
+    "inkRatio": 0.7142261904761905,
+    "inkCenter": {
+      "x": 0.4561440015834653,
+      "y": 0.5925158002649088
+    }
+  },
+  "034": {
+    "file": "034.webp",
+    "w": 736,
+    "h": 1104,
+    "inkBox": {
+      "x": 138,
+      "y": 4,
+      "w": 571,
+      "h": 1082
+    },
+    "inkRatio": 0.22309895833333335,
+    "inkCenter": {
+      "x": 0.4548497234323755,
+      "y": 0.4769903812004997
+    }
+  },
+  "035": {
+    "file": "035.webp",
+    "w": 1072,
+    "h": 755,
+    "inkBox": {
+      "x": 0,
+      "y": 6,
+      "w": 1072,
+      "h": 743
+    },
+    "inkRatio": 0.9365044247787611,
+    "inkCenter": {
+      "x": 0.5046576009922041,
+      "y": 0.4943483526049083
+    }
+  },
+  "036": {
+    "file": "036.webp",
+    "w": 458,
+    "h": 618,
+    "inkBox": {
+      "x": 48,
+      "y": 0,
+      "w": 410,
+      "h": 618
+    },
+    "inkRatio": 0.5982638888888889,
+    "inkCenter": {
+      "x": 0.49707001259525924,
+      "y": 0.5651804650946167
+    }
+  },
+  "037": {
+    "file": "037.webp",
+    "w": 440,
+    "h": 1181,
+    "inkBox": {
+      "x": 0,
+      "y": 8,
+      "w": 435,
+      "h": 1165
+    },
+    "inkRatio": 0.6689248251748252,
+    "inkCenter": {
+      "x": 0.501310828898198,
+      "y": 0.44034768223428583
+    }
+  },
+  "038": {
+    "file": "038.webp",
+    "w": 700,
+    "h": 906,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 700,
+      "h": 906
+    },
+    "inkRatio": 0.5426932367149758,
+    "inkCenter": {
+      "x": 0.49487801824858124,
+      "y": 0.6549223811743103
+    }
+  },
+  "039": {
+    "file": "039.webp",
+    "w": 999,
+    "h": 1313,
+    "inkBox": {
+      "x": 0,
+      "y": 6,
+      "w": 981,
+      "h": 1307
+    },
+    "inkRatio": 0.31526785714285716,
+    "inkCenter": {
+      "x": 0.5790024177725827,
+      "y": 0.46804199938841984
+    }
+  },
+  "040": {
+    "file": "040.webp",
+    "w": 370,
+    "h": 1268,
+    "inkBox": {
+      "x": 4,
+      "y": 9,
+      "w": 362,
+      "h": 1250
+    },
+    "inkRatio": 0.591526003649635,
+    "inkCenter": {
+      "x": 0.5160099444563919,
+      "y": 0.5054174655712302
+    }
+  },
+  "041": {
+    "file": "041.webp",
+    "w": 710,
+    "h": 469,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 710,
+      "h": 469
+    },
+    "inkRatio": 0.6980542452830188,
+    "inkCenter": {
+      "x": 0.5018722548357124,
+      "y": 0.4921689108749942
+    }
+  },
+  "042": {
+    "file": "042.webp",
+    "w": 1145,
+    "h": 1181,
+    "inkBox": {
+      "x": 21,
+      "y": 21,
+      "w": 1117,
+      "h": 1110
+    },
+    "inkRatio": 0.6987121212121212,
+    "inkCenter": {
+      "x": 0.49299340834090916,
+      "y": 0.501193020254413
+    }
+  },
+  "043": {
+    "file": "043.webp",
+    "w": 1165,
+    "h": 1014,
+    "inkBox": {
+      "x": 7,
+      "y": 21,
+      "w": 1122,
+      "h": 979
+    },
+    "inkRatio": 0.4760791366906475,
+    "inkCenter": {
+      "x": 0.49572721385150553,
+      "y": 0.6563322883128746
+    }
+  },
+  "044": {
+    "file": "044.webp",
+    "w": 1580,
+    "h": 766,
+    "inkBox": {
+      "x": 0,
+      "y": 9,
+      "w": 1580,
+      "h": 748
+    },
+    "inkRatio": 0.7254006410256411,
+    "inkCenter": {
+      "x": 0.49299714183143706,
+      "y": 0.5785920049765416
+    }
+  },
+  "045": {
+    "file": "045.webp",
+    "w": 675,
+    "h": 1200,
+    "inkBox": {
+      "x": 21,
+      "y": 321,
+      "w": 536,
+      "h": 723
+    },
+    "inkRatio": 0.26575704225352115,
+    "inkCenter": {
+      "x": 0.48442541071898976,
+      "y": 0.4636188157265196
+    }
+  },
+  "046": {
+    "file": "046.webp",
+    "w": 1600,
+    "h": 608,
+    "inkBox": {
+      "x": 10,
+      "y": 9,
+      "w": 1590,
+      "h": 599
+    },
+    "inkRatio": 0.9154713114754098,
+    "inkCenter": {
+      "x": 0.49771656231412753,
+      "y": 0.5011443760492446
+    }
+  },
+  "047": {
+    "file": "047.webp",
+    "w": 611,
+    "h": 947,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 611,
+      "h": 619
+    },
+    "inkRatio": 0.2829133064516129,
+    "inkCenter": {
+      "x": 0.4904986192766791,
+      "y": 0.5354160205695332
+    }
+  },
+  "048": {
+    "file": "048.webp",
+    "w": 736,
+    "h": 1308,
+    "inkBox": {
+      "x": 27,
+      "y": 9,
+      "w": 686,
+      "h": 1299
+    },
+    "inkRatio": 0.6459947183098591,
+    "inkCenter": {
+      "x": 0.5068984344312633,
+      "y": 0.4240512124678116
+    }
+  },
+  "049": {
+    "file": "049.webp",
+    "w": 735,
+    "h": 568,
+    "inkBox": {
+      "x": 64,
+      "y": 27,
+      "w": 547,
+      "h": 514
+    },
+    "inkRatio": 0.33639112903225804,
+    "inkCenter": {
+      "x": 0.545163345530001,
+      "y": 0.38404362344278437
+    }
+  },
+  "050": {
+    "file": "050.webp",
+    "w": 384,
+    "h": 579,
+    "inkBox": {
+      "x": 4,
+      "y": 4,
+      "w": 380,
+      "h": 575
+    },
+    "inkRatio": 0.7442686721991701,
+    "inkCenter": {
+      "x": 0.5219388625987498,
+      "y": 0.5393126697663135
+    }
+  },
+  "051": {
+    "file": "051.webp",
+    "w": 735,
+    "h": 922,
+    "inkBox": {
+      "x": 0,
+      "y": 4,
+      "w": 735,
+      "h": 918
+    },
+    "inkRatio": 0.5040422885572139,
+    "inkCenter": {
+      "x": 0.495200493522517,
+      "y": 0.5149478716841456
+    }
+  },
+  "052": {
+    "file": "052.webp",
+    "w": 400,
+    "h": 714,
+    "inkBox": {
+      "x": 0,
+      "y": 4,
+      "w": 398,
+      "h": 706
+    },
+    "inkRatio": 0.7106643356643356,
+    "inkCenter": {
+      "x": 0.44447558154826833,
+      "y": 0.5204698908691214
+    }
+  },
+  "053": {
+    "file": "053.webp",
+    "w": 400,
+    "h": 397,
+    "inkBox": {
+      "x": 12,
+      "y": 12,
+      "w": 376,
+      "h": 373
+    },
+    "inkRatio": 0.35998427672955974,
+    "inkCenter": {
+      "x": 0.5029416903253986,
+      "y": 0.48192946790937913
+    }
+  },
+  "054": {
+    "file": "054.webp",
+    "w": 736,
+    "h": 1063,
+    "inkBox": {
+      "x": 27,
+      "y": 13,
+      "w": 696,
+      "h": 1050
+    },
+    "inkRatio": 0.6503787878787879,
+    "inkCenter": {
+      "x": 0.5137469977171906,
+      "y": 0.5286114967091579
+    }
+  },
+  "055": {
+    "file": "055.webp",
+    "w": 568,
+    "h": 969,
+    "inkBox": {
+      "x": 0,
+      "y": 14,
+      "w": 558,
+      "h": 955
+    },
+    "inkRatio": 0.5032967032967033,
+    "inkCenter": {
+      "x": 0.30377101122762123,
+      "y": 0.5952766256500165
+    }
+  },
+  "056": {
+    "file": "056.webp",
+    "w": 541,
+    "h": 1000,
+    "inkBox": {
+      "x": 23,
+      "y": 23,
+      "w": 491,
+      "h": 954
+    },
+    "inkRatio": 0.5670819256756757,
+    "inkCenter": {
+      "x": 0.5355995290510532,
+      "y": 0.5896470458063022
+    }
+  },
+  "057": {
+    "file": "057.webp",
+    "w": 606,
+    "h": 1131,
+    "inkBox": {
+      "x": 3,
+      "y": 37,
+      "w": 603,
+      "h": 1094
+    },
+    "inkRatio": 0.5380643812709031,
+    "inkCenter": {
+      "x": 0.4621400311130299,
+      "y": 0.6523654116888907
+    }
+  },
+  "058": {
+    "file": "058.webp",
+    "w": 561,
+    "h": 796,
+    "inkBox": {
+      "x": 3,
+      "y": 3,
+      "w": 558,
+      "h": 793
+    },
+    "inkRatio": 0.9479625550660793,
+    "inkCenter": {
+      "x": 0.49811412089427637,
+      "y": 0.49826273135951105
+    }
+  },
+  "059": {
+    "file": "059.webp",
+    "w": 736,
+    "h": 1308,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 695,
+      "h": 1216
+    },
+    "inkRatio": 0.46056338028169014,
+    "inkCenter": {
+      "x": 0.3318881387083055,
+      "y": 0.35489969940227967
+    }
+  },
+  "060": {
+    "file": "060.webp",
+    "w": 295,
+    "h": 590,
+    "inkBox": {
+      "x": 1,
+      "y": 0,
+      "w": 294,
+      "h": 590
+    },
+    "inkRatio": 0.79509765625,
+    "inkCenter": {
+      "x": 0.5408459736701556,
+      "y": 0.5147612858950109
+    }
+  },
+  "061": {
+    "file": "061.webp",
+    "w": 347,
+    "h": 625,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 347,
+      "h": 621
+    },
+    "inkRatio": 0.6300130208333333,
+    "inkCenter": {
+      "x": 0.6461242938582894,
+      "y": 0.47068295453642156
+    }
+  },
+  "062": {
+    "file": "062.webp",
+    "w": 736,
+    "h": 1457,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 736,
+      "h": 1457
+    },
+    "inkRatio": 0.581782334384858,
+    "inkCenter": {
+      "x": 0.45621018029009086,
+      "y": 0.543245076243025
+    }
+  },
+  "063": {
+    "file": "063.webp",
+    "w": 591,
+    "h": 305,
+    "inkBox": {
+      "x": 25,
+      "y": 40,
+      "w": 526,
+      "h": 207
+    },
+    "inkRatio": 0.30353915662650605,
+    "inkCenter": {
+      "x": 0.4199889238681905,
+      "y": 0.5566524612822058
+    }
+  },
+  "064": {
+    "file": "064.webp",
+    "w": 1080,
+    "h": 1080,
+    "inkBox": {
+      "x": 175,
+      "y": 13,
+      "w": 730,
+      "h": 1054
+    },
+    "inkRatio": 0.4475,
+    "inkCenter": {
+      "x": 0.49143421529070974,
+      "y": 0.5573588132072769
+    }
+  },
+  "065": {
+    "file": "065.webp",
+    "w": 675,
+    "h": 1200,
+    "inkBox": {
+      "x": 21,
+      "y": 21,
+      "w": 633,
+      "h": 1137
+    },
+    "inkRatio": 0.6641505281690141,
+    "inkCenter": {
+      "x": 0.49488794636446976,
+      "y": 0.5252159635857969
+    }
+  },
+  "066": {
+    "file": "066.webp",
+    "w": 736,
+    "h": 718,
+    "inkBox": {
+      "x": 27,
+      "y": 23,
+      "w": 645,
+      "h": 654
+    },
+    "inkRatio": 0.6141826923076923,
+    "inkCenter": {
+      "x": 0.5400004659398006,
+      "y": 0.5210408570142315
+    }
+  },
+  "067": {
+    "file": "067.webp",
+    "w": 428,
+    "h": 668,
+    "inkBox": {
+      "x": 8,
+      "y": 10,
+      "w": 412,
+      "h": 650
+    },
+    "inkRatio": 0.4471,
+    "inkCenter": {
+      "x": 0.554322662352186,
+      "y": 0.5983659670505765
+    }
+  },
+  "068": {
+    "file": "068.webp",
+    "w": 736,
+    "h": 490,
+    "inkBox": {
+      "x": 4,
+      "y": 32,
+      "w": 728,
+      "h": 422
+    },
+    "inkRatio": 0.5582359813084112,
+    "inkCenter": {
+      "x": 0.49978774918775154,
+      "y": 0.4490602153668378
+    }
+  },
+  "069": {
+    "file": "069.webp",
+    "w": 420,
+    "h": 548,
+    "inkBox": {
+      "x": 23,
+      "y": 99,
+      "w": 374,
+      "h": 350
+    },
+    "inkRatio": 0.4529605263157895,
+    "inkCenter": {
+      "x": 0.5002373453768095,
+      "y": 0.5020947595766998
+    }
+  },
+  "070": {
+    "file": "070.webp",
+    "w": 736,
+    "h": 1467,
+    "inkBox": {
+      "x": 0,
+      "y": 0,
+      "w": 736,
+      "h": 1467
+    },
+    "inkRatio": 0.37525470219435736,
+    "inkCenter": {
+      "x": 0.4867555017490733,
+      "y": 0.538063395455863
+    }
+  },
+  "071": {
+    "file": "071.webp",
+    "w": 498,
+    "h": 750,
+    "inkBox": {
+      "x": 18,
+      "y": 15,
+      "w": 468,
+      "h": 723
+    },
+    "inkRatio": 0.5619035269709544,
+    "inkCenter": {
+      "x": 0.5296612359809849,
+      "y": 0.5742429890999025
+    }
+  },
+  "072": {
+    "file": "072.webp",
+    "w": 735,
+    "h": 1161,
+    "inkBox": {
+      "x": 174,
+      "y": 256,
+      "w": 483,
+      "h": 580
+    },
+    "inkRatio": 0.226951581027668,
+    "inkCenter": {
+      "x": 0.506810866286212,
+      "y": 0.5567559232248467
+    }
+  },
+  "073": {
+    "file": "073.webp",
+    "w": 663,
+    "h": 1000,
+    "inkBox": {
+      "x": 33,
+      "y": 37,
+      "w": 597,
+      "h": 922
+    },
+    "inkRatio": 0.27984958506224067,
+    "inkCenter": {
+      "x": 0.5805445510147345,
+      "y": 0.43682193452835655
+    }
+  },
+  "074": {
+    "file": "074.webp",
+    "w": 736,
+    "h": 736,
+    "inkBox": {
+      "x": 82,
+      "y": 27,
+      "w": 581,
+      "h": 677
+    },
+    "inkRatio": 0.5625390625,
+    "inkCenter": {
+      "x": 0.4974486449904823,
+      "y": 0.5166891282587613
+    }
+  },
+  "075": {
+    "file": "075.webp",
+    "w": 675,
+    "h": 1200,
+    "inkBox": {
+      "x": 54,
+      "y": 160,
+      "w": 562,
+      "h": 855
+    },
+    "inkRatio": 0.38237235915492956,
+    "inkCenter": {
+      "x": 0.5094760642613729,
+      "y": 0.47776180639646704
+    }
+  },
+  "076": {
+    "file": "076.webp",
+    "w": 736,
+    "h": 736,
+    "inkBox": {
+      "x": 0,
+      "y": 64,
+      "w": 663,
+      "h": 672
+    },
+    "inkRatio": 0.41296875,
+    "inkCenter": {
+      "x": 0.516794887964014,
+      "y": 0.6268172842193647
+    }
+  },
+  "077": {
+    "file": "077.webp",
+    "w": 735,
+    "h": 574,
+    "inkBox": {
+      "x": 18,
+      "y": 27,
+      "w": 690,
+      "h": 534
+    },
+    "inkRatio": 0.7232,
+    "inkCenter": {
+      "x": 0.5113403392330383,
+      "y": 0.4878926514342386
+    }
+  },
+  "078": {
+    "file": "078.webp",
+    "w": 666,
+    "h": 1000,
+    "inkBox": {
+      "x": 124,
+      "y": 75,
+      "w": 459,
+      "h": 867
+    },
+    "inkRatio": 0.2913541666666667,
+    "inkCenter": {
+      "x": 0.4170255468521467,
+      "y": 0.4872846250103133
+    }
+  },
+  "079": {
+    "file": "079.webp",
+    "w": 675,
+    "h": 896,
+    "inkBox": {
+      "x": 37,
+      "y": 38,
+      "w": 630,
+      "h": 829
+    },
+    "inkRatio": 0.6027417452830188,
+    "inkCenter": {
+      "x": 0.5134858459674918,
+      "y": 0.4761426874491543
+    }
+  },
+  "080": {
+    "file": "080.webp",
+    "w": 735,
+    "h": 797,
+    "inkBox": {
+      "x": 22,
+      "y": 23,
+      "w": 691,
+      "h": 774
+    },
+    "inkRatio": 0.4781791907514451,
+    "inkCenter": {
+      "x": 0.4834703334340687,
+      "y": 0.44815321489732185
+    }
+  },
+  "081": {
+    "file": "081.webp",
+    "w": 735,
+    "h": 1000,
+    "inkBox": {
+      "x": 22,
+      "y": 22,
+      "w": 691,
+      "h": 978
+    },
+    "inkRatio": 0.6826261467889908,
+    "inkCenter": {
+      "x": 0.5121069578608428,
+      "y": 0.5464560004574556
+    }
+  },
+  "082": {
+    "file": "082.webp",
+    "w": 736,
+    "h": 842,
+    "inkBox": {
+      "x": 32,
+      "y": 0,
+      "w": 704,
+      "h": 842
+    },
+    "inkRatio": 0.17797131147540984,
+    "inkCenter": {
+      "x": 0.4410410105320194,
+      "y": 0.4715177960032005
+    }
+  },
+  "083": {
+    "file": "083.webp",
+    "w": 1451,
+    "h": 1084,
+    "inkBox": {
+      "x": 27,
+      "y": 27,
+      "w": 1388,
+      "h": 1039
+    },
+    "inkRatio": 0.5973958333333333,
+    "inkCenter": {
+      "x": 0.42407644836487335,
+      "y": 0.5041643607141504
+    }
+  },
+  "084": {
+    "file": "084.webp",
+    "w": 736,
+    "h": 736,
+    "inkBox": {
+      "x": 105,
+      "y": 32,
+      "w": 526,
+      "h": 695
+    },
+    "inkRatio": 0.4840625,
+    "inkCenter": {
+      "x": 0.48925948263169217,
+      "y": 0.46635567060996413
+    }
+  },
+  "085": {
+    "file": "085.webp",
+    "w": 650,
+    "h": 857,
+    "inkBox": {
+      "x": 40,
+      "y": 8,
+      "w": 387,
+      "h": 825
+    },
+    "inkRatio": 0.39078791469194313,
+    "inkCenter": {
+      "x": 0.4835646495150937,
+      "y": 0.47823446453728446
+    }
+  },
+  "086": {
+    "file": "086.webp",
+    "w": 554,
+    "h": 1008,
+    "inkBox": {
+      "x": 6,
+      "y": 34,
+      "w": 542,
+      "h": 954
+    },
+    "inkRatio": 0.5576675257731959,
+    "inkCenter": {
+      "x": 0.4886865701857036,
+      "y": 0.5513426815818497
+    }
+  },
+  "087": {
+    "file": "087.webp",
+    "w": 736,
+    "h": 981,
+    "inkBox": {
+      "x": 41,
+      "y": 27,
+      "w": 631,
+      "h": 941
+    },
+    "inkRatio": 0.6157570422535211,
+    "inkCenter": {
+      "x": 0.4983060545506087,
+      "y": 0.4970701528169047
+    }
+  },
+  "088": {
+    "file": "088.webp",
+    "w": 357,
+    "h": 403,
+    "inkBox": {
+      "x": 0,
+      "y": 6,
+      "w": 357,
+      "h": 397
+    },
+    "inkRatio": 0.4653660220994475,
+    "inkCenter": {
+      "x": 0.47874735660755363,
+      "y": 0.39302102708484615
+    }
+  },
+  "089": {
+    "file": "089.webp",
+    "w": 406,
+    "h": 595,
+    "inkBox": {
+      "x": 10,
+      "y": 7,
+      "w": 389,
+      "h": 578
+    },
+    "inkRatio": 0.47689636752136755,
+    "inkCenter": {
+      "x": 0.4847035761938492,
+      "y": 0.3905335071926693
+    }
+  },
+  "090": {
+    "file": "090.webp",
+    "w": 736,
+    "h": 736,
+    "inkBox": {
+      "x": 216,
+      "y": 41,
+      "w": 281,
+      "h": 663
+    },
+    "inkRatio": 0.172578125,
+    "inkCenter": {
+      "x": 0.5128349746565837,
+      "y": 0.47822984256325135
+    }
+  },
+  "091": {
+    "file": "091.webp",
+    "w": 1080,
+    "h": 1080,
+    "inkBox": {
+      "x": 263,
+      "y": 155,
+      "w": 554,
+      "h": 770
+    },
+    "inkRatio": 0.2785546875,
+    "inkCenter": {
+      "x": 0.48472745244911425,
+      "y": 0.4991112439632246
+    }
+  },
+  "092": {
+    "file": "092.webp",
+    "w": 1080,
+    "h": 1080,
+    "inkBox": {
+      "x": 236,
+      "y": 13,
+      "w": 601,
+      "h": 1054
+    },
+    "inkRatio": 0.3591796875,
+    "inkCenter": {
+      "x": 0.43754666373395407,
+      "y": 0.5009631070397791
+    }
+  },
+  "093": {
+    "file": "093.webp",
+    "w": 620,
+    "h": 573,
+    "inkBox": {
+      "x": 50,
+      "y": 11,
+      "w": 520,
+      "h": 547
+    },
+    "inkRatio": 0.6118243243243243,
+    "inkCenter": {
+      "x": 0.4913381738463947,
+      "y": 0.5102192668131318
+    }
+  },
+  "094": {
+    "file": "094.webp",
+    "w": 1080,
+    "h": 1080,
+    "inkBox": {
+      "x": 13,
+      "y": 6,
+      "w": 1067,
+      "h": 1054
+    },
+    "inkRatio": 0.622734375,
+    "inkCenter": {
+      "x": 0.5262438681994381,
+      "y": 0.5804008280015055
+    }
+  },
+  "095": {
+    "file": "095.webp",
+    "w": 1080,
+    "h": 543,
+    "inkBox": {
+      "x": 13,
+      "y": 101,
+      "w": 1061,
+      "h": 300
+    },
+    "inkRatio": 0.332578125,
+    "inkCenter": {
+      "x": 0.5068766467818461,
+      "y": 0.5115504943729046
+    }
+  },
+  "096": {
+    "file": "096.webp",
+    "w": 1080,
+    "h": 543,
+    "inkBox": {
+      "x": 0,
+      "y": 33,
+      "w": 1006,
+      "h": 510
+    },
+    "inkRatio": 0.350625,
+    "inkCenter": {
+      "x": 0.453513620213186,
+      "y": 0.48719251336898395
+    }
+  },
+  "097": {
+    "file": "097.webp",
+    "w": 1080,
+    "h": 543,
+    "inkBox": {
+      "x": 74,
+      "y": 54,
+      "w": 932,
+      "h": 489
+    },
+    "inkRatio": 0.306640625,
+    "inkCenter": {
+      "x": 0.6469112895781409,
+      "y": 0.5652883934890304
+    }
+  },
+  "098": {
+    "file": "098.webp",
+    "w": 1080,
+    "h": 543,
+    "inkBox": {
+      "x": 6,
+      "y": 122,
+      "w": 1074,
+      "h": 293
+    },
+    "inkRatio": 0.291953125,
+    "inkCenter": {
+      "x": 0.5960343867125112,
+      "y": 0.4651629524988954
+    }
+  },
+  "099": {
+    "file": "099.webp",
+    "w": 620,
+    "h": 573,
+    "inkBox": {
+      "x": 85,
+      "y": 27,
+      "w": 423,
+      "h": 527
+    },
+    "inkRatio": 0.39556587837837837,
+    "inkCenter": {
+      "x": 0.515402501265912,
+      "y": 0.6147477219776563
     }
   }
 }

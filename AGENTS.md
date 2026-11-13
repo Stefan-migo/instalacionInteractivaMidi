@@ -49,6 +49,7 @@ The bridge serves both clients and the assets, so a single origin covers HTTP an
 | `scripts/generate-layout.js` | Regenerates `images/layout.json` from `images/manifest.json` |
 | `scripts/build-ink-metadata.js` | Measures each image's opaque silhouette and writes `inkBox`, `inkRatio`, `inkCenter` into the manifest |
 | `scripts/build-thumbnails.js` | Generates `images/thumbs/<key>.webp` at 200 px for the operator grid |
+| `scripts/import-library.js` | Release entry point: dedupes a raw folder, normalizes it to WebP and rewrites the manifest with renumbered keys |
 | `scripts/process-images.py`, `scripts/remove-bg.py` | Image curation helpers (Python) |
 | `scripts/simulate-phones.js` | 30 virtual phones for testing without devices |
 
@@ -111,6 +112,8 @@ The system is data-driven. To load a dataset:
 
    Optionally, `node scripts/build-ink-metadata.js` adds the silhouette fields the drawing code uses (`inkBox`, `inkRatio`, `inkCenter`, measured with ffmpeg). The script is idempotent and preserves every other field; the four library images with no alpha channel get `inkRatio: 1` and a full-frame box rather than a fabricated contour.
 
+To replace the whole library, `node scripts/import-library.js` is the release entry point. It enumerates the source folder deterministically, drops exact duplicates by content hash, normalizes every survivor to WebP (longest edge ≤ 1600 px, quality 90, alpha preserved, never upscaled) into `images/content/`, and rewrites `images/manifest.json` with `file`, `w` and `h` only. The `role`/`axis`/`pole` taxonomy of earlier libraries is no longer emitted, because no code reads it. Keys are renumbered `001…N`, so **a release invalidates the authored sizes in `images/sizes.json` and the exclusions in `images/deck.json`: both are reset**. Afterwards run the ink pass, `npm run generate-layout` and `node scripts/build-thumbnails.js --force`, in that order. `--force` is not optional for a release: keys keep their names while the pictures behind them change, so the mtime skip would keep the previous library's thumbnails and the grid would show the wrong image for every reused key. `--dry-run` prints the plan and writes nothing.
+
 3. Run `npm run generate-layout` to rebuild `images/layout.json` (30 cells, positions, rotation, z-order).
 
 The collage renders whatever the image deck assigns, not the layout: `images/layout.json` keeps geometry only. With an empty manifest the deck is empty and every cell renders nothing, so the installation still runs with zero content.
@@ -127,13 +130,14 @@ Images can also be taken out of the deck, in `images/deck.json` (`version` plus 
 
 ```bash
 npm install
-npm test                    # Jest, 56 suites
+npm test                    # Jest, 59 suites
 npm run test:coverage
 npm run bridge              # http://localhost:8080
 # projector:  http://localhost:8080/p5-collage/
 # phone:      http://localhost:8080/phone-client/
 # operator:   http://localhost:8080/operator/
 npm run generate-layout     # requires a non-empty manifest
+node scripts/import-library.js --dry-run   # preview a library release
 node scripts/simulate-phones.js   # 30 virtual phones
 ```
 

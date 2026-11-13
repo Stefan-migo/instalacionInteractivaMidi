@@ -28,6 +28,31 @@ describe('operator deck curation logic', () => {
     expect(Curation.warningMessage(available, 30)).toBe(empty ? `${available} imágenes disponibles; al guardar quedarían vacías ${empty} de las 30 celdas.` : '');
   });
 
+  test('assigned images have a visible class marker while unassigned images do not', () => {
+    expect(Curation.sizeMarker({ '001': 'L' }, '001')).toEqual({ assigned: true, label: 'L' });
+    expect(Curation.sizeMarker({}, '002')).toEqual({ assigned: false, label: '' });
+  });
+
+  test('unassigned filter hides exactly assigned images and restores all when disabled', () => {
+    const files = ['001', '002', '003'];
+    const assignments = { '002': 'M' };
+    expect(Curation.visibleImageKeys(files, assignments, true)).toEqual(['001', '003']);
+    expect(Curation.visibleImageKeys(files, assignments, false)).toEqual(files);
+  });
+
+  test('assignment counts include empty reset and mixed libraries', () => {
+    expect(Curation.assignmentCount(210, {})).toEqual({ assigned: 0, total: 210 });
+    expect(Curation.assignmentCount(4, { '001': 'S', '003': 'XL' })).toEqual({ assigned: 2, total: 4 });
+  });
+
+  test('operator source wires filter, badge and selection independently', () => {
+    const fs = require('fs');
+    const source = fs.readFileSync(require.resolve('../operator/operator'), 'utf8');
+    expect(source).toMatch(/visibleImageKeys/);
+    expect(source).toMatch(/sizeMarker/);
+    expect(source).toMatch(/selected\.has\(key\)/);
+  });
+
   test('repeating an action replaces its keyed toast instead of stacking', () => {
     const once = Curation.replaceToast([], 'preset', 'Distribución: scatter');
     expect(Curation.replaceToast(once, 'preset', 'Distribución: neat-grid')).toEqual([{ key: 'preset', message: 'Distribución: neat-grid' }]);

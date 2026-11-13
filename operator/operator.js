@@ -323,17 +323,25 @@
       var usable = Object.keys(manifest || {}).filter(function (key) { return !(deck.excluded || []).includes(key); }).length;
       warning.textContent = Curation.warningMessage(usable, 30);
     }
+    var onlyUnassigned = false;
     function render() {
+      var allKeys = Object.keys(manifest || {}).filter(function (key) { return manifest[key] && manifest[key].file; });
+      var visible = Curation.visibleImageKeys(allKeys, sizes.assignments, onlyUnassigned);
       grid.innerHTML = '';
-      Object.keys(manifest || {}).forEach(function (key) {
-        var entry = manifest[key]; if (!entry || !entry.file) return;
-        var label = doc.createElement('label'); label.className = 'deck-item';
+      visible.forEach(function (key) {
+        var entry = manifest[key];
+        var marker = Curation.sizeMarker(sizes.assignments, key);
+        var label = doc.createElement('label'); label.className = 'deck-item' + (marker.assigned ? ' assigned' : '');
         var checkbox = doc.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = selected.has(key); checkbox.dataset.key = key;
         var image = doc.createElement('img'); image.loading = 'lazy'; image.src = '/images/thumbs/' + encodeURIComponent(key) + '.webp'; image.alt = entry.file;
         var caption = doc.createElement('span'); caption.textContent = entry.file;
-        var state = doc.createElement('small'); state.textContent = (sizes.assignments[key] || 'Sin clase') + (deck.excluded.includes(key) ? ' · Excluida' : '');
+        // The class letter travels with the marker so it reads without relying on colour.
+        var state = doc.createElement('small'); state.textContent = (marker.assigned ? '● ' + marker.label : 'Sin clase') + (deck.excluded.includes(key) ? ' · Excluida' : '');
         label.appendChild(checkbox); label.appendChild(image); label.appendChild(caption); label.appendChild(state); grid.appendChild(label);
       });
+      var counts = Curation.assignmentCount(allKeys.length, sizes.assignments);
+      var counter = doc.getElementById('deck-assignment-count');
+      if (counter) counter.textContent = counts.assigned + ' / ' + counts.total + ' con tamaño' + (onlyUnassigned ? ' · mostrando ' + visible.length + ' sin asignar' : '');
       refreshWarning();
     }
     function save(url, value, name, count, key, confirmation) {
@@ -348,6 +356,12 @@
       if (event.shiftKey && lastSelected !== null) selected = Curation.toggleSelection(selected, key, keys, lastSelected);
       else selected = Curation.toggleSelection(selected, key, keys);
       lastSelected = key; render();
+    });
+    var unassignedBtn = doc.getElementById('deck-unassigned');
+    if (unassignedBtn) unassignedBtn.addEventListener('click', function () {
+      onlyUnassigned = !onlyUnassigned;
+      unassignedBtn.setAttribute('aria-pressed', String(onlyUnassigned));
+      render();
     });
     doc.getElementById('deck-all').addEventListener('click', function () { selected = Curation.selectAll(Object.keys(manifest || {})); render(); });
     doc.getElementById('deck-none').addEventListener('click', function () { selected = Curation.selectNone(); render(); });
@@ -368,7 +382,9 @@
       if (!file) return;
       doc.getElementById('dimension-file').textContent = file;
       var assignedCount = Object.keys(data.assignments).length;
-      doc.getElementById('dimension-progress').textContent = (current + 1) + ' / ' + files.length + ' · ' + assignedCount + ' asignadas';
+      var currentKey = Object.keys(manifest).find(function (id) { return manifest[id].file === file; });
+      var currentMarker = Curation.sizeMarker(data.assignments, currentKey);
+      doc.getElementById('dimension-progress').textContent = (current + 1) + ' / ' + files.length + ' · ' + assignedCount + ' con tamaño · ' + (currentMarker.assigned ? 'esta imagen: clase ' + currentMarker.label : 'esta imagen: SIN ASIGNAR');
       image.onload = function () {
         var key = Object.keys(manifest).find(function (id) { return manifest[id].file === file; });
         var dims = data && root.SizeClasses.getAuthoredDrawSize(data, key, image.naturalWidth, image.naturalHeight, 1920, 1080, manifest[key].inkRatio || 1);

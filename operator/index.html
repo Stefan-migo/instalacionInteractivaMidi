@@ -17,14 +17,14 @@
     <section id="dimensions"><h2>Dimensiones</h2>
       <p>Una imagen por vez. Referencia fija: un cuadrado de 300 × 300 px representa el 1 % del área del lienzo.</p>
       <div class="dimension-preview"><canvas id="dimension-canvas" width="960" height="540" aria-label="Vista previa de dimensiones"></canvas><div class="dimension-reference" aria-hidden="true"></div></div>
-      <p id="dimension-progress" aria-live="polite">Cargando…</p><p id="dimension-file"></p>
+      <p id="dimension-progress" aria-live="polite">Cargando…</p><p id="dimension-file"></p><p id="dimension-size-marker" class="size-marker" aria-live="polite"></p>
       <div class="presets"><button type="button" data-size="S">S</button><button type="button" data-size="M">M</button><button type="button" data-size="L">L</button><button type="button" data-size="XL">XL</button></div>
       <div class="presets"><button id="dimension-prev" type="button">Anterior</button><button id="dimension-next" type="button">Siguiente</button><button id="dimension-save" type="button">Guardar</button></div>
       <p id="dimension-status" class="visually-hidden" aria-live="polite"></p>
     </section>
     <section id="deck-curation"><h2>Imágenes · Mazo y dimensiones</h2>
       <p id="deck-warning" class="deck-warning" role="alert">Calculando el impacto sobre las 30 celdas…</p>
-      <div class="deck-tools"><button id="deck-all" type="button">Seleccionar todas</button><button id="deck-none" type="button">Seleccionar ninguna</button><button type="button" data-bulk-size="S">S</button><button type="button" data-bulk-size="M">M</button><button type="button" data-bulk-size="L">L</button><button type="button" data-bulk-size="XL">XL</button><button id="deck-exclude" type="button">Excluir del mazo</button><button id="deck-include" type="button">Reincluir en el mazo</button></div>
+      <div class="deck-tools"><button id="deck-unassigned" type="button" aria-pressed="false">Solo sin asignar</button><span id="deck-assignment-count" aria-live="polite"></span><button id="deck-all" type="button">Seleccionar todas</button><button id="deck-none" type="button">Seleccionar ninguna</button><button type="button" data-bulk-size="S">S</button><button type="button" data-bulk-size="M">M</button><button type="button" data-bulk-size="L">L</button><button type="button" data-bulk-size="XL">XL</button><button id="deck-exclude" type="button">Excluir del mazo</button><button id="deck-include" type="button">Reincluir en el mazo</button></div>
       <div id="deck-grid" class="deck-grid" aria-label="Imágenes del mazo"></div>
     </section>
     <section><h2>Tema</h2><p>La preferencia se sincroniza entre las ventanas de este navegador.</p></section>
