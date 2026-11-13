@@ -28,7 +28,11 @@ The bridge serves both clients and the assets, so a single origin covers HTTP an
 | `music/agent.js` | Local agent: registers with the bridge as `agent` and writes group values to MIDI |
 | `p5-collage/sketch.js` | p5 draw loop, WebSocket client, action handling, floating control bar |
 | `p5-collage/device-manager.js` | 30 cells, phone↔slot wiring, sensor mapping |
-| `p5-collage/control-panel.js` | Operator sidebar (layout presets, background, per-cell editor) |
+| `p5-collage/operator-link.js` | Receives the operator page's commands and applies them to cells |
+| `p5-collage/collage-layout.js` | Parsed layout model: canvas size and the 30 cells |
+| `p5-collage/transition-renderer.js` | Crossfade state machine for image cycling (IDLE → FADING → IDLE) |
+| `p5-collage/size-classes.js` | Validates the authored size classes and resolves class → ink area → drawn size, shared by the operator preview and the collage |
+| `operator/operator.js` | Operator page: presets, scatter scale, background, per-cell editor and the Dimensiones size authoring |
 | `p5-collage/layout-preset-engine.js` | Six deterministic layout presets |
 | `p5-collage/cell-renderer.js` | Per-cell drawing, filters, object-fit contain |
 | `p5-collage/cell-image.js` | Applies a deck assignment to a cell without blanking it while the bitmap loads |
@@ -87,7 +91,7 @@ Valid gestures: `flick`. The bridge resolves it to `shuffle`, the action the gal
 
 ## HTTP endpoints
 
-`/health`, `/api/layout`, `/api/manifest`, `/images/content/<file>`, `/phone-client/…`, `/p5-collage/…`.
+`/health`, `/api/layout`, `/api/manifest`, `/api/sizes`, `/images/content/<file>`, `/phone-client/…`, `/p5-collage/…`, `/operator/…`.
 
 `IMAGES_DIR` overrides the served image directory (default `images/content`), which is how tests avoid depending on repository data.
 
@@ -112,20 +116,25 @@ The deck deals distinct images: with at least as many files as cells, no two fra
 
 Fragments are sized by two rules, because a cell alone does not decide how big a photo looks. The deck prefers an image whose silhouette aspect is within `ASPECT_TOLERANCE` (`p5-collage/image-deck.js`) of the target cell, which keeps `object-fit: contain` from shrinking a panorama into a sliver. Then, after the contain fit, if the painted area falls under `CONFIG.minInkCoverage` of the cell, the fragment is scaled up until it clears that floor, bounded by `CONFIG.maxInkOverflow`. The floor is measured on **ink**, not on the bounding rectangle: the torn silhouette means only 30-60% of a frame is actually painted, so a rectangle-based floor would pass fragments that still look empty. Nothing is cropped to achieve either rule.
 
+Sizes can also be authored per image, in `images/sizes.json`. Each entry maps an image key to a class (`S`, `M`, `L`, `XL`), and each class maps to a target **ink** area as a fraction of the canvas (`0.015` / `0.030` / `0.060` / `0.100` by default — tunable in that file, never hardcoded in a module). For an authored image the drawn frame area becomes `targetInk / inkRatio`, so two images of the same class carry the same painted mass even when one is a panorama and the other a portrait. The per-preset random scale then degrades to jitter, and the ink floor stops correcting and only warns. Every unassigned image keeps the two rules above, which is why the file ships empty: authoring is opt-in per image, and merging it changes nothing on screen. Author them in the operator page's **Dimensiones** mode, which shows one image at a time beside a fixed 300×300 px reference and saves through the bridge.
+
 ## Running
 
 ```bash
 npm install
-npm test                    # Jest, 53 suites
+npm test                    # Jest, 54 suites
 npm run test:coverage
 npm run bridge              # http://localhost:8080
 # projector:  http://localhost:8080/p5-collage/
 # phone:      http://localhost:8080/phone-client/
+# operator:   http://localhost:8080/operator/
 npm run generate-layout     # requires a non-empty manifest
 node scripts/simulate-phones.js   # 30 virtual phones
 ```
 
 Sensors require a secure context: `localhost` works, a plain LAN IP does not. Serving the phone client over HTTPS (tunnel or TLS) is a deployment concern, not a code one.
+
+Size assignments are written through `POST /api/sizes`, which stays disabled unless `SIZE_WRITES_ENABLED=true` is set for the bridge process. It is off in production on purpose: the endpoint rewrites a tracked file, and the same bridge is publicly reachable.
 
 ## Testing
 
