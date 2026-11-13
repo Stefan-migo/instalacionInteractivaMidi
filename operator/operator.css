@@ -89,3 +89,11 @@ body.routing-window main { max-width: 1500px; }
 .operator-toast[hidden] { display: none; }
 .operator-toast button { min-height: 1.5rem; padding: .1rem .4rem; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.operator-token { max-width: min(26rem, calc(100vw - 2rem)); padding: 1.2rem; border: 2px solid var(--ink); background: var(--paper); color: var(--ink); }
+.operator-token::backdrop { background: rgba(17, 17, 17, .35); }
+.operator-token h2 { margin: 0 0 .5rem; font-size: 1rem; }
+.operator-token p { margin: 0 0 .8rem; font-size: .85rem; }
+.operator-token label { display: block; margin-bottom: .3rem; font-size: .8rem; }
+.operator-token input { width: 100%; min-height: 2rem; padding: .3rem .5rem; border: 2px solid var(--ink); background: var(--paper); color: var(--ink); font: inherit; }
+.operator-token-actions { display: flex; gap: .5rem; margin-top: .9rem; }
+.operator-token-actions button { min-height: 2rem; padding: .3rem .8rem; }

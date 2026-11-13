@@ -11,6 +11,7 @@ const { createGestureTriggers } = require('./gesture-triggers');
 const { createVoiceGate } = require('./voice-gate');
 const { startHeartbeat } = require('./heartbeat');
 const { createMusicState } = require('./music-state');
+const { checkAuthoring } = require('./authoring-guard');
 const { SLOT_COUNT, DEFAULT_GROUP_COUNT, deriveTopology } = require('./topology');
 const { parseEmitRequest } = require('./message-relay');
 const { validateSizes } = require('../p5-collage/size-classes');
@@ -321,7 +322,8 @@ const server = http.createServer((req, res) => {
   }
 
   if (pathname === '/api/deck' && req.method === 'POST') {
-    if (process.env.AUTHORING_WRITES_ENABLED !== 'true') return sendJson(res, 403, { ok: false, error: 'Deck assignments are disabled' });
+    const gate = checkAuthoring(process.env, req.headers);
+    if (!gate.ok) return sendJson(res, gate.status, { ok: false, error: gate.status === 401 ? 'Operator token required' : 'Deck assignments are disabled' });
     readJsonBody(req, DECK_WRITE_LIMIT, async (error, submitted) => {
       if (error) return sendJson(res, error.message === 'body too large' ? 413 : 400, { ok: false, error: error.message });
       try {
@@ -342,8 +344,9 @@ const server = http.createServer((req, res) => {
   }
 
   if (pathname === '/api/sizes' && req.method === 'POST') {
-    if (process.env.AUTHORING_WRITES_ENABLED !== 'true') {
-      return sendJson(res, 403, { ok: false, error: 'Size assignments are disabled' });
+    const gate = checkAuthoring(process.env, req.headers);
+    if (!gate.ok) {
+      return sendJson(res, gate.status, { ok: false, error: gate.status === 401 ? 'Operator token required' : 'Size assignments are disabled' });
     }
     let size = 0;
     const chunks = [];
