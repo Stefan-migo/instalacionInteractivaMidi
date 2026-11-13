@@ -28,7 +28,8 @@ function setup() {
   ]).then(([layoutData, manifestData]) => {
     collageLayout = new CollageLayout(layoutData);
     // The deck is the single authority for which image each cell shows.
-    imageDeck = new ImageDeck(imageLoader.filesFrom(manifestData));
+    const inkMetadata = imageLoader.metadataFrom(manifestData);
+    imageDeck = new ImageDeck(imageLoader.filesFrom(manifestData), { metadata: inkMetadata });
 
     const sm = new SensorMapper(CONFIG);
     const renderer = createRenderer();
@@ -79,7 +80,7 @@ function createRenderer() {
   return {
     cellStates: state.cellStates,
     initCell(slot, cell) {
-      const file = imageDeck.claim(slot);
+      const file = imageDeck.claim(slot, cell);
 
       const cellState = {
         cell,
@@ -438,10 +439,10 @@ function drawCell(s, dt) {
 
   const tState = s.transition.update(dt);
   if (tState.state === 'fading' && s._oldImg) {
-    drawImg(s._oldImg, s.flipH, s.flipV, -w / 2, -h / 2, w, h, s.opacity * tState.oldAlpha, s.filterType);
-    drawImg(s.img, s.flipH, s.flipV, -w / 2, -h / 2, w, h, s.opacity * tState.newAlpha, s.filterType);
+    drawImg(s._oldImg, s.flipH, s.flipV, -w / 2, -h / 2, w, h, s.opacity * tState.oldAlpha, s.filterType, s._oldImg.inkRatio);
+    drawImg(s.img, s.flipH, s.flipV, -w / 2, -h / 2, w, h, s.opacity * tState.newAlpha, s.filterType, s.img.inkRatio);
   } else {
-    drawImg(s.img, s.flipH, s.flipV, -w / 2, -h / 2, w, h, s.opacity, s.filterType);
+    drawImg(s.img, s.flipH, s.flipV, -w / 2, -h / 2, w, h, s.opacity, s.filterType, s.img && s.img.inkRatio);
   }
 
   // Selection highlight — dashed golden border when cell is selected
@@ -468,5 +469,5 @@ function drawCell(s, dt) {
 
 function drawImageWithTransform(s, x, y, w, h, opacity) {
   if (!s.img) return;
-  drawImg(s.img, s.flipH, s.flipV, x, y, w, h, opacity, s.filterType);
+  drawImg(s.img, s.flipH, s.flipV, x, y, w, h, opacity, s.filterType, s.img.inkRatio);
 }

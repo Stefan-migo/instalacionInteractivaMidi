@@ -1,4 +1,4 @@
-const { ImageDeck } = require('../p5-collage/image-deck');
+const { ImageDeck, ASPECT_TOLERANCE } = require('../p5-collage/image-deck');
 
 function seeded(seed) {
   let state = seed >>> 0;
@@ -18,6 +18,25 @@ describe('ImageDeck', () => {
     expect(deck.inUseFiles()).toHaveLength(30);
     expect(deck.deckFiles()).toHaveLength(270);
     expect(deck.deckFiles().filter((file) => deck.isInUse(file))).toEqual([]);
+  });
+
+  test('deals a compatible ink aspect without repeating an active file', () => {
+    const files = ['square.webp', 'square-alt.webp', 'wide.webp'];
+    const deck = new ImageDeck(files, {
+      rng: () => 0,
+      metadata: {
+        'square.webp': { inkBox: { w: 100, h: 100 } },
+        'square-alt.webp': { inkBox: { w: 100, h: 100 } },
+        'wide.webp': { inkBox: { w: 200, h: 100 } },
+      },
+    });
+    const first = deck.claim('other', { w: 100, h: 100 });
+    const chosen = deck.claim('target', { w: 200, h: 100 });
+    expect(chosen).toBe('wide.webp');
+    expect(chosen).not.toBe(first);
+    expect(deck.inUseFiles()).toContain(chosen);
+    const selectedAspect = chosen === 'wide.webp' ? 2 : 1;
+    expect(Math.abs(selectedAspect - 2) / 2).toBeLessThanOrEqual(ASPECT_TOLERANCE);
   });
 
   test('claim is idempotent and does not consume the deck twice', () => {

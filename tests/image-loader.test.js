@@ -70,6 +70,18 @@ describe('ImageLoader', () => {
     expect(loader.filesFrom({ a: {}, b: { file: 'x.jpg' }, c: { file: 'x.jpg' }, d: { file: 'y.jpg' } })).toEqual(['x.jpg', 'y.jpg']);
   });
 
+  test('maps manifest ink ratios by filename and annotates decoded images', async () => {
+    const h = factoryHarness();
+    const loader = new ImageLoader('', { createImage: h.createImage });
+    const metadata = loader.metadataFrom({ a: { file: 'a.webp', inkRatio: 0.42 }, b: { file: 'b.webp' } });
+    expect(metadata['a.webp'].inkRatio).toBe(0.42);
+    expect(loader.getInkRatio('missing.webp')).toBe(1);
+    const pending = loader.ensure('a.webp');
+    settle(h.elements.get('a.webp'));
+    const image = await pending;
+    expect(image.inkRatio).toBe(0.42);
+  });
+
   test('stats track cache, pending, pins and failure', async () => {
     const h = factoryHarness(); const loader = new ImageLoader('', { maxCached: 1, createImage: h.createImage });
     const p = loader.ensure('a.jpg'); expect(loader.stats()).toMatchObject({ cached: 0, pending: 1, pinned: 0 });

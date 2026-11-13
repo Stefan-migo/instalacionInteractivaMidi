@@ -1,3 +1,5 @@
+const ASPECT_TOLERANCE = 0.25;
+
 class ImageDeck {
   constructor(files, options = {}) {
     const library = Array.isArray(files) ? files : [];
@@ -6,9 +8,12 @@ class ImageDeck {
     this._slots = new Map();
     this._rng = typeof options.rng === 'function' ? options.rng : Math.random;
     this._warned = false;
+    this._metadata = options.metadata || {};
+    this._cellAspects = new Map();
   }
 
-  claim(slot) {
+  claim(slot, cell) {
+    if (cell && cell.w > 0 && cell.h > 0) this._cellAspects.set(slot, cell.w / cell.h);
     return this._claim(slot, null);
   }
 
@@ -18,10 +23,22 @@ class ImageDeck {
 
     let file;
     if (this._deck.length > 0) {
-      const random = Number(this._rng());
-      let index = Math.min(this._deck.length - 1, Math.max(0, Math.floor(random * this._deck.length)));
-      if (this._deck[index] === excluded && this._deck.length > 1) index = (index + 1) % this._deck.length;
-      [file] = this._deck.splice(index, 1);
+      const aspect = this._cellAspects.get(slot);
+      const alternatives = excluded !== null && this._deck.length > 1
+        ? this._deck.filter(candidate => candidate !== excluded)
+        : this._deck;
+      let candidates = alternatives;
+      if (aspect) {
+        const compatible = alternatives.filter(candidate => {
+          const box = this._metadata[candidate] && this._metadata[candidate].inkBox;
+          if (!box || !(box.w > 0) || !(box.h > 0)) return false;
+          return Math.abs(box.w / box.h - aspect) / aspect <= ASPECT_TOLERANCE;
+        });
+        if (compatible.length) candidates = compatible;
+      }
+      let index = Math.min(candidates.length - 1, Math.max(0, Math.floor(Number(this._rng()) * candidates.length)));
+      file = candidates[index];
+      this._deck.splice(this._deck.indexOf(file), 1);
     } else {
       if (!this._warned) {
         console.warn('ImageDeck exhausted; reusing images from the library.');
@@ -35,9 +52,7 @@ class ImageDeck {
     return file;
   }
 
-  current(slot) {
-    return this._slots.has(slot) ? this._slots.get(slot) : null;
-  }
+  current(slot) { return this._slots.has(slot) ? this._slots.get(slot) : null; }
 
   release(slot) {
     if (!this._slots.has(slot)) return null;
@@ -62,23 +77,10 @@ class ImageDeck {
     return true;
   }
 
-  isInUse(file) {
-    return [...this._slots.values()].includes(file);
-  }
-
-  inUseFiles() {
-    return [...this._slots.values()];
-  }
-
-  deckFiles() {
-    return [...this._deck];
-  }
-
-  get availableCount() {
-    return this._deck.length;
-  }
+  isInUse(file) { return [...this._slots.values()].includes(file); }
+  inUseFiles() { return [...this._slots.values()]; }
+  deckFiles() { return [...this._deck]; }
+  get availableCount() { return this._deck.length; }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { ImageDeck };
-}
+if (typeof module !== 'undefined' && module.exports) module.exports = { ImageDeck, ASPECT_TOLERANCE };
