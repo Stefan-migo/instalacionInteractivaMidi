@@ -33,4 +33,16 @@ describe('thumbnail builder', () => {
     expect(read).toHaveBeenCalledTimes(1);
     expect(read.mock.calls[0].map(norm)).toEqual(['source/b', 'out/b.webp']);
   });
+  test('force regenerates every target, including the ones the mtime rule would skip', () => {
+    const norm = p => p.split(path.sep).join('/');
+    const files = new Map([['source/a', 10], ['source/b', 20], ['out/a.webp', 10], ['out/b.webp', 1]]);
+    const fsImpl = {
+      mkdirSync: jest.fn(), existsSync: p => files.has(norm(p)),
+      statSync: p => ({ mtimeMs: files.get(norm(p)) }),
+    };
+    const read = jest.fn((source, target) => files.set(norm(target), files.get(norm(source))));
+    buildThumbnails({ manifest: { a: { file: 'a' }, b: { file: 'b' } }, contentDir: 'source', outputDir: 'out', reader: read, fsImpl, force: true });
+    expect(read).toHaveBeenCalledTimes(2);
+    expect(read.mock.calls.map(call => norm(call[1]))).toEqual(['out/a.webp', 'out/b.webp']);
+  });
 });
