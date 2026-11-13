@@ -328,7 +328,7 @@ const server = http.createServer((req, res) => {
       } catch (validationError) { return sendJson(res, 400, { ok: false, error: validationError.message }); }
       const tempPath = `${DECK_PATH}.${process.pid}.${Date.now()}.tmp`;
       try {
-        await fs.promises.writeFile(tempPath, `${JSON.stringify(submitted, null, 2)}\\n`, { flag: 'wx' });
+        await fs.promises.writeFile(tempPath, `${JSON.stringify(submitted, null, 2)}\n`, { flag: 'wx' });
         await fs.promises.rename(tempPath, DECK_PATH);
         return sendJson(res, 200, { ok: true });
       } catch {
