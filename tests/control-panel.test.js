@@ -73,12 +73,11 @@ describe('preset dispatch', () => {
       expect(result).toHaveLength(30);
 
       result.forEach(function (pos, idx) {
-        expect(pos.x).toBeGreaterThanOrEqual(0);
-        expect(pos.y).toBeGreaterThanOrEqual(0);
-        expect(pos.x + pos.w / 2).toBeGreaterThanOrEqual(0);
-        expect(pos.x + pos.w / 2).toBeLessThanOrEqual(W);
-        expect(pos.y + pos.h / 2).toBeGreaterThanOrEqual(0);
-        expect(pos.y + pos.h / 2).toBeLessThanOrEqual(H);
+        // Fragments may hang off the canvas; what may not happen is vanishing.
+        var visibleW = Math.min(pos.x + pos.w, W) - Math.max(pos.x, 0);
+        var visibleH = Math.min(pos.y + pos.h, H) - Math.max(pos.y, 0);
+        expect(visibleW).toBeGreaterThanOrEqual(Math.floor(pos.w * engine.minVisible) - 1);
+        expect(visibleH).toBeGreaterThanOrEqual(Math.floor(pos.h * engine.minVisible) - 1);
         expect(pos.w).toBeGreaterThan(20);
         expect(pos.h).toBeGreaterThan(20);
       });

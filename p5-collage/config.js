@@ -15,6 +15,12 @@ const CONFIG = {
   defaultPreset: 'scatter',
   presetList: ['scatter', 'spiral', 'polaroid-stack', 'neat-grid', 'vignette', 'random'],
   scatterScale: 1.0,
+  // Fragments are allowed to hang off the canvas edge, which is what makes the
+  // collage read as cut paper instead of a scrapbook pinned inside a frame.
+  // presetEdgeBleed is how far a centre may sit outside, as a canvas fraction;
+  // presetMinVisible is how much of a fragment always stays on screen.
+  presetEdgeBleed: 0.10,
+  presetMinVisible: 0.25,
   filterMap: {
     sepia: 'sepia(0.85) contrast(1.1)',
     grayscale: 'grayscale(1.0) contrast(1.3)',

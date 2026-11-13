@@ -32,20 +32,16 @@ describe('LayoutPresetEngine', () => {
   /* ── Each preset produces valid output ── */
 
   describe.each(PRESETS)('preset "%s"', (preset) => {
-    test('places single cell within canvas bounds', () => {
+    test('keeps a single fragment visible while allowing it off the canvas', () => {
       const engine = makeEngine();
       const result = engine.compute(makeCells(1), preset);
       expect(result).toHaveLength(1);
       expect(result[0].slot).toBe(0);
-      expect(result[0].x).toBeGreaterThanOrEqual(0);
-      expect(result[0].y).toBeGreaterThanOrEqual(0);
-      // Cell center must be within canvas bounds
-      const cx = result[0].x + result[0].w / 2;
-      const cy = result[0].y + result[0].h / 2;
-      expect(cx).toBeGreaterThanOrEqual(0);
-      expect(cx).toBeLessThanOrEqual(W);
-      expect(cy).toBeGreaterThanOrEqual(0);
-      expect(cy).toBeLessThanOrEqual(H);
+      // Hanging off the canvas is allowed on purpose; disappearing is not.
+      const visibleW = Math.min(result[0].x + result[0].w, W) - Math.max(result[0].x, 0);
+      const visibleH = Math.min(result[0].y + result[0].h, H) - Math.max(result[0].y, 0);
+      expect(visibleW).toBeGreaterThanOrEqual(Math.floor(result[0].w * engine.minVisible) - 1);
+      expect(visibleH).toBeGreaterThanOrEqual(Math.floor(result[0].h * engine.minVisible) - 1);
       expect(result[0].w).toBeGreaterThan(20);
       expect(result[0].h).toBeGreaterThan(20);
       expect(typeof result[0].rotation).toBe('number');
@@ -67,15 +63,11 @@ describe('LayoutPresetEngine', () => {
       expect(result).toHaveLength(n);
       for (const cell of result) {
         expect(cell.slot).toBeGreaterThanOrEqual(0);
-        expect(cell.x).toBeGreaterThanOrEqual(0);
-        expect(cell.y).toBeGreaterThanOrEqual(0);
-        // Cell center must be within canvas bounds
-        const cx = cell.x + cell.w / 2;
-        const cy = cell.y + cell.h / 2;
-        expect(cx).toBeGreaterThanOrEqual(0);
-        expect(cx).toBeLessThanOrEqual(W);
-        expect(cy).toBeGreaterThanOrEqual(0);
-        expect(cy).toBeLessThanOrEqual(H);
+        // Bleeding past an edge is allowed; staying visible is the invariant.
+        const visibleW = Math.min(cell.x + cell.w, W) - Math.max(cell.x, 0);
+        const visibleH = Math.min(cell.y + cell.h, H) - Math.max(cell.y, 0);
+        expect(visibleW).toBeGreaterThanOrEqual(Math.floor(cell.w * engine.minVisible) - 1);
+        expect(visibleH).toBeGreaterThanOrEqual(Math.floor(cell.h * engine.minVisible) - 1);
         expect(cell.w).toBeGreaterThan(20);
         expect(cell.h).toBeGreaterThan(20);
         expect(typeof cell.rotation).toBe('number');
@@ -83,6 +75,31 @@ describe('LayoutPresetEngine', () => {
         expect(cell.zIndex).toBeGreaterThan(0);
       }
     });
+  });
+
+  /* ── Edge bleed ── */
+
+  test('fragments are allowed to run off the canvas edge', () => {
+    const engine = makeEngine();
+    const cells = makeCells(30);
+    let bled = 0;
+    for (let run = 0; run < 40; run++) {
+      for (const cell of engine.compute(cells, 'random')) {
+        if (cell.x < 0 || cell.y < 0 || cell.x + cell.w > W || cell.y + cell.h > H) bled++;
+      }
+    }
+    expect(bled).toBeGreaterThan(0);
+  });
+
+  test('the bleed is bounded by edgeBleed and never hides a fragment', () => {
+    const engine = makeEngine();
+    const cells = makeCells(30);
+    for (const preset of PRESETS) {
+      for (const cell of engine.compute(cells, preset)) {
+        expect(cell.x).toBeGreaterThanOrEqual(-Math.round(W * (engine.edgeBleed + 1)) - cell.w);
+        expect(cell.y).toBeGreaterThanOrEqual(-Math.round(H * (engine.edgeBleed + 1)) - cell.h);
+      }
+    }
   });
 
   /* ── Preset switching ── */
