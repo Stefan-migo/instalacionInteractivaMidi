@@ -270,7 +270,9 @@
   // --- Gesture Gallery State Machine ---
   var gestureActionMap = {
     inclinar: 'cell-next',
-    latigo: 'shuffle',
+    // Látigo is "cambia foto": the same action the Otra foto button sends.
+    // `shuffle` swaps two cells and reads as a jump, which `inclinar` already owns.
+    latigo: 'cycle-next',
     twist: 'filter-next'
   };
 

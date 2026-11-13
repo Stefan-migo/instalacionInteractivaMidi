@@ -71,10 +71,12 @@ const MIME_TYPES = {
 };
 
 const GESTURE_ACTIONS = {
-  // The gallery on the phone teaches látigo as "cambia foto", and practice has
-  // always sent `shuffle`. One gesture, one action: the whip swaps the image
-  // with another fragment instead of advancing this cell's deck.
-  'flick': 'shuffle',
+  // The gallery on the phone teaches látigo as "cambia foto", and the button
+  // that says "Otra foto" sends cycle-next. The whip must do the same thing:
+  // pull a new photo from the deck into this cell. shuffle exchanges images
+  // between two cells and reads as a jump, which is what `inclinar` already
+  // does — that collision is why both gestures felt identical.
+  'flick': 'cycle-next',
 };
 
 // Reported by /health so an operator can tell one instance from two. Two
@@ -97,7 +99,7 @@ const dtwMatcher = new DTWMatcher(gestureStore, {
   threshold: 0.5,
   downsampleHz: 10,
   debounceMs: 1000,
-  defaultAction: 'shuffle',
+  defaultAction: 'cycle-next',
 });
 const p5Players = new Set();
 const phoneConnections = new Map();

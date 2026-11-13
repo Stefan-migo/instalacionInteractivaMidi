@@ -10,7 +10,10 @@ describe('the tilt gesture jumps the fragment to another cell', () => {
     const map = app.match(/var gestureActionMap = \{([\s\S]*?)\};/);
     expect(map).not.toBeNull();
     expect(map[1]).toMatch(/inclinar:\s*'cell-next'/);
-    expect(map[1]).toMatch(/latigo:\s*'shuffle'/);
+    // Látigo is not a jump: it pulls a new photo into this cell, the same action
+    // the "Otra foto" button sends. `shuffle` swapped two cells, which read as a
+    // second jump and made the two gestures indistinguishable on the device.
+    expect(map[1]).toMatch(/latigo:\s*'cycle-next'/);
     expect(map[1]).toMatch(/twist:\s*'filter-next'/);
   });
 
