@@ -46,3 +46,9 @@ L3 (verbatim, user, three answers): "Mismo pipeline que hoy" · "Las 210 (todas 
 L4 (parent, evidence): the previous library's "bardo" was not the images but the sizing logic, which is now fixed and authored per image. This release is the moment to re-do the dataset on top of the fixed logic, and the reason S10 insists on a reproducible pipeline: the user says "un nuevo release", implying more than one.
 
 L5 (parent, decision): dropping `role`/`axis`/`pole` is safe only because it was verified that no code reads them. That verification is the whole justification — if a later slice starts consuming them, the manifest needs them back and the 210 images need tagging.
+
+L6 (parent, defect found after the release landed): **every thumbnail for a reused key was stale.** `scripts/build-thumbnails.js` skipped files it judged up to date, and when it did run it called ffmpeg without `-y`; ffmpeg then refuses to overwrite, prints "Not overwriting - exiting", and **still exits 0**, so the reader's `status !== 0` check never fired. The release therefore regenerated only the 80 new keys (131-210) and left the previous library's pictures on 001-130, which the operator showed as duplicated images. Measured before the fix: 130 of 130 reused thumbs byte-identical to `main`, perceptual distance 22-35 against their own content.
+
+Fix: `-y` plus a guard that also treats the "not overwriting" message as a failure, `--force` on the pass, and a regression test for the force path. After regeneration all 210 thumbs are produced from their own content — the six that scored borderline on a perceptual hash were false positives caused by compositing the alpha channel during the comparison, confirmed by rendering each pair side by side and by regenerating them to byte-identical output.
+
+Lesson worth keeping: **a tool that returns 0 while refusing to do the work turns a guard into decoration.** The check has to look at the effect, not only the exit code.
