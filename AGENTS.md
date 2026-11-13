@@ -33,6 +33,8 @@ The bridge serves both clients and the assets, so a single origin covers HTTP an
 | `p5-collage/transition-renderer.js` | Crossfade state machine for image cycling (IDLE → FADING → IDLE) |
 | `p5-collage/size-classes.js` | Validates the authored size classes and resolves class → ink area → drawn size, shared by the operator preview and the collage |
 | `operator/operator.js` | Operator page: presets, scatter scale, background, per-cell editor and the Dimensiones size authoring |
+| `operator/deck-curation.js` | Selection, empty-cell warning and toast text for the operator's grid and bulk actions |
+| `p5-collage/deck-list.js` | Validates the deck exclusions and resolves the usable image pool in manifest order |
 | `p5-collage/layout-preset-engine.js` | Six deterministic layout presets |
 | `p5-collage/cell-renderer.js` | Per-cell drawing, filters, object-fit contain |
 | `p5-collage/cell-image.js` | Applies a deck assignment to a cell without blanking it while the bitmap loads |
@@ -46,6 +48,7 @@ The bridge serves both clients and the assets, so a single origin covers HTTP an
 | `phone-client/torn-clip-path.js` | Deterministic torn-edge clip-path |
 | `scripts/generate-layout.js` | Regenerates `images/layout.json` from `images/manifest.json` |
 | `scripts/build-ink-metadata.js` | Measures each image's opaque silhouette and writes `inkBox`, `inkRatio`, `inkCenter` into the manifest |
+| `scripts/build-thumbnails.js` | Generates `images/thumbs/<key>.webp` at 200 px for the operator grid |
 | `scripts/process-images.py`, `scripts/remove-bg.py` | Image curation helpers (Python) |
 | `scripts/simulate-phones.js` | 30 virtual phones for testing without devices |
 
@@ -91,7 +94,7 @@ Valid gestures: `flick`. The bridge resolves it to `shuffle`, the action the gal
 
 ## HTTP endpoints
 
-`/health`, `/api/layout`, `/api/manifest`, `/api/sizes`, `/images/content/<file>`, `/phone-client/…`, `/p5-collage/…`, `/operator/…`.
+`/health`, `/api/layout`, `/api/manifest`, `/api/sizes`, `/api/deck`, `/images/content/<file>`, `/images/thumbs/<file>`, `/phone-client/…`, `/p5-collage/…`, `/operator/…`.
 
 `IMAGES_DIR` overrides the served image directory (default `images/content`), which is how tests avoid depending on repository data.
 
@@ -118,11 +121,13 @@ Fragments are sized by two rules, because a cell alone does not decide how big a
 
 Sizes can also be authored per image, in `images/sizes.json`. Each entry maps an image key to a class (`S`, `M`, `L`, `XL`), and each class maps to a target **ink** area as a fraction of the canvas (`0.015` / `0.030` / `0.060` / `0.100` by default — tunable in that file, never hardcoded in a module). For an authored image the drawn frame area becomes `targetInk / inkRatio`, so two images of the same class carry the same painted mass even when one is a panorama and the other a portrait. The per-preset random scale then degrades to jitter, and the ink floor stops correcting and only warns. Every unassigned image keeps the two rules above, which is why the file ships empty: authoring is opt-in per image, and merging it changes nothing on screen. Author them in the operator page's **Dimensiones** mode, which shows one image at a time beside a fixed 300×300 px reference and saves through the bridge.
 
+Images can also be taken out of the deck, in `images/deck.json` (`version` plus an `excluded` list, shipped empty). An excluded image is never dealt and returns when it is re-included; nothing deletes files. Because the deck deals one distinct image per visible cell and never repeats, **below 30 available images the surplus cells render nothing**, so the operator's grid states how many cells would be left empty before saving. The grid lists `images/thumbs/<key>.webp` thumbnails and both bulk actions — size class and exclusion — go through the same guarded write endpoints as the Dimensiones mode. Operator confirmations are toasts; continuous slider drags stay silent on purpose, because one toast per tick would say nothing.
+
 ## Running
 
 ```bash
 npm install
-npm test                    # Jest, 54 suites
+npm test                    # Jest, 56 suites
 npm run test:coverage
 npm run bridge              # http://localhost:8080
 # projector:  http://localhost:8080/p5-collage/
@@ -134,7 +139,7 @@ node scripts/simulate-phones.js   # 30 virtual phones
 
 Sensors require a secure context: `localhost` works, a plain LAN IP does not. Serving the phone client over HTTPS (tunnel or TLS) is a deployment concern, not a code one.
 
-Size assignments are written through `POST /api/sizes`, which stays disabled unless `SIZE_WRITES_ENABLED=true` is set for the bridge process. It is off in production on purpose: the endpoint rewrites a tracked file, and the same bridge is publicly reachable.
+Authoring writes — `POST /api/sizes` and `POST /api/deck` — stay disabled unless `AUTHORING_WRITES_ENABLED=true` is set for the bridge process. Both are off in production on purpose: they rewrite tracked files, and the same bridge is publicly reachable.
 
 ## Testing
 
