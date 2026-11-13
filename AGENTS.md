@@ -41,6 +41,7 @@ The bridge serves both clients and the assets, so a single origin covers HTTP an
 | `phone-client/paper-texture.js` | Phone-side paper shader (same noise as the collage) |
 | `phone-client/torn-clip-path.js` | Deterministic torn-edge clip-path |
 | `scripts/generate-layout.js` | Regenerates `images/layout.json` from `images/manifest.json` |
+| `scripts/build-ink-metadata.js` | Measures each image's opaque silhouette and writes `inkBox`, `inkRatio`, `inkCenter` into the manifest |
 | `scripts/process-images.py`, `scripts/remove-bg.py` | Image curation helpers (Python) |
 | `scripts/simulate-phones.js` | 30 virtual phones for testing without devices |
 
@@ -101,17 +102,21 @@ The system is data-driven. To load a dataset:
    { "001": { "file": "001.jpg", "w": 1600, "h": 977 } }
    ```
 
+   Optionally, `node scripts/build-ink-metadata.js` adds the silhouette fields the drawing code uses (`inkBox`, `inkRatio`, `inkCenter`, measured with ffmpeg). The script is idempotent and preserves every other field; the four library images with no alpha channel get `inkRatio: 1` and a full-frame box rather than a fabricated contour.
+
 3. Run `npm run generate-layout` to rebuild `images/layout.json` (30 cells, positions, rotation, z-order).
 
 The collage renders whatever the image deck assigns, not the layout: `images/layout.json` keeps geometry only. With an empty manifest the deck is empty and every cell renders nothing, so the installation still runs with zero content.
 
 The deck deals distinct images: with at least as many files as cells, no two fragments show the same photo, and cycling returns the released image to the bottom of the deck. Látigo (`shuffle`) exchanges images between two cells instead. Only the visible cells are decoded up front; the rest of the library loads on demand behind a pinned LRU cache (`CONFIG.imageCacheSize`). `generate-layout` refuses to run against an empty manifest and leaves the existing layout untouched.
 
+Fragments are sized by two rules, because a cell alone does not decide how big a photo looks. The deck prefers an image whose silhouette aspect is within `ASPECT_TOLERANCE` (`p5-collage/image-deck.js`) of the target cell, which keeps `object-fit: contain` from shrinking a panorama into a sliver. Then, after the contain fit, if the painted area falls under `CONFIG.minInkCoverage` of the cell, the fragment is scaled up until it clears that floor, bounded by `CONFIG.maxInkOverflow`. The floor is measured on **ink**, not on the bounding rectangle: the torn silhouette means only 30-60% of a frame is actually painted, so a rectangle-based floor would pass fragments that still look empty. Nothing is cropped to achieve either rule.
+
 ## Running
 
 ```bash
 npm install
-npm test                    # Jest, 52 suites
+npm test                    # Jest, 53 suites
 npm run test:coverage
 npm run bridge              # http://localhost:8080
 # projector:  http://localhost:8080/p5-collage/
