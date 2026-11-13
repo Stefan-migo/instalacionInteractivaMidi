@@ -24,11 +24,7 @@
   // Stable seed for deterministic decoration (torn edges).
   var DECOR_SEED = 1337;
   var galleryState = null;
-  var gestureDetectors = null;
-  var lastFiredGesture = null;
-  var lastFireTime = 0;
-  var lastJerkTime = 0; // tracks recent jerk for cross-talk suppression
-  var activePracticeGesture = null;
+  var gestureDetector = null;
 
   var $ = function (id) { return document.getElementById(id); };
   var slotBadge = $('slot-badge');
@@ -281,34 +277,42 @@
   var gestureInstructions = {
     inclinar: 'Incliná el teléfono hacia adelante → saltás a otra celda',
     latigo: 'Sacudí el teléfono → cambia foto',
-    twist: 'Girá el teléfono como una perilla → cambia filtro'
+    twist: 'Girá el teléfono como una perilla, acostado o sostenido firme → cambia filtro'
   };
 
   function startPractice(gesture) {
-    // 'latigo' has no detector — it uses the existing flick detection
-    if (gesture !== 'latigo' && (!gestureDetectors || !gestureDetectors[gesture])) return;
+    if (!gestureActionMap[gesture]) return;
     galleryState = 'practice';
     $('practice-overlay').classList.remove('hidden');
     $('practice-instruction').textContent = gestureInstructions[gesture] || '';
     $('practice-feedback').classList.add('hidden');
-    activePracticeGesture = gesture;
   }
 
   function endPractice() {
-    activePracticeGesture = null;
     galleryState = 'gallery';
     $('practice-overlay').classList.add('hidden');
     $('practice-feedback').classList.add('hidden');
+  }
+
+  /**
+   * One detector fired. The whip travels as the `flick` gesture so the bridge
+   * can feed the audio side and silence the derived gestures for that burst;
+   * the other two are plain actions. Every path lands on the action the gallery
+   * teaches, including practice — a gesture must not change meaning while it is
+   * being taught.
+   */
+  function fireGesture(gesture) {
+    if (gesture === 'latigo' && galleryState !== 'practice') {
+      sendGesture('flick');
+      return;
+    }
+    onGestureDetected(gesture);
   }
 
   function onGestureDetected(gesture) {
     // Always fire the action (gestures work as defaults)
     var action = gestureActionMap[gesture];
     if (action) sendAction(action);
-
-    // Update lockout to prevent cross-talk between gesture sensors
-    lastFiredGesture = gesture;
-    lastFireTime = Date.now();
 
     // Only show practice UI if user is in the gesture gallery
     if (galleryState === 'practice') {
@@ -354,178 +358,41 @@
     permBtn.textContent = 'Sensores activados';
     permBtn.classList.add('connected');
 
+    gestureDetector = GestureDetector.create();
+
     window.addEventListener('devicemotion', function (e) {
       var a = e.accelerationIncludingGravity || { x: 0, y: 0, z: 0 };
       var r = e.rotationRate || { alpha: 0, beta: 0, gamma: 0 };
       lastSensor.accel = { x: a.x || 0, y: a.y || 0, z: a.z || 0 };
       lastSensor.gyro = { a: r.alpha || 0, b: r.beta || 0, g: r.gamma || 0 };
-      gestureDetector.processMotion({ x: a.x || 0, y: a.y || 0, z: a.z || 0 });
+      var fired = gestureDetector.feedMotion({
+        // `acceleration` arrives with gravity already removed by the platform
+        // sensor fusion. When a browser omits it the detector estimates the
+        // gravity itself, so a phone that is only rotating never arms the whip.
+        accel: lastSensor.accel,
+        linear: e.acceleration
+          ? { x: e.acceleration.x, y: e.acceleration.y, z: e.acceleration.z }
+          : null,
+        rotationRate: lastSensor.gyro,
+        ts: Date.now(),
+      });
+      if (fired) fireGesture(fired);
     });
 
     window.addEventListener('deviceorientation', function (e) {
       lastSensor.orientation = { a: e.alpha || 0, b: e.beta || 0, g: e.gamma || 0 };
-      gestureDetector.processOrientation(e.beta || 0, e.gamma || 0, e.alpha || 0);
+      // Only `beta` participates: the Euler angles are not a knob. See
+      // phone-client/gesture-detector.js for why alpha was the wrong axis.
+      var fired = gestureDetector.feedOrientation({
+        alpha: e.alpha || 0,
+        beta: e.beta || 0,
+        gamma: e.gamma || 0,
+        ts: Date.now(),
+      });
+      if (fired) fireGesture(fired);
     });
 
     sendInterval = setInterval(sendSensor, 33);
-
-    // Gesture detection: flick only
-    var gestureDetector = {
-      prevAccel: null,
-      flickStartTs: 0,
-      flickTriggered: false,
-      lastFlickTs: 0,
-
-      processMotion: function (accel) {
-        var ax = accel.x || 0;
-        var ay = accel.y || 0;
-        var az = accel.z || 0;
-
-        if (this.prevAccel) {
-          var jerkX = ax - this.prevAccel.x;
-          var jerkY = ay - this.prevAccel.y;
-          var jerkZ = az - this.prevAccel.z;
-          var jerkMag = Math.sqrt(jerkX * jerkX + jerkY * jerkY + jerkZ * jerkZ);
-
-          if (jerkMag > 15 && !this.flickTriggered) {
-            this.flickTriggered = true;
-            this.flickStartTs = Date.now();
-            lastJerkTime = Date.now();
-            // Cancel any pending inclinar — it was a flick, not a tilt
-            if (gestureDetectors && gestureDetectors.inclinar) {
-              gestureDetectors.inclinar.pendingSince = 0;
-            }
-          }
-
-          if (this.flickTriggered) {
-            var elapsed = Date.now() - this.flickStartTs;
-              if (jerkMag < 10) {
-              var now = Date.now();
-              if (now - this.lastFlickTs > 750) {
-                if (activePracticeGesture === 'latigo') {
-                  onGestureDetected('latigo');
-                } else {
-                  sendGesture('flick');
-                  lastFiredGesture = 'latigo';
-                  lastFireTime = Date.now();
-                }
-                this.lastFlickTs = now;
-              }
-              this.flickTriggered = false;
-            } else if (elapsed > 200) {
-              this.flickTriggered = false;
-            }
-          }
-        }
-        this.prevAccel = { x: ax, y: ay, z: az };
-
-          // girar-muneca NOT checked here — rotationRate.beta is angular velocity,
-          // not the absolute tilt angle. Only check in processOrientation below.
-      },
-
-      processOrientation: function (beta, gamma, alpha) {
-        if (!gestureDetectors) return;
-        var now = Date.now();
-        // Track alpha frame-to-frame — if alpha is actively changing, user is twisting
-        var alphaMoving = false;
-        if (this._lastAlpha !== undefined) {
-          var aRaw = alpha - this._lastAlpha;
-          if (Math.abs(aRaw) > 5) alphaMoving = true;
-        }
-        this._lastAlpha = alpha;
-
-        // Check inclinar (beta) — only if alpha isn't actively changing
-        if (gestureDetectors.inclinar && !alphaMoving
-            && (!lastFiredGesture || lastFiredGesture !== 'twist' || now - lastFireTime > 800)) {
-          if (gestureDetectors.inclinar.check({ b: beta })) {
-            lastFiredGesture = 'inclinar';
-            lastFireTime = now;
-            onGestureDetected('inclinar');
-            return;
-          }
-        }
-        // Pre-init refAlpha so first twist isn't wasted on setup
-        if (gestureDetectors.twist && gestureDetectors.twist.refAlpha === null) {
-          gestureDetectors.twist.refAlpha = alpha;
-        }
-        // Check twist (alpha)
-        if (gestureDetectors.twist && (!lastFiredGesture || lastFiredGesture !== 'inclinar' || now - lastFireTime > 800)) {
-          if (gestureDetectors.twist.check(alpha)) {
-            lastFiredGesture = 'twist';
-            lastFireTime = now;
-            onGestureDetected('twist');
-          }
-        }
-      },
-    };
-
-    // Practice gesture detectors with per-gesture activation + 1s cooldown
-    gestureDetectors = {
-      inclinar: {
-        lastTrigger: 0,
-        cooldown: 1200,
-        canFire: true,
-        pendingSince: 0,
-        check: function (orientation) {
-          var now = Date.now();
-          // Beta near zero (< 10°) resets canFire (phone returned to level)
-          if (Math.abs(orientation.b) < 10) this.canFire = true;
-          if (!this.canFire) {
-            this.pendingSince = 0;
-            return false;
-          }
-          if (now - this.lastTrigger < this.cooldown) return false;
-
-          var absB = Math.abs(orientation.b);
-          if (absB > 30) {
-            if (this.pendingSince === 0) {
-              this.pendingSince = now;
-              return false;
-            }
-            if (now - this.pendingSince > 400 && now - lastJerkTime > 800) {
-              this.pendingSince = 0;
-              this.lastTrigger = now;
-              this.canFire = false;
-              return true;
-            }
-            return false;
-          }
-          this.pendingSince = 0;
-          return false;
-        }
-      },
-      twist: {
-        lastTrigger: 0,
-        cooldown: 1200,
-        canFire: true,
-        refAlpha: null,
-        check: function (alpha) {
-          var now = Date.now();
-          if (this.refAlpha === null) {
-            this.refAlpha = alpha;
-            return false;
-          }
-          // Reset refAlpha if idle > 5s (prevents drift from slow head turns)
-          if (this.lastTrigger > 0 && now - this.lastTrigger > 5000) {
-            this.refAlpha = alpha;
-            this.canFire = true;
-            return false;
-          }
-          // Compute angle delta with wrap-around (0-360)
-          var raw = alpha - this.refAlpha;
-          var delta = Math.abs(raw) > 180 ? 360 - Math.abs(raw) : Math.abs(raw);
-          // Reset canFire when back near ref (no time req — cooldown prevents double fire)
-          if (delta <= 5) this.canFire = true;
-          if (delta > 20 && this.canFire && now - this.lastTrigger >= this.cooldown) {
-            this.lastTrigger = now;
-            this.canFire = false;
-            this.refAlpha = alpha;
-            return true;
-          }
-          return false;
-        }
-      }
-    };
   });
 
   function showPermissionDenial() {

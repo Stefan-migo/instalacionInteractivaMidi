@@ -88,7 +88,7 @@ If the user denies sensor permission, the phone MUST show an error message on th
 
 ### Overview
 
-Gallery overlay: 3 example cards + "Crear mi gesto". Teaches through practice before custom recording.
+Gallery overlay: 3 example cards. Teaches each gesture through practice.
 
 ### Requirements
 
@@ -98,56 +98,56 @@ Gallery overlay: 3 example cards + "Crear mi gesto". Teaches through practice be
 
 | Scenario | GIVEN | WHEN | THEN |
 |----------|-------|------|------|
-| Open gallery | Dashboard visible | User taps "Gestos" | Gallery opens with 3 cards + "Crear mi gesto" |
+| Open gallery | Dashboard visible | User taps "Gestos" | Gallery opens with 3 cards |
 | Dismiss × | Gallery open | User taps × | Gallery closes; dashboard visible |
 | Dismiss outside | Gallery open | User taps outside card | Gallery closes |
 
 #### R-GG-2: Gesture Cards
 
-Gallery SHALL show 3 cards + "Crear mi gesto". Each card: icon, name, description, [Practicar].
+Gallery SHALL show 3 cards. Each card: icon, name, description, [Practicar].
 
-| Gesture | Icon | Name | Description | Effect |
-|---------|------|------|-------------|--------|
-| Inclinar | ⤓ | Inclinar | Salta a otra celda | Moves the fragment to another slot |
-| Sacudir | 𝄐 | Sacudir | Cambia la foto | Shuffles image |
-| Elevar | ↕ | Elevar | Cambia el filtro | Cycles filter |
+| Gesture | Name | Description | Effect |
+|---------|------|-------------|--------|
+| Inclinar | Inclinar | Incliná hacia adelante → saltás de celda | `cell-next` |
+| Látigo | Látigo | Sacudí → cambia foto | `shuffle` |
+| Girar | Girar | Girá como perilla → cambia filtro | `filter-next` |
 
 #### R-GG-3: Practice Flow
 
-User taps [Practicar] → practice overlay with instruction text. While open, client-side detector activates. On match: phone MUST send the action to the bridge, SHOULD vibrate (`navigator.vibrate()`), and MUST show green check + "¡Bien! Eso fue un gesto." for 2s. User MAY practice again.
+User taps [Practicar] → practice overlay with instruction text. The gesture is the installation control whenever sensors are authorised; the overlay only teaches it and shows the feedback. On match: phone MUST send the action to the bridge, SHOULD vibrate (`navigator.vibrate()`), and MUST show green check + "¡Bien! Eso fue un gesto." for 2s. User MAY practice again.
 
 | Scenario | GIVEN | WHEN | THEN |
 |----------|-------|------|------|
-| Practice Inclinar | Practice overlay for Inclinar open | User tilts forward >30° sustained 400ms | Sends cell-next, vibrates, green check 2s |
-| Practice Sacudir | Practice overlay for Sacudir open | User shakes phone (jerk >15) | Sends shuffle, vibrates, green check 2s |
-| Practice Elevar | Practice overlay for Elevar open | User jerks up (accel.y < -12) | Cycles filter, vibrates, green check 2s |
-| False positive | Practice for Girar open | User rotates slowly (gamma <30°) | No action sent |
+| Practice Inclinar | Practice overlay for Inclinar open | User tilts past 30° for 400 ms | Sends cell-next, vibrates, green check 2s |
+| Practice Látigo | Practice overlay for Látigo open | User shakes the phone (gravity-free jerk > 15, then < 10) | Sends shuffle, vibrates, green check 2s |
+| Practice Girar | Practice overlay for Girar open | User turns the phone 45° about its own z axis | Sends filter-next, vibrates, green check 2s |
+| False positive | Practice for Girar open | User rotates slower than 40°/s | No action sent |
 
 #### R-GG-4: Detection Heuristics
 
-Client-side only — no bridge changes. Detectors active ONLY while the practice overlay for that gesture is open. Each SHALL have a ~1s cooldown.
+Client-side only — no bridge changes. The detectors are the shipped module `phone-client/gesture-detector.js`; `phone-client/app.js` only feeds it sensor frames. They run whenever sensors are authorised, because the gestures are the default controls, not a practice-only toy.
+
+One physical burst MUST resolve to at most one gesture: after any gesture fires, every detector is locked for 800 ms; a knob turn in flight blocks Látigo and Inclinar; an armed Látigo blocks the knob.
 
 | Gesture | Sensor | Condition |
 |---------|--------|-----------|
-| Girar | `rotationRate.gamma` | abs > 30° |
-| Sacudir | `jerkMag` (accel derivative) | > 15 |
-| Elevar | `accel.y` | < -12 |
+| Girar | `rotationRate.alpha` (deg/s about the device z axis) | signed integral ≥ 45°, re-armed after 120 ms below 40 °/s, 1200 ms cooldown |
+| Látigo | linear acceleration (`acceleration`, gravity removed; low-pass estimate when the platform omits it) | frame-to-frame change > 15 m/s² arms, < 10 m/s² within 200 ms fires, 750 ms cooldown |
+| Inclinar | `deviceorientation.beta` | beyond 30° held 400 ms, cancelled by a jerk in the last 800 ms, 1200 ms cooldown |
 
-#### R-GG-5: "Crear mi gesto"
+`DeviceOrientationEvent.alpha` MUST NOT take part in any detector: it is the heading about the earth vertical, so it only matches a knob when the phone lies flat, and the ZXY decomposition is singular near `beta = ±90°`, where the wrist roll spills into it.
 
-Gallery MUST always show "Crear mi gesto". Tapping it SHALL open the existing 5-step wizard — unchanged.
+#### R-GG-5: No gesture recording
 
-| Scenario | GIVEN | WHEN | THEN |
-|----------|-------|------|------|
-| Wizard from gallery | Gallery open | User taps "Crear mi gesto" | Existing 5-step wizard opens at practice step |
+The gallery MUST NOT offer to record a gesture, and no client code may send `record-start` or `record-stop`. *(The wizard was removed: a visitor stands in front of the piece for minutes, so recording a template taught nothing usable. The DTW matcher stays in the bridge and is dormant.)*
 
 ### Module Boundaries
 
 | File | Change | Role |
 |------|--------|------|
-| `phone-client/index.html` | Modified | Button "Gestos"; gallery overlay DOM (cards, ×); practice overlay (instruction, feedback) |
-| `phone-client/app.js` | Modified | Button click → gallery; gallery state machine; 3 heuristic detectors in gestureDetector; practice wiring |
+| `phone-client/index.html` | Modified | Button "Gestos"; gallery overlay DOM (cards, ×); practice overlay (instruction, feedback); loads the detector module before `app.js` |
+| `phone-client/gesture-detector.js` | Added | The three detectors and the burst lockout. Plain global script with a CommonJS shim so tests exercise the shipped code |
+| `phone-client/app.js` | Modified | Button click → gallery; gallery state machine; sensor listeners feed the detector; practice wiring |
 | `phone-client/style.css` | Modified | Gallery styles, cards, practice overlay, green check |
-| `bridge/*` | Unchanged | — |
+| `bridge/*` | Modified | `flick` resolves to `shuffle`, the action the gallery teaches |
 | `p5-collage/*` | Unchanged | — |
-

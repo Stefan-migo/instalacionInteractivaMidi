@@ -138,7 +138,7 @@ describe('Bridge', () => {
       const playerMsg = await waitForMessage(player);
       expect(playerMsg.type).toBe('gesture-event');
       expect(playerMsg.event).toBe('matched');
-      expect(playerMsg.action).toBe('cycle-next');
+      expect(playerMsg.action).toBe('shuffle');
       expect(playerMsg.slot).toBe(assignMsg.slot);
 
       phone.close();

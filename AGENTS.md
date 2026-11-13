@@ -37,6 +37,7 @@ The bridge serves both clients and the assets, so a single origin covers HTTP an
 | `p5-collage/background-texture.js` | WebGL simplex-noise paper background |
 | `p5-collage/drag-manager.js` | Hit-testing and drag state machine |
 | `phone-client/app.js` | Three-screen flow, sensors, gestures, controls, hint engine |
+| `phone-client/gesture-detector.js` | Client-side detectors for girar, látigo and inclinar, plus the one-gesture-per-burst lockout |
 | `phone-client/paper-texture.js` | Phone-side paper shader (same noise as the collage) |
 | `phone-client/torn-clip-path.js` | Deterministic torn-edge clip-path |
 | `scripts/generate-layout.js` | Regenerates `images/layout.json` from `images/manifest.json` |
@@ -81,7 +82,7 @@ Valid actions and value ranges (`bridge/message-relay.js`):
 | `move` | `{ dx, dy }` finite numbers |
 | `record-start`, `record-stop` | optional `duration` (`1000..5000` ms) |
 
-Valid gestures: `flick`. Recorded gestures are matched with DTW.
+Valid gestures: `flick`. The bridge resolves it to `shuffle`, the action the gallery on the phone teaches as Látigo. Recorded gestures are matched with DTW, but no client records any more, so the matcher is dormant.
 
 ## HTTP endpoints
 
@@ -110,7 +111,7 @@ The deck deals distinct images: with at least as many files as cells, no two fra
 
 ```bash
 npm install
-npm test                    # Jest, 51 suites
+npm test                    # Jest, 52 suites
 npm run test:coverage
 npm run bridge              # http://localhost:8080
 # projector:  http://localhost:8080/p5-collage/
