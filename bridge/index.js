@@ -65,7 +65,10 @@ const MIME_TYPES = {
 };
 
 const GESTURE_ACTIONS = {
-  'flick': 'cycle-next',
+  // The gallery on the phone teaches látigo as "cambia foto", and practice has
+  // always sent `shuffle`. One gesture, one action: the whip swaps the image
+  // with another fragment instead of advancing this cell's deck.
+  'flick': 'shuffle',
 };
 
 // Reported by /health so an operator can tell one instance from two. Two
@@ -88,7 +91,7 @@ const dtwMatcher = new DTWMatcher(gestureStore, {
   threshold: 0.5,
   downsampleHz: 10,
   debounceMs: 1000,
-  defaultAction: 'cycle-next',
+  defaultAction: 'shuffle',
 });
 const p5Players = new Set();
 const phoneConnections = new Map();
