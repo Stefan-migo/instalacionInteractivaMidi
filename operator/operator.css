@@ -26,6 +26,11 @@ output { float: right; font-variant-numeric: tabular-nums; }
 #scatter-all { margin-bottom: .75rem; }
 #visibility-toggle { margin-bottom: .75rem; }
 #visibility-toggle:disabled { cursor: not-allowed; opacity: .55; }
+.dimension-preview { position: relative; width: min(100%, 960px); aspect-ratio: 16 / 9; background: #f4f4f4; border: 1px solid var(--rule-color); }
+#dimension-canvas { display: block; width: 100%; height: 100%; }
+/* Fixed reference: 300×300 px equals 1% of the 1920×1080 canvas area. */
+.dimension-reference { position: absolute; right: 1rem; bottom: 1rem; width: 15.625%; aspect-ratio: 1; border: 1px dashed var(--ink); pointer-events: none; }
+.dimension-preview { overflow: hidden; }
 /* MIDI ROUTING START */
 .routing-actions { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem; }
 .routing-actions a { color: var(--ink); font-size: .75rem; }

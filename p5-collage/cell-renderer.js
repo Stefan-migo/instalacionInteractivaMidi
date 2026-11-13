@@ -18,7 +18,7 @@ function getCombinedFilters(filterType) {
  * If the cell aspect ratio matches the image (via adaptCellToImage),
  * there is no letterboxing.
  */
-function drawImg(img, flipH, flipV, x, y, w, h, opacity, filterType, inkRatio) {
+function drawImg(img, flipH, flipV, x, y, w, h, opacity, filterType, inkRatio, authored) {
   if (!img) return;
   push();
   translate(x + w / 2, y + h / 2);
@@ -38,10 +38,17 @@ function drawImg(img, flipH, flipV, x, y, w, h, opacity, filterType, inkRatio) {
     const cellArea = w * h;
     const drawnArea = dw * dh;
     if (Number.isFinite(inkRatio) && inkRatio > 0 && cellArea > 0 && drawnArea > 0) {
-      const needed = Math.sqrt((config.minInkCoverage * cellArea) / (inkRatio * drawnArea));
-      const multiplier = Math.min(config.maxInkOverflow, Math.max(1, needed));
-      dw *= multiplier;
-      dh *= multiplier;
+      if (authored) {
+        if (inkRatio * drawnArea < config.minInkCoverage * cellArea && !img._warnedAuthoredInkFloor) {
+          console.warn('Authored fragment size is below the ink coverage floor:', inkRatio * drawnArea, config.minInkCoverage * cellArea);
+          img._warnedAuthoredInkFloor = true;
+        }
+      } else {
+        const needed = Math.sqrt((config.minInkCoverage * cellArea) / (inkRatio * drawnArea));
+        const multiplier = Math.min(config.maxInkOverflow, Math.max(1, needed));
+        dw *= multiplier;
+        dh *= multiplier;
+      }
     }
     const dx = (w - dw) / 2, dy = (h - dh) / 2;
     drawingContext.drawImage(img, 0, 0, iw, ih, -w / 2 + dx, -h / 2 + dy, dw, dh);
@@ -82,8 +89,18 @@ function adaptCellToImage(cellState, centerAt) {
 
   // Contain: fit the image inside the layout budget
   const fitScale = Math.min(origW / iw, origH / ih);
-  const newW = Math.round(iw * fitScale);
-  const newH = Math.round(ih * fitScale);
+  let newW = Math.round(iw * fitScale);
+  let newH = Math.round(ih * fitScale);
+  const key = cellState.currentImageFile && typeof imageLoader !== 'undefined' && imageLoader.fileToKey && imageLoader.fileToKey[cellState.currentImageFile];
+  const targetInk = key && typeof SizeClasses !== 'undefined' && SizeClasses.getAuthoredSize(sizeClassesData, key);
+  if (targetInk) {
+    const authored = SizeClasses.getAuthoredDrawSize(sizeClassesData, key, iw, ih, 1920, 1080, imageLoader.getInkRatio(cellState.currentImageFile));
+    if (authored) {
+      const jitter = 0.98 + Math.random() * 0.04;
+      newW = Math.round(authored.width * jitter); newH = Math.round(authored.height * jitter);
+      cellState._authoredSize = true;
+    }
+  } else cellState._authoredSize = false;
   if (newW <= 0 || newH <= 0) return false;
 
   // Center at the right position:

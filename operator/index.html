@@ -7,11 +7,20 @@
   <link rel="stylesheet" href="/shared/theme.css">
   <link rel="stylesheet" href="/operator/operator.css">
   <script src="/shared/theme.js"></script>
+  <script src="/p5-collage/size-classes.js"></script>
   <script src="/operator/operator.js" defer></script>
 </head>
 <body>
   <header><h1>MIDI <span>· Operador</span></h1><button id="theme-toggle" type="button" aria-pressed="false">Tema claro</button><p id="connection">Esperando collage…</p></header>
   <main>
+    <section id="dimensions"><h2>Dimensiones</h2>
+      <p>Una imagen por vez. Referencia fija: un cuadrado de 300 × 300 px representa el 1 % del área del lienzo.</p>
+      <div class="dimension-preview"><canvas id="dimension-canvas" width="960" height="540" aria-label="Vista previa de dimensiones"></canvas><div class="dimension-reference" aria-hidden="true"></div></div>
+      <p id="dimension-progress" aria-live="polite">Cargando…</p><p id="dimension-file"></p>
+      <div class="presets"><button type="button" data-size="S">S</button><button type="button" data-size="M">M</button><button type="button" data-size="L">L</button><button type="button" data-size="XL">XL</button></div>
+      <div class="presets"><button id="dimension-prev" type="button">Anterior</button><button id="dimension-next" type="button">Siguiente</button><button id="dimension-save" type="button">Guardar</button></div>
+      <p id="dimension-status" role="status" aria-live="polite"></p>
+    </section>
     <section><h2>Tema</h2><p>La preferencia se sincroniza entre las ventanas de este navegador.</p></section>
     <section><h2>01 · Distribución</h2><div id="presets" class="presets"></div></section>
     <section><h2>02 · Escala de dispersión</h2><label for="scatter">Escala</label><output id="scatter-value"></output><input id="scatter" type="range" min="0.4" max="1.6" step="0.05"></section>
