@@ -20,13 +20,13 @@ Six owner requests in one pass: the projector stops carrying event furniture (QR
 
 | ID | Specs | Route | Commit |
 | --- | --- | --- | --- |
-| T1 | S1 | inline: `p5-collage/cell-actions.js` | — |
-| T2 | S2 | inline: `p5-collage/index.html`, `p5-collage/sketch.js`, `p5-collage/brand-mark.js` | — |
-| T3 | S3 | inline: `p5-collage/config.js`, `p5-collage/background-texture.js` | — |
-| T4 | S4 | inline: `p5-collage/cell-renderer.js`, `p5-collage/drag-manager.js`, `p5-collage/cell-actions.js`, `p5-collage/layout-preset-engine.js`, `p5-collage/config.js` | — |
-| T5 | S5 | inline: `bridge/index.js` | — |
-| T6 | S6 | worker: `bridge/index.js`, `bridge/message-relay.js`, `p5-collage/image-deck.js`, `p5-collage/sketch.js`, `phone-client/index.html`, `phone-client/app.js`, `phone-client/style.css` | — |
-| T7 | S1–S6 | verify: full Jest suite + served-page structural pass | — |
+| T1 | S1 | inline: `p5-collage/cell-actions.js` | `6f7a5f4` |
+| T2 | S2 | inline: `p5-collage/index.html`, `p5-collage/sketch.js`, `p5-collage/brand-mark.js` | `6f7a5f4` |
+| T3 | S3 | inline: `p5-collage/config.js`, `p5-collage/background-texture.js` | `6f7a5f4` |
+| T4 | S4 | inline: `p5-collage/cell-renderer.js`, `p5-collage/drag-manager.js`, `p5-collage/cell-actions.js`, `p5-collage/layout-preset-engine.js`, `p5-collage/config.js` | `6f7a5f4` |
+| T5 | S5 | inline: `bridge/index.js` | `6f7a5f4` |
+| T6 | S6 | worker: `bridge/index.js`, `bridge/message-relay.js`, `p5-collage/image-deck.js`, `p5-collage/cell-actions.js`, `p5-collage/sketch.js`, `phone-client/index.html`, `phone-client/app.js`, `phone-client/style.css` | `6f7a5f4` |
+| T7 | S1–S6 | verify: full Jest suite + served-page structural pass | `6f7a5f4` |
 
 ## Log
 
@@ -43,3 +43,7 @@ Six owner requests in one pass: the projector stops carrying event furniture (QR
 **L6 (recorte de alcance) —** S4 pedía que la posición manual sobreviviera también a un cambio de la escala de dispersión. No se implementa: `_recalculateLayout` reescribe `pos.x`/`pos.y` con la nueva composición antes de adaptar, así que preservar `_userMoved` no conservaría la posición, solo saltearía el anclaje dentro de la caja nueva; y el ciclo de reordenamiento (cada 30 s) depende de que cada paso sea un reordenamiento completo. Se implementa el resto de S4: piso de 8%, el drag y el `move` del teléfono aceptan que el fragmento salga del canvas, y un fragmento arrastrado ya no se re-ancla al cambiar de imagen (el drag no marcaba `_userMoved`; solo lo hacía el `move`).
 
 **L7 (decisión) —** El color del canvas no cambia con S3: `shader-paper` pasa a pintar el mismo tono papel que `solid` (`[244,244,244]`), porque ahora el shader es una capa de grano translúcida y no el color de fondo. Antes `shader-paper` pintaba un beige cálido `[235,217,179]`, que habría cambiado el color de la obra al encender la textura.
+
+**L8 (evidencia T7) —** Suite completa: **62 suites, 641 tests verdes** (baja de 63/643 porque T2 borra `tests/brand-mark-draw.test.js` y consolida `tests/brand-mark.test.js`). Cada tarea observó RED antes de su fuente. Chequeo estructural sobre lo servido por el bridge (`PORT=8231 node bridge/index.js`): `/phone-client/`, `/p5-collage/` y `/operator/` responden 200; `/api/deck/available` devuelve **210 claves, `001`…`210`, ordenadas**; la página del proyector da **0** coincidencias de `qr-wrapper`, `qrserver` y `brand-mark.js`; el cliente del teléfono sirve `photo-choice`, `photo-library` y `choose-library-btn`. **Pendientes de verificación a ojo** (no hay navegador headless en el repo): que el grano se lea como papel y no como ruido de compresión, y que la grilla de miniaturas entre en la hoja del teléfono sin empujar los controles.
+
+**L9 (deuda de tests, T6) —** El test de ruta `GET /api/deck/available` lo escribió el padre, no el worker: cubre exclusiones, orden ascendente, formato de tres dígitos y el filtro de una imagen que un proyector reporta sobre una celda. Falta un test que cubra el filtro **en vivo** con dos proyectores reportando a la vez, y un test de que un `assign` rechazado deja intactos tanto el mazo como las dos celdas involucradas.
