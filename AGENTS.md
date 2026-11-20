@@ -85,6 +85,8 @@ Valid actions and value ranges (`bridge/message-relay.js`):
 | Action | Value |
 |--------|-------|
 | `shuffle`, `bring-front`, `cell-next`, `cell-prev`, `filter-next` | — |
+| `set-image` | three-digit manifest key (`001`…`210`), refused if another cell already shows it |
+| `send-back` | — (one press takes the fragment to the very back) |
 | `opacity` | integer `0..100` |
 | `scale` | integer `40..180` |
 | `rotation` | finite number |
@@ -96,7 +98,9 @@ Valid gestures: `flick`. The bridge resolves it to `shuffle`, the action the gal
 
 ## HTTP endpoints
 
-`/health`, `/api/layout`, `/api/manifest`, `/api/sizes`, `/api/deck`, `/api/cycle`, `/images/content/<file>`, `/images/thumbs/<file>`, `/phone-client/…`, `/p5-collage/…`, `/operator/…`.
+`/health`, `/api/layout`, `/api/manifest`, `/api/sizes`, `/api/deck`, `/api/deck/available`, `/api/cycle`, `/images/content/<file>`, `/images/thumbs/<file>`, `/phone-client/…`, `/p5-collage/…`, `/operator/…`.
+
+`/api/deck/available` lists the keys the phone's image picker may offer: the manifest minus the deck exclusions minus whatever the projectors report as already on a cell, ascending. That is the route that keeps the "one distinct image per cell" rule true when a visitor picks a photo by hand.
 
 `IMAGES_DIR` overrides the served image directory (default `images/content`), which is how tests avoid depending on repository data.
 
