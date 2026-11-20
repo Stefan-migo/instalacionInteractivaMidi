@@ -119,6 +119,26 @@ describe('bridge agent WebSocket', () => {
     agent.close();
   });
 
+  // "Otra celda" used to walk the slot order, so the wall felt like a conveyor
+  // belt. Any free cell will do: weighted to the far end of the free list, the
+  // jump has to land there and not on the next slot in order.
+  test('cell-next jumps to a random empty slot, not the next one in order', async () => {
+    const phone = await connect();
+    phone.send(JSON.stringify({ type: 'register', role: 'phone' }));
+    const assigned = await next(phone, m => m.type === 'assigned');
+
+    const original = Math.random;
+    Math.random = () => 0.999;
+    try {
+      phone.send(JSON.stringify({ type: 'action', action: 'cell-next' }));
+      const moved = await next(phone, m => m.type === 'assigned');
+      expect(moved.slot).toBeGreaterThan(assigned.slot + 1);
+    } finally {
+      Math.random = original;
+      phone.close();
+    }
+  });
+
   test('fans out ten group frames and removes disconnected phones', async () => {
     const agent = await connect();
     agent.send(JSON.stringify({ type: 'register', role: 'agent' }));

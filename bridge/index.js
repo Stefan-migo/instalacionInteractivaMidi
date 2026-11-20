@@ -310,6 +310,21 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (pathname === '/api/deck/available' && req.method === 'GET') {
+    try {
+      const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+      let deck = { version: 1, excluded: [] };
+      try { deck = JSON.parse(fs.readFileSync(DECK_PATH, 'utf8')); } catch {}
+      const excluded = new Set(Array.isArray(deck.excluded) ? deck.excluded : []);
+      const displayed = new Set(Object.values(slotImageMap).map(entry => {
+        const found = Object.entries(manifest).find(([, value]) => value.file === entry.imageFile);
+        return found && found[0];
+      }).filter(Boolean));
+      const keys = Object.keys(manifest).filter(key => /^\d{3}$/.test(key) && !excluded.has(key) && !displayed.has(key)).sort();
+      return sendJson(res, 200, { version: deck.version || 1, keys });
+    } catch { return sendJson(res, 200, { version: 1, keys: [] }); }
+  }
+
   if (pathname === '/api/deck' && req.method === 'GET') {
     fs.readFile(DECK_PATH, 'utf8', (error, text) => {
       try {
@@ -656,22 +671,14 @@ wss.on('connection', (ws) => {
             broadcastToPlayers(relay.formatGestureEventMessage(info.slot, 'recorded', gestureId));
           }
         } else if (msg.action === 'cell-next' || msg.action === 'cell-prev') {
+          // Any free cell will do. Walking the slot order made "Otra celda" feel
+          // like a conveyor belt; the jump reads better when it is unpredictable.
+          // Only free, out-of-cooldown slots are candidates.
           const emptySlots = allocator.getEmptySlots();
           if (emptySlots.length === 0) return;
 
           const currentSlot = info.slot;
-          const direction = msg.action === 'cell-next' ? 1 : -1;
-          let targetSlot = -1;
-
-          if (direction === 1) {
-            // Next empty slot AFTER current, wrap to first
-            const after = emptySlots.filter(s => s > currentSlot);
-            targetSlot = after.length > 0 ? after[0] : emptySlots[0];
-          } else {
-            // Previous empty slot BEFORE current, wrap to last
-            const before = emptySlots.filter(s => s < currentSlot);
-            targetSlot = before.length > 0 ? before[before.length - 1] : emptySlots[emptySlots.length - 1];
-          }
+          const targetSlot = emptySlots[Math.floor(Math.random() * emptySlots.length)];
 
           if (targetSlot === -1 || targetSlot === currentSlot) return;
 

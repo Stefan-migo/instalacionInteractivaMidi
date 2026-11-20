@@ -68,6 +68,18 @@ describe('ImageDeck', () => {
     expect(empty.advance('new', 'next')).toBeNull();
   });
 
+  test('assign refuses an image held by another slot and keeps assignments distinct', () => {
+    const deck = new ImageDeck(files(4), { rng: () => 0 });
+    const held = deck.claim('a');
+    deck.claim('b');
+    const before = deck.inUseFiles();
+    expect(deck.assign('b', held)).toBe(false);
+    expect(deck.inUseFiles()).toEqual(before);
+    expect(new Set(deck.inUseFiles()).size).toBe(deck.inUseFiles().length);
+    expect(deck.assign('b', deck.deckFiles()[0])).toBe(true);
+    expect(new Set(deck.inUseFiles()).size).toBe(deck.inUseFiles().length);
+  });
+
   test('swap exchanges assigned images without changing the deck', () => {
     const deck = new ImageDeck(files(4), { rng: () => 0 });
     const a = deck.claim('a');

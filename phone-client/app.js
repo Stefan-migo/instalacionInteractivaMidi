@@ -782,8 +782,49 @@
     sendAction('cell-next');
   });
 
-  document.getElementById('change-photo-btn')?.addEventListener('click', function () {
+  var photoChoice = $('photo-choice');
+  var photoLibrary = $('photo-library');
+  function closePhotoChoice() {
+    if (photoChoice) photoChoice.classList.add('hidden');
+    if (photoLibrary) photoLibrary.classList.add('hidden');
+  }
+
+  $('change-photo-btn')?.addEventListener('click', function () {
+    if (photoChoice) photoChoice.classList.toggle('hidden');
+  });
+  $('skip-photo-btn')?.addEventListener('click', function () {
     sendAction('cycle-next');
+    closePhotoChoice();
+  });
+  $('choose-library-btn')?.addEventListener('click', async function () {
+    if (!photoLibrary) return;
+    photoLibrary.replaceChildren();
+    try {
+      var response = await fetch('/api/deck/available');
+      if (!response.ok) return;
+      var data = await response.json();
+      var keys = Array.isArray(data.keys) ? data.keys : [];
+      if (!keys.length) {
+        photoLibrary.textContent = 'No hay imágenes disponibles';
+      } else {
+        keys.forEach(function (key) {
+          if (!/^\\d{3}$/.test(key)) return;
+          var button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'photo-thumbnail';
+          var image = document.createElement('img');
+          image.src = '/images/thumbs/' + key + '.webp';
+          image.alt = 'Imagen ' + key;
+          button.appendChild(image);
+          button.addEventListener('click', function () {
+            sendActionWithPayload('set-image', { value: key });
+            closePhotoChoice();
+          });
+          photoLibrary.appendChild(button);
+        });
+      }
+      photoLibrary.classList.remove('hidden');
+    } catch (error) { /* Picker is optional; keep the phone running offline. */ }
   });
 
   // Ascender / enviar atrás

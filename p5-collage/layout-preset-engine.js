@@ -18,7 +18,9 @@ class LayoutPresetEngine {
     this.edgeBleed = 0.10;
     // A fragment may hang off the canvas, but never so far that it vanishes:
     // this fraction of its width and height always stays visible.
-    this.minVisible = 0.25;
+    this.minVisible = (typeof CONFIG !== 'undefined' && CONFIG.presetMinVisible != null)
+      ? CONFIG.presetMinVisible
+      : 0.08;
     // The composition percentage where a fragment starts to hang over an edge.
     // Measured in the fragment's own units, so the same percentage bleeds the same
     // relative amount whatever the fragment's size: below this band (mirrored on

@@ -142,34 +142,42 @@ describe('drag state machine', () => {
     expect(getDragState().isDragging).toBe(true);
   });
 
-  test('updateDrag clamps x to canvas left edge', () => {
+  // Fragments read as cut paper: a drag may take one past the edge, and only a
+  // sliver — 8% of its own size — has to stay reachable.
+  test('updateDrag lets the fragment hang past the left edge', () => {
     startDrag(0, 50, 80);
-    updateDrag(-50, 80); // try to go past left edge
-    expect(states[0].pos.x).toBe(0); // clamped
+    updateDrag(-900, 80); // try to go far past the left edge
+    expect(states[0].pos.x).toBe(-184); // 200 wide: 16px must stay visible
     expect(states[0].pos.y).toBe(0);
   });
 
-  test('updateDrag clamps x to canvas right edge', () => {
-    // pos: x=0, w=200 → max x = 1920 - 200 = 1720
+  test('updateDrag lets the fragment hang past the right edge', () => {
     startDrag(0, 50, 80);
-    updateDrag(1900, 80); // try to go far right
-    expect(states[0].pos.x).toBe(1720); // clamped to canvasW - cellW
+    updateDrag(2000, 80); // try to go far right
+    expect(states[0].pos.x).toBe(1904); // 1920 - 16
     expect(states[0].pos.y).toBe(0);
   });
 
-  test('updateDrag clamps y to canvas top edge', () => {
+  test('updateDrag lets the fragment hang past the top edge', () => {
     startDrag(0, 50, 40);
-    updateDrag(60, -50); // try to go above
+    updateDrag(60, -900); // try to go far above
     expect(states[0].pos.x).toBe(10);
-    expect(states[0].pos.y).toBe(0); // clamped
+    expect(states[0].pos.y).toBe(-138); // 150 tall: 12px must stay visible
   });
 
-  test('updateDrag clamps y to canvas bottom edge', () => {
-    // pos: x=0,y=0,w=200,h=150 → max y = 1080 - 150 = 930
+  test('updateDrag lets the fragment hang past the bottom edge', () => {
     startDrag(0, 50, 80);
-    updateDrag(60, 1100); // try to go past bottom
+    updateDrag(60, 1200); // try to go past bottom
     expect(states[0].pos.x).toBe(10);
-    expect(states[0].pos.y).toBe(930); // clamped
+    expect(states[0].pos.y).toBe(1068); // 1080 - 12
+  });
+
+  // Regression: a dragged cell was never marked as moved, so the next image
+  // change re-anchored it and the fragment jumped back to its composition spot.
+  test('a drag marks the cell as moved by the user', () => {
+    startDrag(0, 50, 80);
+    updateDrag(300, 300);
+    expect(states[0]._userMoved).toBe(true);
   });
 
   test('endDrag returns wasDrag=false when no movement', () => {

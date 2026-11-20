@@ -5,53 +5,32 @@ const root = path.join(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 
 describe('brand mark placements', () => {
-  test('canvas mark keeps one ink value in both themes for the paper-toned canvas', () => {
-    const theme = read('shared/theme.css');
-    // The identity's ink tone (#111111), not pure black: a third colour would be
-    // invented. The canvas is the paper tone in every UI theme, so the mark has
-    // to be the ink tone to stay visible on it.
-    expect(theme).toMatch(/:root\s*\{[^}]*--mark-on-canvas:\s*#111111\s*;/s);
-    const light = theme.match(/:root\[data-theme="light"\]\s*\{([^}]*)\}/s);
-    expect(light).not.toBeNull();
-    expect(light[1]).not.toMatch(/--mark-on-canvas\s*:/);
-  });
-
   test('the phone header embeds vector geometry without a hardcoded white fill', () => {
     const html = read('phone-client/index.html');
     expect(html).toMatch(/<svg\b[^>]*>[\s\S]*?<path\b[^>]*\bd="[^"]+"/);
     expect(html).not.toContain('fill="#ffffff"');
   });
 
-  // Regression: the mark was a DOM overlay above the canvas, so no fragment could
-  // ever cover it. It is now part of the canvas composite, on the paper.
-  test('the collage no longer carries a DOM overlay for the mark', () => {
+  // The canvas is the artwork's field, not a place for the studio's watermark:
+  // the mark is gone, so neither the module, the script tag nor the call site
+  // survive.
+  test('the projector paints no brand mark behind the fragments', () => {
+    const sketch = read('p5-collage/sketch.js');
+    expect(sketch).not.toMatch(/drawBrandMark\s*\(/);
+    expect(sketch).not.toMatch(/brandMarkColor\s*\(/);
     const html = read('p5-collage/index.html');
+    expect(html).not.toMatch(/brand-mark\.js/);
     expect(html).not.toContain('id="brand-mark"');
-    expect(html).toMatch(/<script src="\/p5-collage\/brand-mark\.js"><\/script>/);
-    expect(html.indexOf('brand-mark.js')).toBeLessThan(html.indexOf('sketch.js'));
   });
 
-  test('the mark is painted after the paper texture and before the cells', () => {
-    const sketch = read('p5-collage/sketch.js');
-    const texture = sketch.indexOf('image(_bgTexture, 0, 0)');
-    const mark = sketch.indexOf('drawBrandMark(');
-    const cells = sketch.indexOf('drawGrid(dt)');
-    expect(texture).toBeGreaterThan(-1);
-    expect(mark).toBeGreaterThan(texture);
-    expect(cells).toBeGreaterThan(mark);
-  });
-
-  test('the canvas mark takes its colour from the --mark-on-canvas token and stays translucent', () => {
-    const sketch = read('p5-collage/sketch.js');
-    expect(sketch).toMatch(/--mark-on-canvas/);
-    const call = sketch.slice(sketch.indexOf('drawBrandMark(drawingContext'), sketch.indexOf('drawGrid(dt)'));
-    expect(call).toMatch(/opacity:\s*0\.35/);
-  });
-
-  test('the collage geometry ships as inline path data, since Logo/ is not published', () => {
-    const module = read('p5-collage/brand-mark.js');
-    expect(module).toMatch(/M37 0h462v192h-462z/);
-    expect(module).not.toMatch(/\.(png|jpe?g|svg)['"]/);
+  // The QR was the public's door into the phone client. It is out of the
+  // artwork: nothing in the projector page may reach a third-party QR service.
+  test('the projector page carries no join QR', () => {
+    const html = read('p5-collage/index.html');
+    expect(html).not.toMatch(/qr-wrapper/);
+    expect(html).not.toMatch(/qr-img/);
+    expect(html).not.toMatch(/qrserver/);
+    expect(html).not.toMatch(/Escaneá para conectar/);
   });
 
   test('the phone header carries the mark and drops the fragment label', () => {

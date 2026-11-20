@@ -14,7 +14,9 @@ describe('cell z-order actions', () => {
     return { handle: action => handle(slot, action), cellStates, ctx };
   }
 
-  test('send-back moves beneath the immediately lower cell', () => {
+  // One press, all the way to the back: stepping down a single layer made
+  // reaching the bottom of a 30-cell wall take dozens of taps.
+  test('send-back takes the fragment straight to the back in one press', () => {
     const { handle, cellStates, ctx } = setup(2, [1, 4, 7, 12]);
     handle('send-back');
     // The contract is the relative order, not the absolute number.
@@ -22,7 +24,7 @@ describe('cell z-order actions', () => {
       .map(([slot, cell]) => [Number(slot), cell.pos.zIndex])
       .sort((a, b) => a[1] - b[1])
       .map(([slot]) => slot);
-    expect(order).toEqual([0, 2, 1, 3]);
+    expect(order).toEqual([2, 0, 1, 3]);
     expect(ctx.onZOrderChanged).toHaveBeenCalledTimes(1);
   });
 

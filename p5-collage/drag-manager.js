@@ -99,18 +99,24 @@
     var newX = mx - _dragState.offsetX;
     var newY = my - _dragState.offsetY;
 
-    // Clamp to canvas bounds
+    // The fragment may hang off the canvas: only a sliver of its own size has
+    // to stay reachable, so a cut-paper piece can bleed past the edge.
     var canvasW = 1920;
     var canvasH = 1080;
-    if (typeof CONFIG !== 'undefined') {
-      // CONFIG doesn't have canvas dimensions directly, use constants
-    }
+    var minVisible = (typeof CONFIG !== 'undefined' && CONFIG.presetMinVisible != null)
+      ? CONFIG.presetMinVisible
+      : 0.08;
+    var keepX = s.pos.w * minVisible;
+    var keepY = s.pos.h * minVisible;
 
-    newX = Math.max(0, Math.min(canvasW - s.pos.w, newX));
-    newY = Math.max(0, Math.min(canvasH - s.pos.h, newY));
+    newX = Math.max(keepX - s.pos.w, Math.min(canvasW - keepX, newX));
+    newY = Math.max(keepY - s.pos.h, Math.min(canvasH - keepY, newY));
 
     s.pos.x = newX;
     s.pos.y = newY;
+    // A hand-placed fragment must not be re-anchored by its composition
+    // percentage the next time its image changes.
+    s._userMoved = true;
   }
 
   /**

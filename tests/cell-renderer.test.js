@@ -384,3 +384,15 @@ describe('cell-renderer public surface', () => {
     expect(Object.keys(renderer).sort()).toEqual(['adaptCellToImage', 'drawImg', 'getCombinedFilters', 'resolveAnchor']);
   });
 });
+
+describe('the free-movement floor', () => {
+  // One value decides how much of a fragment stays reachable: the engine reads
+  // it for the layout pass, and the drag and the phone `move` action read it for
+  // hand positions. The exact 8% boundary is pinned by the drag and move tests.
+  test('CONFIG carries the 8% floor that the engine and the drag both read', () => {
+    const { CONFIG } = require('../p5-collage/config');
+    const { LayoutPresetEngine } = require('../p5-collage/layout-preset-engine');
+    expect(CONFIG.presetMinVisible).toBe(0.08);
+    expect(new LayoutPresetEngine().minVisible).toBe(0.08);
+  });
+});
