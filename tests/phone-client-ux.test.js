@@ -37,12 +37,17 @@ describe('phone intro screens', () => {
   const html = fs.readFileSync(path.join(__dirname, '../phone-client/index.html'), 'utf8');
   const css = fs.readFileSync(path.join(__dirname, '../phone-client/style.css'), 'utf8');
 
-  test('the splash introduces the piece and dedicates it to the night', () => {
+  // The event is over and the piece is not tied to it any more, so the plaque
+  // quotes a Latin American woman artist on collage instead of a dated
+  // dedication. The quote is Grete Stern's own definition of photomontage.
+  test('the splash dedicates the piece to collage, not to an event', () => {
     expect(html).toMatch(/Collage<br>interactivo<br>sonoro-visual/);
     expect(html).toMatch(/sumate a la experiencia MIDI desde tu celular\./);
-    expect(html).toMatch(/Noche de los Museos 2026/);
-    expect(html).toMatch(/«Somos ese quimérico museo de formas inconstantes, ese montón de espejos rotos\.»/);
-    expect(html).toMatch(/Jorge Luis Borges, <cite>Cambridge<\/cite>/);
+    expect(html).toMatch(/«La unión de diferentes fotografías ya existentes… para crear con ellas una nueva composición fotográfica\.»/);
+    expect(html).toMatch(/Grete Stern, <cite>Apuntes sobre fotomontaje<\/cite>/);
+    expect(html).not.toMatch(/Noche de los Museos/);
+    expect(html).not.toMatch(/Jorge Luis Borges/);
+    expect(css).not.toMatch(/\.plaque-event\s*\{/);
   });
 
   // Regression: the splash reported Fragmentos / Lienzo / Sesión, which describes

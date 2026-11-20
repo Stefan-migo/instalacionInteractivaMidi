@@ -18,15 +18,12 @@ The title keeps the display treatment it already has; the lead keeps the `.lead`
 **S3 — The splash stops reporting and starts dedicating.** The three `Fragmentos / Lienzo / Sesión` rows disappear, and their place holds a plaque reading exactly:
 
 ```
-NOCHE DE LOS MUSEOS 2026
+«La unión de diferentes fotografías ya existentes… para crear con ellas una nueva composición fotográfica.»
 
-«Somos ese quimérico museo de formas
-inconstantes, ese montón de espejos rotos.»
-
-Jorge Luis Borges, Cambridge
+Grete Stern, Apuntes sobre fotomontaje
 ```
 
-The `.data` primitive and its `.k` / `.v` children are removed from `phone-client/style.css`; nothing else uses them. The quote reads in **two lines** from 360px wide up, breaking after `formas`; `.plaque-quote` is capped at `45ch`, the only window that yields that break (under 43ch it falls to three lines, at 50ch or more it pulls `inconstantes,` up and leaves a short second line).
+The `.data` primitive and its `.k` / `.v` children are removed from `phone-client/style.css`; nothing else uses them. The plaque carries no event line and no `.plaque-event` rule: the piece is not tied to a date. `.plaque-quote` is capped at `45ch`, which keeps the measure short on the phone column; at the 328px usable width of a 360px viewport this quote wraps to three lines.
 
 **S4 — The permission screen asks for one thing.** The `Campo 02` block (`Opcional` — the gestures paragraph) is removed; only `Campo 01` (`Requerido`) remains. The gap between the `Acceso al movimiento` title and the field grows, so the title breathes. Campo 01 explains how the sensors are used and that no sensitive data is collected:
 
@@ -117,3 +114,5 @@ The `La hoja de abajo ajusta opacidad, rotación y escala` step is gone; step 6 
 **L20 (decisión) —** "si procede con el concepto celda. asi no se confunde." Desambiguado: se adopta el **modelo de dos niveles** (S12), no un renombre masivo. *fragmento* = la cosa, *celda* = el lugar. Único cambio de código: el `alt` de la imagen pasa de `Tu celda` a `Tu fragmento`, para que un lector de pantalla reciba un solo nombre. Todo el copy visible queda igual. Se descartó la alternativa de eliminar «fragmento» y usar «celda» en todo el cliente: habría costado seis textos visibles, el preámbulo de L19 habría perdido su segunda idea, y «celda» es más frío que «fragmento» para nombrar una obra.
 
 **L21 (reversión) —** "ok saca el mensaje que agregamos explicando en guia. no funciona. no me gusta. lo dejaremos asi sin mensaje creo que igual se entiende." Se revierte L19 por completo: se va el `<p class="guide-intro">`, su regla CSS y su test. La guía vuelve a ser solo los 7 pasos, sin preámbulo. **No reintentar**: un párrafo explicativo arriba de la lista ya se probó y no funcionó. El modelo de vocabulario de S12 sobrevive igual, porque no dependía del preámbulo.
+
+**L22 (cambio de requisito) —** "hola chat necesito que retomemos el trabajo con la instalacion interactiva midi. necesito que eliminemos todo concepto relacionado a la noche de los museos. ese evento ya paso y ahora la obra no esta ligada al evento. Eso por ahora" y después "sacat toda la placa. la cita tambien. cambiemosla por otra cita mas relacionada a los collages. pudes buscar algo? ojala algun artista latinoamericano mujer de preferencia". Afecta solo S3: se va la línea del evento, se va la cita de Borges y se va la regla `.plaque-event`; la placa queda con una cita sobre collage de una artista latinoamericana. Elegida por el usuario entre tres candidatas verificadas: la definición de fotomontaje de **Grete Stern**, leída en el Foto Club Argentino en septiembre de 1967 y publicada en *Fotomundo* 310 (febrero 1994), con el corte `…` en lugar de ", o a tomarse con ese fin,". Descartadas: otra frase del mismo texto («…moviendo e intercambiando los elementos fotográficos, hasta que logro la composición que me satisface») y la de Mira Schendel sobre congelar el instante (MoMA, en inglés). Consecuencia: la cita ya no mide 80 caracteres sino 107, así que la ventana de dos líneas que fijó L12 desaparece; `.plaque-quote` sigue en `45ch` por medida de lectura y la cita cae en tres líneas. Edición sin commit: el commit `46a3433` de T2 sigue conteniendo la placa vieja.
