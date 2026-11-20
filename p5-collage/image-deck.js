@@ -70,6 +70,21 @@ class ImageDeck {
     return true;
   }
 
+  assign(slot, file) {
+    if (!this._files.includes(file)) return false;
+    for (const [otherSlot, current] of this._slots) {
+      if (otherSlot !== slot && current === file) return false;
+    }
+    const previous = this._slots.get(slot);
+    if (previous === file) return true;
+    if (previous !== undefined) this._deck.push(previous);
+    const index = this._deck.indexOf(file);
+    if (index < 0) return false;
+    this._deck.splice(index, 1);
+    this._slots.set(slot, file);
+    return true;
+  }
+
   isInUse(file) { return [...this._slots.values()].includes(file); }
   inUseFiles() { return [...this._slots.values()]; }
   deckFiles() { return [...this._deck]; }

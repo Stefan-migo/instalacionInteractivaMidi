@@ -13,26 +13,22 @@ function drawBackgroundTexture(p, w, h, intensity, seed, style) {
     return gfx;
   }
 
-  // Only shader-paper is active. If unknown style, fall back cleanly.
+  // Only shader-paper is active. Any other style paints nothing: this buffer is
+  // a grain layer over the canvas colour, so a solid fill here would black out
+  // the whole 1920x1080 wall.
   if (style !== 'shader-paper') {
     gfx.clear();
-    gfx.noStroke();
-    gfx.fill(0, 0, 0);
-    gfx.rect(0, 0, w, h);
     return gfx;
   }
 
-  // Render shader-based paper texture
+  // Render shader-based paper texture. The buffer is cleared first so the
+  // grain layer always starts empty, with or without WebGL.
+  gfx.clear();
   var shaderCanvas = renderPaperShader(w, h, intensity, seed);
   if (shaderCanvas) {
     gfx.canvas.getContext('2d').drawImage(shaderCanvas, 0, 0);
-  } else {
-    // WebGL not available — solid warm fill as fallback
-    gfx.clear();
-    gfx.noStroke();
-    gfx.fill(0, 0, 0);
-    gfx.rect(0, 0, w, h);
   }
+  // WebGL unavailable: nothing is painted, and the canvas keeps its own colour.
 
   return gfx;
 }
@@ -126,9 +122,9 @@ var _FRAG_SRC = [
   '',
   'void main() {',
   '  vec2 uv = gl_FragCoord.xy / u_resolution;',
-  '  float noise = paperNoise(gl_FragCoord.xy) * 0.3 * u_intensity;',
-  '  vec3 col = vec3(clamp(noise, 0.0, 0.10));',
-  '  gl_FragColor = vec4(col, 1.0);',
+  '  float grain = paperNoise(gl_FragCoord.xy);',
+  '  float alpha = clamp(grain, 0.0, 1.0) * 0.30 * u_intensity;',
+  '  gl_FragColor = vec4(vec3(0.0), alpha);',
   '}'
 ].join('\n');
 

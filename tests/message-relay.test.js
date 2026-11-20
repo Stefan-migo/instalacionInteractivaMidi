@@ -391,6 +391,13 @@ describe('MessageRelay', () => {
       });
     });
 
+    test('accepts set-image only with a three-digit manifest key', () => {
+      const relay = new MessageRelay();
+      expect(relay.validateSensorMessage({ type: 'action', action: 'set-image', value: '042' })).toEqual({ valid: true });
+      expect(relay.validateSensorMessage({ type: 'action', action: 'set-image', value: '42' }).valid).toBe(false);
+      expect(relay.validateSensorMessage({ type: 'action', action: 'set-image', value: 'abc' }).valid).toBe(false);
+    });
+
     test('contains shuffle', () => {
       expect(VALID_ACTIONS).toContain('shuffle');
     });

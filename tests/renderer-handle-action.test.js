@@ -95,12 +95,14 @@ describe('production cell action handler — value actions', () => {
       testContext.handleAction(0, 'move', null, { dx: 50, dy: -30 });
       expect(s.pos.x).toBe(150); expect(s.pos.y).toBe(170);
     });
-    test('clamps position to canvas bounds', () => {
+    test('moves a fragment past the canvas edge but keeps it reachable', () => {
       const s = testContext.ctx.state.cellStates[0];
-      testContext.handleAction(0, 'move', null, { dx: -100, dy: -100 });
-      expect(s.pos.x).toBe(0); expect(s.pos.y).toBe(0);
-      testContext.handleAction(0, 'move', null, { dx: 2000, dy: 1000 });
-      expect(s.pos.x).toBe(1520); expect(s.pos.y).toBe(780);
+      s.pos.x = 100; s.pos.y = 200;
+      testContext.handleAction(0, 'move', null, { dx: -900, dy: -900 });
+      // 400x300: 8% of each side has to stay on canvas.
+      expect(s.pos.x).toBe(-368); expect(s.pos.y).toBe(-276);
+      testContext.handleAction(0, 'move', null, { dx: 2400, dy: 2400 });
+      expect(s.pos.x).toBe(1888); expect(s.pos.y).toBe(1056);
     });
   });
 

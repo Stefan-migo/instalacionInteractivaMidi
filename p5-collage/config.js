@@ -18,9 +18,9 @@ const CONFIG = {
   // Fragments are allowed to hang off the canvas edge, which is what makes the
   // collage read as cut paper instead of a scrapbook pinned inside a frame.
   // presetEdgeBleed is how far a centre may sit outside, as a canvas fraction;
-  // presetMinVisible is how much of a fragment always stays on screen.
+  // presetMinVisible is the sliver of a fragment that always stays reachable.
   presetEdgeBleed: 0.10,
-  presetMinVisible: 0.25,
+  presetMinVisible: 0.08,
   filterMap: {
     sepia: 'sepia(0.85) contrast(1.1)',
     grayscale: 'grayscale(1.0) contrast(1.3)',
@@ -29,11 +29,12 @@ const CONFIG = {
     vintage: 'sepia(0.35) saturate(0.7) contrast(0.95) brightness(1.03)',
     none: '',
   },
-  // The projector canvas is the identity paper tone, flat: fragments read the
-  // way they do on the phone client. 'shader-paper' + a non-zero noiseIntensity
-  // restores the paper texture if the installation wants it back.
-  noiseIntensity: 0,
-  canvasBgStyle: 'solid',
+  // The projector canvas is the identity paper tone with a subtle grain over
+  // it: fragments read the way they do on the phone client, and the wall still
+  // looks like paper instead of a flat fill. The operator drives the grain with
+  // `setNoiseIntensity` (value / 100).
+  noiseIntensity: 0.35,
+  canvasBgStyle: 'shader-paper',
 };
 
 if (typeof module !== 'undefined' && module.exports) {

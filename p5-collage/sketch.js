@@ -87,6 +87,7 @@ function createRenderer() {
   }).apply;
   const handleAction = createCellActionHandler({
     state,
+    keyToFile: Object.fromEntries(Object.entries(imageLoader.fileToKey || {}).map(([file, key]) => [key, file])), 
     deck: imageDeck,
     applyImage,
     getCells: () => collageLayout.cells,
@@ -429,32 +430,15 @@ function touchEnded(event) {
   return false;
 }
 
-let _markColor = null;
-
-/**
- * The collage mark is painted on the canvas, so it cannot rely on CSS. It reads
- * the one token that deliberately never follows the light theme.
- */
-function brandMarkColor() {
-  if (_markColor) return _markColor;
-  // Fallback is the ink tone, not white: the canvas is the paper tone, so a
-  // white mark would be invisible if the token cannot be read.
-  let color = '#111111';
-  try {
-    const value = getComputedStyle(document.documentElement).getPropertyValue('--mark-on-canvas').trim();
-    if (value) color = value;
-  } catch (e) { /* headless or detached document */ }
-  _markColor = color;
-  return color;
-}
-
 let _bgTexture = null;
+let _bgIntensity = null;
 let _bgSeed = Math.floor(Math.random() * 100000);
 
-// Canvas background color — the artwork surface, not UI chrome. 'solid' is the
-// identity paper tone; 'shader-paper' keeps the texture available.
+// Canvas background color — the artwork surface, not UI chrome. Both styles
+// paint the identity paper tone; 'shader-paper' is the one that also gets the
+// grain, so the operator can raise or lower it without changing the colour.
 const CANVAS_BG_COLORS = {
-  'shader-paper': [235, 217, 179],  // warm yellow-beige (shader-generated)
+  'shader-paper': [244, 244, 244],  // identity paper tone, with the grain on top
   'solid': [244, 244, 244],         // identity paper tone, same as the phone client
 };
 
@@ -468,25 +452,17 @@ function draw() {
     const bgColor = CANVAS_BG_COLORS[CONFIG.canvasBgStyle] || [235, 217, 179];
     background(bgColor[0], bgColor[1], bgColor[2]);
 
-    // Draw background texture behind all cells (lazy-init on first frame).
-    // Only the shader-paper style has a texture: the helper falls back to a
-    // solid black fill for any other style, so raising the noise slider on a
-    // flat canvas would paint the whole canvas black.
+    // Draw background texture behind all cells (lazy-init on first frame, and
+    // rebuilt when the operator moves the noise slider — a texture cached only
+    // on "is it null?" froze the grain at whatever intensity booted the page).
+    // Only the shader-paper style has a texture.
     if (CONFIG.noiseIntensity > 0 && CONFIG.canvasBgStyle === 'shader-paper') {
-      if (!_bgTexture) {
+      if (!_bgTexture || _bgIntensity !== CONFIG.noiseIntensity) {
         _bgTexture = drawBackgroundTexture(window, 1920, 1080, CONFIG.noiseIntensity, _bgSeed, CONFIG.canvasBgStyle);
+        _bgIntensity = CONFIG.noiseIntensity;
       }
       image(_bgTexture, 0, 0);
     }
-
-    // Brand mark: on the paper, underneath every fragment. Painting it after
-    // drawGrid would put it on top of the artwork instead of behind it.
-    drawBrandMark(drawingContext, {
-      width: 1920,
-      height: 1080,
-      opacity: 0.35,
-      color: brandMarkColor(),
-    });
 
     if (!deviceManager || !collageLayout) return;
     drawGrid(dt);

@@ -210,7 +210,7 @@ describe('edge anchor contract', () => {
       xPct: expect.any(Number),
       yPct: expect.any(Number),
       band: 0.75,
-      minVisible: 0.25,
+      minVisible: 0.08,
       canvasW: 1920,
       canvasH: 1080,
     });

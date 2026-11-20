@@ -1,7 +1,6 @@
 /**
- * The projector canvas is the artwork surface, not UI chrome: it has to be the
- * identity paper tone with no paper shader, so fragments read the same way they
- * do on the phone client.
+ * The projector canvas is the artwork's field: the identity paper tone with a
+ * subtle paper grain over it, and the grain stays drivable from the operator.
  */
 const fs = require('fs');
 const path = require('path');
@@ -9,24 +8,26 @@ const path = require('path');
 const { CONFIG } = require('../p5-collage/config');
 
 const SKETCH = fs.readFileSync(path.join(__dirname, '..', 'p5-collage', 'sketch.js'), 'utf8');
-const THEME = fs.readFileSync(path.join(__dirname, '..', 'shared', 'theme.css'), 'utf8');
 
 describe('Canvas background', () => {
-  test('asks for a solid canvas and no paper texture', () => {
-    expect(CONFIG.canvasBgStyle).toBe('solid');
-    expect(CONFIG.noiseIntensity).toBe(0);
+  test('asks for the paper shader at a subtle default intensity', () => {
+    expect(CONFIG.canvasBgStyle).toBe('shader-paper');
+    // Subtle: visible as paper, never as grain or as a pattern.
+    expect(CONFIG.noiseIntensity).toBeGreaterThan(0);
+    expect(CONFIG.noiseIntensity).toBeLessThanOrEqual(0.5);
   });
 
-  test('paints the solid canvas in the identity paper tone', () => {
+  // The shader is a grain layer now, so the style must not change the canvas
+  // colour: the paper tone is the same one the phone client paints.
+  test('paints the texture over the identity paper tone, not a second colour', () => {
+    expect(SKETCH).toMatch(/'shader-paper':\s*\[\s*244,\s*244,\s*244\s*\]/);
     expect(SKETCH).toMatch(/'solid':\s*\[\s*244,\s*244,\s*244\s*\]/);
   });
 
-  test('keeps the brand mark visible against the light canvas', () => {
-    // The mark was #f4f4f4 while the canvas was near-black. On a paper-toned
-    // canvas that is the same value as the background, so it disappears.
-    expect(THEME).toMatch(/--mark-on-canvas:\s*#111111/);
-    // Same reason for the headless fallback: it must not be white either.
-    expect(SKETCH).toMatch(/let color = '#111111';/);
-    expect(SKETCH).not.toMatch(/let color = '#ffffff';/);
+  // The texture is rendered once and cached; a cache keyed only on "is it
+  // null?" froze the operator's slider at whatever intensity booted the page.
+  test('rebuilds the texture when the operator changes the intensity', () => {
+    expect(SKETCH).toMatch(/_bgIntensity\s*!==\s*CONFIG\.noiseIntensity/);
+    expect(SKETCH).toMatch(/_bgIntensity\s*=\s*CONFIG\.noiseIntensity/);
   });
 });

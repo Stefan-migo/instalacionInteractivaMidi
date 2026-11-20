@@ -67,6 +67,61 @@ describe('deck routes', () => {
     expect(JSON.parse(read.body).excluded).toEqual([first]);
   });
 
+  // S6: the phone offers only images that are not on the wall, so this route is
+  // the rule itself — not a convenience list.
+  describe('GET /api/deck/available', () => {
+    const WebSocket = require('ws');
+    const manifest = () => JSON.parse(fs.readFileSync(path.join(BASE_DIR, 'images', 'manifest.json'), 'utf8'));
+
+    function getAvailable() {
+      return new Promise((resolve, reject) => {
+        http.get(`${base}/api/deck/available`, res => {
+          let body = '';
+          res.on('data', chunk => body += chunk);
+          res.on('end', () => resolve({ status: res.statusCode, json: JSON.parse(body) }));
+        }).on('error', reject);
+      });
+    }
+
+    test('lists the manifest minus the exclusions, ascending, as three-digit keys', async () => {
+      const all = manifestKeys();
+      const excluded = all.slice(0, 2);
+      fs.writeFileSync(deckPath, JSON.stringify({ version: 7, excluded }));
+
+      const { status, json } = await getAvailable();
+      expect(status).toBe(200);
+      expect(json.version).toBe(7);
+      expect(json.keys).toHaveLength(all.length - excluded.length);
+      for (const key of excluded) expect(json.keys).not.toContain(key);
+      expect(json.keys).toEqual([...json.keys].sort());
+      for (const key of json.keys) expect(key).toMatch(/^\d{3}$/);
+
+      fs.writeFileSync(deckPath, JSON.stringify({ version: 1, excluded: [] }));
+    });
+
+    test('removes an image a projector reports as already on a cell', async () => {
+      const all = manifestKeys();
+      const key = all[5];
+      const file = manifest()[key].file;
+
+      const player = new WebSocket(`ws://127.0.0.1:${port}`);
+      await new Promise((resolve, reject) => {
+        player.once('open', resolve);
+        player.once('error', reject);
+      });
+      try {
+        player.send(JSON.stringify({ type: 'register', role: 'player' }));
+        player.send(JSON.stringify({ type: 'image-update', slot: 0, imageFile: file }));
+        await new Promise(resolve => setTimeout(resolve, 150));
+
+        const { json } = await getAvailable();
+        expect(json.keys).not.toContain(key);
+      } finally {
+        player.terminate();
+      }
+    });
+  });
+
   test('rejections leave the stored bytes untouched', async () => {
     const before = fs.readFileSync(deckPath);
 

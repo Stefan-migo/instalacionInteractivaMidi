@@ -101,7 +101,7 @@ function axisAnchor(u, size, extent, band, minVisible) {
 function resolveAnchor(anchor, width, height) {
   if (!anchor || !(width > 0) || !(height > 0)) return null;
   const band = Number.isFinite(anchor.band) ? anchor.band : 0.75;
-  const minVisible = Number.isFinite(anchor.minVisible) ? anchor.minVisible : 0.25;
+  const minVisible = Number.isFinite(anchor.minVisible) ? anchor.minVisible : 0.08;
   if (!(anchor.canvasW > 0) || !(anchor.canvasH > 0)) return null;
   return {
     x: axisAnchor(anchor.xPct, width, anchor.canvasW, band, minVisible),

@@ -8,6 +8,12 @@ function createCellActionHandler(ctx) {
         if (result && result.current) ctx.applyImage(slot, result.current);
         break;
       }
+      case 'set-image': {
+        const key = payload && payload.value;
+        const file = ctx.keyToFile && ctx.keyToFile[key];
+        if (file && ctx.deck.assign(slot, file)) ctx.applyImage(slot, file);
+        break;
+      }
       case 'shuffle': {
         // Exchange images with another cell. Both stay in use, so the deck is
         // untouched and no two fragments ever show the same photo.
@@ -52,16 +58,24 @@ function createCellActionHandler(ctx) {
           s._userMoved = true;
           s.pos.x += payload.dx || 0;
           s.pos.y += payload.dy || 0;
-          s.pos.x = Math.max(0, Math.min(1920 - s.pos.w, s.pos.x));
-          s.pos.y = Math.max(0, Math.min(1080 - s.pos.h, s.pos.y));
+          // Same floor as the projector's own drag: the fragment may leave the
+          // canvas, but a sliver of its own size stays reachable.
+          const minVisible = (ctx.config && Number.isFinite(ctx.config.presetMinVisible))
+            ? ctx.config.presetMinVisible
+            : 0.08;
+          const keepX = s.pos.w * minVisible;
+          const keepY = s.pos.h * minVisible;
+          s.pos.x = Math.max(keepX - s.pos.w, Math.min(1920 - keepX, s.pos.x));
+          s.pos.y = Math.max(keepY - s.pos.h, Math.min(1080 - keepY, s.pos.y));
         }
         break;
       case 'send-back': {
-        // Step exactly one position down the draw order, then rewrite the
-        // zIndexes densely. `zIndex = lower - 1` used to collide with the cell
-        // already sitting there — the layout ships consecutive pairs such as
-        // 57/58 — which left two cells sharing a zIndex and an undefined draw
-        // order. It also walked past the bottom cell into negative values.
+        // Straight to the back of the draw order, then rewrite the zIndexes
+        // densely. One layer per press was tedious on a 30-cell wall, and
+        // `zIndex = lower - 1` used to collide with the cell already sitting
+        // there — the layout ships consecutive pairs such as 57/58 — which left
+        // two cells sharing a zIndex and an undefined draw order. It also
+        // walked past the bottom cell into negative values.
         const cells = ctx.getRendererCellStates();
         const order = (typeof ctx.getSortedSlots === 'function' ? ctx.getSortedSlots() : [])
           .map(entry => {
@@ -74,7 +88,7 @@ function createCellActionHandler(ctx) {
         if (at <= 0) break; // unknown slot, or already at the back
 
         const [moved] = order.splice(at, 1);
-        order.splice(at - 1, 0, moved);
+        order.unshift(moved);
         order.forEach((entry, index) => {
           const cell = cells[entry.slot];
           if (cell) cell.pos.zIndex = index;

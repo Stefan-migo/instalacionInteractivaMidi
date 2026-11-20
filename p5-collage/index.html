@@ -33,15 +33,6 @@
     #loading p { font-size: 1rem; color: var(--ink); }
     #loading .count { font-size: 0.875rem; color: var(--quiet); margin-top: 0.5rem; }
 
-    #qr-wrapper {
-      position: fixed; bottom: 1rem; right: 1rem; z-index: 100;
-      background: var(--paper);
-      padding: 6px; border: 2px solid var(--rule-color);
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
-    }
-    #qr-wrapper img { display: block; width: 80px; height: 80px; }
-    #qr-wrapper .qr-label { color: var(--ink); font-size: 0.6rem; font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.14em; }
-    
     /* Paint layer overlay: film grain */
     #p5_loading { display: none; }
     canvas { display: block; margin: 0 auto; position: relative; z-index: 2; }
@@ -53,21 +44,6 @@
     <p>Cargando collage...</p>
     <div class="count" id="load-count">0 / 0</div>
   </div>
-  <div id="qr-wrapper" style="display:none">
-    <img id="qr-img" alt="QR para conectar teléfono" />
-    <span class="qr-label">Escaneá para conectar</span>
-  </div>
-  <script>
-    // Set QR code pointing to the phone-client URL
-    (function() {
-      var qr = document.getElementById('qr-wrapper');
-      var img = document.getElementById('qr-img');
-      var url = encodeURIComponent(window.location.origin + '/phone-client');
-      img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' + url;
-      img.onload = function() { qr.style.display = 'flex'; };
-      img.onerror = function() { qr.style.display = 'none'; };
-    })();
-  </script>
   <script src="/p5-collage/size-classes.js"></script>
   <script src="/p5-collage/deck-list.js"></script>
   <script src="/p5-collage/config.js"></script>
@@ -76,7 +52,6 @@
   <script src="/p5-collage/sensor-mapper.js"></script>
   <script src="/p5-collage/cell-renderer.js"></script>
   <script src="/p5-collage/cell-image.js"></script>
-  <script src="/p5-collage/brand-mark.js"></script>
   <script src="/p5-collage/image-loader.js"></script>
   <script src="/p5-collage/device-manager.js"></script>
   <script src="/p5-collage/image-deck.js"></script>

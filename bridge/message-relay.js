@@ -4,7 +4,7 @@ const VALID_ACTIONS = [
   'opacity', 'rotation', 'filter', 'move',
   'scale', 'filter-next',
   'cell-next', 'cell-prev',
-  'cycle-next', 'bring-front', 'send-back',
+  'cycle-next', 'set-image', 'bring-front', 'send-back',
 ];
 
 const FILTER_NAMES = ['sepia', 'grayscale', 'cyanotype', 'polaroid', 'vintage', 'none'];
@@ -96,6 +96,11 @@ class MessageRelay {
         return { valid: false, error: `invalid action: ${msg.action}` };
       }
       // Validate value-bearing action payloads
+      if (msg.action === 'set-image') {
+        return typeof msg.value === 'string' && /^\d{3}$/.test(msg.value)
+          ? { valid: true }
+          : { valid: false, error: `invalid value for set-image: ${JSON.stringify(msg.value)}` };
+      }
       if (VALID_VALUE_ACTIONS[msg.action]) {
         return this.validateValueAction(msg.action, msg.value ?? msg);
       }

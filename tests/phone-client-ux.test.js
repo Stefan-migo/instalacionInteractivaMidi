@@ -20,6 +20,14 @@ describe('phone control sheet actions', () => {
   // difference is the noun and not a low-frequency verb like "reubicar".
   test('the primaries name what changes: another photo, another cell', () => {
     expect(html).toMatch(/>Otra foto<\/button>/);
+    expect(html).toContain('id="choose-library-btn"');
+    expect(html).toContain('id="skip-photo-btn"');
+    expect(html).toContain('id="photo-library"');
+    expect(html).toMatch(/Saltar a otra/);
+    const app = fs.readFileSync(require('path').join(__dirname, '../phone-client/app.js'), 'utf8');
+    expect(app).toMatch(/fetch\('\/api\/deck\/available'\)/);
+    expect(app).toMatch(/sendActionWithPayload\('set-image', \{ value: key \}\)/);
+    expect(app).toMatch(/sendAction\('cycle-next'\)/);
     expect(html).toMatch(/>Otra celda<\/button>/);
     expect(html).toMatch(/>Enviar atrás<\/button>/);
     expect(html).not.toMatch(/>Reubicar<\/button>/);

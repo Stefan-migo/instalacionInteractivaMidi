@@ -36,21 +36,32 @@ describe('drawBackgroundTexture', () => {
     expect(mockGfx.clear).toHaveBeenCalled();
   });
 
-  test('non-shader-paper style returns solid fill fallback', () => {
+  // A solid fill here used to paint the whole 1920x1080 canvas black: the
+  // texture is a grain layer, so an unsupported style must paint nothing.
+  test('a non-paper style paints nothing, so the canvas keeps its own colour', () => {
     mockGfx.clear.mockClear();
     mockGfx.rect.mockClear();
     drawBackgroundTexture(mockP, 1920, 1080, 1.0, 42, 'aged-paper');
-    // Should draw a solid black fill rect
-    expect(mockGfx.fill).toHaveBeenCalledWith(0, 0, 0);
-    expect(mockGfx.rect).toHaveBeenCalledWith(0, 0, 1920, 1080);
+    expect(mockGfx.clear).toHaveBeenCalled();
+    expect(mockGfx.rect).not.toHaveBeenCalled();
   });
 
-  test('unknown style returns solid fill fallback', () => {
+  test('an unknown style paints nothing either', () => {
     mockGfx.clear.mockClear();
     mockGfx.rect.mockClear();
     drawBackgroundTexture(mockP, 1920, 1080, 1.0, 42, 'unknown');
-    expect(mockGfx.fill).toHaveBeenCalledWith(0, 0, 0);
-    expect(mockGfx.rect).toHaveBeenCalled();
+    expect(mockGfx.clear).toHaveBeenCalled();
+    expect(mockGfx.rect).not.toHaveBeenCalled();
+  });
+
+  test('the shader paints a translucent grain, never an opaque colour', () => {
+    const fs = require('fs');
+    const path = require('path');
+    const src = fs.readFileSync(path.join(__dirname, '..', 'p5-collage', 'background-texture.js'), 'utf8');
+    // An opaque near-black layer replaced the paper colour instead of tinting it.
+    expect(src).not.toMatch(/vec3\(clamp\(noise, 0\.0, 0\.10\)\)/);
+    expect(src).toMatch(/gl_FragColor = vec4\(vec3\(0\.0\), alpha\)/);
+    expect(src).toMatch(/\* 0\.30 \* u_intensity/);
   });
 
   test('zero intensity returns empty buffer', () => {
