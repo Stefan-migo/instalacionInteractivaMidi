@@ -29,10 +29,10 @@ The operator's live tuning (scatter scale, paper grain, layout preset, cycle run
 
 | ID | Specs | Route | Commit |
 | --- | --- | --- | --- |
-| T1 | S1, S2 | worker: `bridge/operator-state.js`, `bridge/index.js` | `PENDING` |
-| T2 | S3 | worker: `p5-collage/sketch.js`, `p5-collage/operator-state.js`, `p5-collage/index.html` | `PENDING` |
-| T3 | S3 | worker: `operator/operator.js` | `PENDING` |
-| T4 | S1–S3 | verify: full Jest suite + served routes | `PENDING` |
+| T1 | S1, S2 | worker: `bridge/operator-state.js`, `bridge/index.js` | `cdc6789` |
+| T2 | S3 | worker: `p5-collage/sketch.js`, `p5-collage/operator-state.js`, `p5-collage/index.html` | `cdc6789` |
+| T3 | S3 | worker: `operator/operator.js` | `cdc6789` |
+| T4 | S1–S3 | verify: full Jest suite + served routes | `cdc6789` |
 
 ## Log
 
