@@ -278,3 +278,30 @@ describe('HintEngine sequential flag logic', () => {
     expect(engine.getFlags().shuffled).toBe(true);
   });
 });
+
+// Regression: the picker guarded every key with a regex written with a double
+// backslash, so `/^\d{3}$/` demanded a literal backslash and silently skipped
+// every thumbnail — the library rendered empty with no error anywhere.
+describe('the image picker key guard', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const app = fs.readFileSync(path.join(__dirname, '../phone-client/app.js'), 'utf8');
+
+  // The picker guards every key with a regex literal before drawing its
+  // thumbnail. Read the literal out of the source and compile it exactly as the
+  // client does: a doubled backslash is what made it reject every real key.
+  test('the key pattern in the client accepts real manifest keys', () => {
+    const line = app.split(String.fromCharCode(10)).find(text => text.includes('.test(key)'));
+    expect(line).toBeDefined();
+    const source = line.slice(line.indexOf('/') + 1, line.lastIndexOf('/'));
+    expect(source.length).toBeGreaterThan(0);
+
+    const pattern = new RegExp(source);
+    expect(pattern.test('001')).toBe(true);
+    expect(pattern.test('210')).toBe(true);
+    expect(pattern.test('1')).toBe(false);
+    expect(pattern.test('01')).toBe(false);
+    expect(pattern.test('0001')).toBe(false);
+    expect(pattern.test('a01')).toBe(false);
+  });
+});
