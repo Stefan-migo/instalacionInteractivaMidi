@@ -70,7 +70,25 @@ function setup() {
   }).then(() => {
     document.getElementById('loading').style.display = 'none';
     connectWebSocket();
+    // The cycle is initialized before the stored tuning is applied: a saved
+    // scatter scale must not be overwritten by the cycle's own first step.
     loadCycleSpec();
+    fetch('/api/operator-state')
+      .then(response => (response.ok ? response.json() : null))
+      .catch(() => null)
+      .then(payload => {
+        const state = payload && payload.state;
+        // A missing module or a missing file leaves the wall on its defaults:
+        // restoring the tuning is never allowed to block the installation.
+        if (!state || !window.OperatorState) return;
+        window.OperatorState.apply(state, {
+          setScatterScale: applyScatterScale,
+          setNoiseIntensity: value => { CONFIG.noiseIntensity = value; setBackgroundTexture(null); redraw(); },
+          setPreset: value => { deviceManager.layoutEngine.setPreset(value); deviceManager._recalculateLayout(); activeSlots = getSortedSlots(); redraw(); },
+          setCycle: setCycleRunning,
+        });
+      })
+      .catch(() => {});
     setInterval(() => { try { redraw(); } catch (e) {} }, 33);
   }).catch(err => {
     document.querySelector('#loading p').textContent = 'Error: ' + err.message;

@@ -36,7 +36,16 @@
     var receive = channelFactory('midi-operator-state');
     var latest = null;
     var gotState = false;
-    function command(type, fields) { var message = fields || {}; message.type = type; send.postMessage(message); }
+    var persistenceTimer = null;
+    function persistTuning() {
+      if (persistenceTimer) clearTimeout(persistenceTimer);
+      persistenceTimer = setTimeout(function () {
+        if (!latest || !root.fetch) return;
+        var snapshot = { version: 1, state: { scatterScale: latest.scatterScale, noiseIntensity: latest.noiseIntensity / 100, preset: latest.preset, cycleRunning: !!(latest.cycle && latest.cycle.running), updatedAt: new Date().toISOString() } };
+        postAuthoring(doc, '/api/operator-state', snapshot).catch(function () {});
+      }, 300);
+    }
+    function command(type, fields) { var message = fields || {}; message.type = type; send.postMessage(message); if (['setPreset', 'setScatterScale', 'setCycle', 'setNoiseIntensity'].indexOf(type) !== -1) persistTuning(); }
     function request() { command('requestState'); }
     function setOptions(el, values) { el.innerHTML = values.map(function (value) { return '<option value="' + value + '">' + value + '</option>'; }).join(''); }
     var presets = doc.getElementById('presets');
