@@ -808,7 +808,7 @@
         photoLibrary.textContent = 'No hay imágenes disponibles';
       } else {
         keys.forEach(function (key) {
-          if (!/^\\d{3}$/.test(key)) return;
+          if (!/^\d{3}$/.test(key)) return;
           var button = document.createElement('button');
           button.type = 'button';
           button.className = 'photo-thumbnail';
