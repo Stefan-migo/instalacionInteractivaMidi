@@ -34,3 +34,7 @@ Logo/
 temp/
 tmp/
 tempExample/
+
+# Runtime state the bridge writes: the wall's tuning. Not source, and a
+# tracked copy would leave the deploy tree dirty and break `git pull --ff-only`.
+images/operator-state.json

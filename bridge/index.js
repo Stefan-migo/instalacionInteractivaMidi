@@ -17,6 +17,7 @@ const { parseEmitRequest } = require('./message-relay');
 const { validateSizes } = require('../p5-collage/size-classes');
 const { DEFAULT_CYCLE, validateCycle } = require('../p5-collage/cycle-steps');
 const { validateDeckList } = require('../p5-collage/deck-list');
+const { validateOperatorState, readOperatorState, writeOperatorState } = require('./operator-state');
 
 function sendJson(res, status, payload) {
   res.writeHead(status, { 'Content-Type': 'application/json' });
@@ -59,6 +60,8 @@ const DECK_PATH = process.env.DECK_PATH ? path.resolve(process.env.DECK_PATH) : 
 // The rearrangement cycle is read-only data the projector drives itself; it is
 // served here so the step list lives beside sizes and deck, not in the sketch.
 const CYCLE_PATH = process.env.CYCLE_PATH ? path.resolve(process.env.CYCLE_PATH) : path.join(ROOT_DIR, 'images', 'cycle.json');
+const OPERATOR_STATE_PATH = process.env.OPERATOR_STATE_PATH ? path.resolve(process.env.OPERATOR_STATE_PATH) : path.join(ROOT_DIR, 'images', 'operator-state.json');
+const OPERATOR_STATE_WRITE_LIMIT = 16 * 1024;
 const DECK_WRITE_LIMIT = 16 * 1024;
 const PHONE_CLIENT_DIR = path.join(ROOT_DIR, 'phone-client');
 const P5_COLLAGE_DIR = path.join(ROOT_DIR, 'p5-collage');
@@ -336,6 +339,22 @@ const server = http.createServer((req, res) => {
       } catch {
         return sendJson(res, 200, { version: 1, excluded: [] });
       }
+    });
+    return;
+  }
+
+  if (pathname === '/api/operator-state' && req.method === 'GET') {
+    return sendJson(res, 200, readOperatorState(OPERATOR_STATE_PATH) || { version: 1, state: null });
+  }
+
+  if (pathname === '/api/operator-state' && req.method === 'POST') {
+    const gate = checkAuthoring(process.env, req.headers);
+    if (!gate.ok) return sendJson(res, gate.status, { ok: false, error: gate.status === 401 ? 'Operator token required' : 'Operator state writes are disabled' });
+    readJsonBody(req, OPERATOR_STATE_WRITE_LIMIT, async (error, submitted) => {
+      if (error) return sendJson(res, error.message === 'body too large' ? 413 : 400, { ok: false, error: error.message });
+      try { validateOperatorState(submitted); } catch (validationError) { return sendJson(res, 400, { ok: false, error: validationError.message }); }
+      try { await writeOperatorState(OPERATOR_STATE_PATH, submitted); return sendJson(res, 200, { ok: true }); }
+      catch { return sendJson(res, 500, { ok: false, error: 'Failed to save operator state' }); }
     });
     return;
   }
